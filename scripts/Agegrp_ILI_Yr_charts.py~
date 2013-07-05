@@ -1,0 +1,141 @@
+#!/usr/bin/python
+
+##############################################
+###Python template
+###Author: Elizabeth Lee
+###Date: 9/20/12	
+###Function: 
+###Import data: Agegrp_ILI_Yr.csv (9/20/12: 4:12:26 PM EDT)
+
+###Command Line: ipython 
+##############################################
+
+### packages ###
+import csv
+import numpy as np
+import matplotlib.pyplot as plt
+
+### functions ###
+
+
+
+### data structures ###
+sumILI_00=[]
+sumILI_01=[]
+sumILI_02=[]
+sumILI_03=[]
+sumILI_04=[]
+sumILI_05=[]
+sumILI_06=[]
+sumILI_07=[]
+sumILI_08=[]
+sumILI_09=[]
+sumILI_10=[]
+sumAnyVisit_00=[]
+sumAnyVisit_01=[]
+sumAnyVisit_02=[]
+sumAnyVisit_03=[]
+sumAnyVisit_04=[]
+sumAnyVisit_05=[]
+sumAnyVisit_06=[]
+sumAnyVisit_07=[]
+sumAnyVisit_08=[]
+sumAnyVisit_09=[]
+sumAnyVisit_10=[]
+propILI_00=[]
+propILI_01=[]
+propILI_02=[]
+propILI_03=[]
+propILI_04=[]
+propILI_05=[]
+propILI_06=[]
+propILI_07=[]
+propILI_08=[]
+propILI_09=[]
+propILI_10=[]
+ageheaders=[]
+
+### import data ###
+i_f=open("/home/elizabeth/Documents/Georgetown/Bansal/SDI/SQL_export/Agegrp_ILI_Yr.csv", "r")
+infile=csv.reader(i_f, delimiter=',')
+#note that: i_f_headers=['AGEGROUP', 'YEAR', 'sum_ILI_m', 'sum_ANY_DIAG_VISIT_CT', 'ILI_prop']
+wip_f=open("Agegrp_ILI_Yr_wip.csv", "wb")
+wipfile=csv.writer(wip_f, delimiter=',')
+
+### program ###
+
+#organize data into arrays
+ct=0
+for row in infile:
+	if row[0] != "TOTAL":
+		if row[1] == "2000":
+			sumILI_00.append(row[2])
+			sumAnyVisit_00.append(row[3])
+			propILI_00.append(row[4])
+			ageheaders.append(row[0])
+		elif row[1] == "2001":
+			sumILI_01.append(row[2])
+			sumAnyVisit_01.append(row[3])
+			propILI_01.append(row[4])
+		elif row[1] == "2002":
+			sumILI_02.append(row[2])
+			sumAnyVisit_02.append(row[3])
+			propILI_02.append(row[4])
+		elif row[1] == "2003":
+			sumILI_03.append(row[2])
+			sumAnyVisit_03.append(row[3])
+			propILI_03.append(row[4])
+		elif row[1] == "2004":
+			sumILI_04.append(row[2])
+			sumAnyVisit_04.append(row[3])
+			propILI_04.append(row[4])
+		elif row[1] == "2005":
+			sumILI_05.append(row[2])
+			sumAnyVisit_05.append(row[3])
+			propILI_05.append(row[4])
+		elif row[1] == "2006":
+			sumILI_06.append(row[2])
+			sumAnyVisit_06.append(row[3])
+			propILI_06.append(row[4])
+		elif row[1] == "2007":
+			sumILI_07.append(row[2])
+			sumAnyVisit_07.append(row[3])
+			propILI_07.append(row[4])
+		elif row[1] == "2008":
+			sumILI_08.append(row[2])
+			sumAnyVisit_08.append(row[3])
+			propILI_08.append(row[4])
+		elif row[1] == "2009":
+			sumILI_09.append(row[2])
+			sumAnyVisit_09.append(row[3])
+			propILI_09.append(row[4])
+		elif row[1] == "2010":
+			sumILI_10.append(row[2])
+			sumAnyVisit_10.append(row[3])
+			propILI_10.append(row[4])
+		else:
+			print "error in year, row: ", ct
+			break
+	else:
+		continue
+	ct+=1
+print ct #check: should equal number of observations in dataset
+print ageheaders #check
+print sumILI_09 #check
+print sumAnyVisit_07 #check
+print propILI_03 #check
+
+#create plots
+N = 12
+xloc = np.arange(N)
+print xloc, len(ageheaders)
+width = 0.2
+
+X2000 = plt.bar(xloc, sumILI_00, width, color = 'y')
+X2001 = plt.bar(xloc, sumILI_01, width, color = 'r')
+#plt.ylabel('ILI counts')
+#plt.xticks(xloc, ageheaders)
+#plt.legend( (X2000[0], X2001[0]), ('2000', '2001'))
+plt.show()
+
+	

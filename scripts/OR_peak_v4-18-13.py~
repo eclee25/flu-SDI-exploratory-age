@@ -1,0 +1,136 @@
+#!/usr/bin/python
+
+##############################################
+###Python template
+###Author: Elizabeth Lee
+###Date:
+###Function: 
+
+###Import data: 
+
+###Command Line: python 
+##############################################
+
+
+### notes ###
+
+
+### packages ###
+import matplotlib
+import csv
+import numpy as np
+import matplotlib.pyplot as plt
+from pylab import *
+
+## local packages ##
+
+### data structures ###
+1c, 2c, 3c, 4c, 5c, 6c, 7c, 8c, 9c, 10c = [],[],[],[],[],[],[],[],[],[] #  
+peakweek_c, peakweek_a = [],[] #
+peakval_c, peakval_a = [],[] #values of 
+
+### parameters ###
+USchild = 20348657 + 20677194 + 22040343 #US child popn
+USadult = 21585999 + 21101849 + 19962099 + 20179642 + 20890964 + 22708591 + 22298125 + 19664805 #US adult popn
+
+
+### functions ###
+def importer4 (csvreadfile, adultlist, childlist, ilicol, pwnum, pwval):
+	ct=0
+	for row in csvreadfile:
+		if row[1] == "A":
+			adultlist.append(float(row[ilicol])/USadult)
+		elif row[1] == "C":
+			childlist.append(float(row[ilicol])/USchild)
+		else:
+			ct+=1
+
+def ORgen (ylist, childlist, adultlist):
+	for i in range(0,len(childlist)):
+		ylist.append((childlist[i]/(1-childlist[i]))/(adultlist[i]/(1-adultlist[i])))
+	print childlist[i], 1-childlist[i], adultlist[i], 1-adultlist[i]
+
+# may need to start with for i in c_alist because enumerate needs to be reinitiated for every max and min function performed on the enumerated list
+def peakweekval (c_alist, peakweeklist, peakvallist):
+	for index, item in enumerate(c_alist):
+		
+
+def peakweek (csvreadfile, peakval, wkval, numval, peakwkval, yearct): 
+	ct=0
+	for row in csvreadfile:
+		yr = int(row[2][:4])
+		wknum = # per A/C
+		month = row[2][5:7]
+		null = float(row[6])
+		if ((yr==yr1vec[yearct] and wknum in firstyr and month != "01") or (yr==yr2vec[yearct] and wknum in nextyr)):
+			ct+=1
+			if null>peakval:
+				peakval=float(row[6])
+				wkval=row[2]
+				numval=ct
+				peakwkval=int(row[3])
+	peak.append(peakval)
+	weeks.append(wkval)
+	peakwk_shifted.append(numval)
+	peakwk.append(peakwkval) #not needed for plotting, just as a check
+
+### import data ###
+d2ain=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a2_a.csv','r')
+d2a=csv.reader(d2ain, delimiter=',')
+d2bin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a2_b.csv','r')
+d2b=csv.reader(d2bin, delimiter=',')
+d2cin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a2_c.csv','r')
+d2c=csv.reader(d2cin, delimiter=',')
+d2din=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a2_d.csv','r')
+d2d=csv.reader(d2din, delimiter=',')
+d2ein=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a2_e.csv','r')
+d2e=csv.reader(d2ein, delimiter=',')
+d2fin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a2_f.csv','r')
+d2f=csv.reader(d2fin, delimiter=',')
+d2gin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a2_g.csv','r')
+d2g=csv.reader(d2gin, delimiter=',')
+d2hin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a2_h.csv','r')
+d2h=csv.reader(d2hin, delimiter=',')
+d2iin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a2_i.csv','r')
+d2i=csv.reader(d2iin, delimiter=',')
+d2jin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a2_j.csv','r')
+d2j=csv.reader(d2jin, delimiter=',')
+
+
+### program ###
+
+# generate odds ratios for whole season
+importer(d1, adult1, child1, 2)
+ORgen(y1, child1, adult1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

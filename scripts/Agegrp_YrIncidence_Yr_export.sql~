@@ -1,0 +1,15 @@
+/*----SQL TEMPLATE----
+Author: Elizabeth Lee
+Date: 9/20/12
+Function: Export SDI flu data: average proportion of flu cases to all diagnosis visits by age group by year
+
+Command Line: mysql -u elizabeth -pBans1Lab! sdi <Agegroup_YrIncidence_Yr_export.sql> Agegrp_YrIncidence_Yr.csv
+*/
+
+SELECT AGEGROUP, YEAR(WEEK), sum(ILI_m), sum(ANY_DIAG_VISIT_CT), sum(ILI_m)/sum(ANY_DIAG_VISIT_CT) as ILI_prop FROM flu
+WHERE SERVICE_PLACE = "TOTAL" AND PATIENT_ZIP3 = "TOT"
+GROUP BY AGEGROUP, YEAR(WEEK)
+;
+
+--note that 2000 data is only the last week of December and 2010 data exists only through the end of June
+
