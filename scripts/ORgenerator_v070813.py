@@ -29,6 +29,7 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 from pylab import *
+from datetime import date
 
 ## local packages ##
 ### data structures ###
@@ -39,29 +40,47 @@ USadult = 21585999 + 21101849 + 19962099 + 20179642 + 20890964 + 22708591 + 2229
 ### functions ###
 
 #### (import_d function) import ILI data into a dictionary where season number and agegroup are the key and ILI count is the value
-# dict_data = empty dictionary where imported data will be stored, seascol = column number for season number; agecol = column number for age group marker ('A', C', 'O'); ilicol = column number for ILI counts
+# dict_data = empty dictionary where imported data will be stored, seascol = column number for season; agecol = column number for age group marker ('A', C', 'O'); ilicol = column number for ILI counts
 # length of dictionary should equal number of rows in csvfile
 def import_d (csvfile, dict_data, seascol, agecol, ilicol):
 	for row in csvfile:
 		dict_data[(int(row[seascol]), str(row[agecol]))] = float(row[ilicol])
 	print "Length of dict_data: %d" % len(dict_data)
 
-
-#### (ORgen function) generate odds ratios at the season-level for a given list of attack rates for children and adults
-# dict_data = completed dictionary with (season number, age group) as key and ILI count as value; dict_OR = empty dictionary where ORs will be stored; snumlist = list of season numbers for which ORs will be calculated
-def ORgen_seas (dict_data, dict_OR, snumlist):
-	for snum in snumlist:
-		c_attack = dict_data[(snum,'C')]/USchild # calculate child attack rate
-		a_attack = dict_data[(snum,'A')]/USadult # calculate adult attack rate
+#### (ORgen_seas function) generate odds ratios at the season-level for a given list of attack rates for children and adults
+# dict_data = completed dictionary with (season number, age group) as key and ILI count as value; dict_OR = empty dictionary where ORs will be stored; timelist = list of season numbers for which ORs will be calculated
+def ORgen_seas (dict_data, dict_OR, timelist):
+	for t in timelist:
+		c_attack = dict_data[(t,'C')]/USchild # calculate child attack rate
+		a_attack = dict_data[(t,'A')]/USadult # calculate adult attack rate
 		OR = (c_attack/(1-c_attack))/(a_attack/(1-a_attack)) # calculate odds ratio
 		print OR
-		dict_OR[snum] = float(OR) # create dictionary for odds ratios
+		dict_OR[t] = float(OR) # create dictionary for odds ratios
 	print "Length of dict_OR: %d" % len(dict_OR)
 
+#### (import_dwk function) import ILI data into a dictionary where season number and agegroup are the key and ILI count is the value
+# dict_data = empty dictionary where imported data will be stored, seascol = column number for season; agecol = column number for age group marker ('A', C', 'O'); ilicol = column number for ILI counts; wklist = empty list where unique weeks will be appended
+# length of dictionary should equal number of rows in csvfile
+def import_dwk (csvfile, dict_data, dict_wk, seascol, wkcol, agecol, ilicol, wklist):
+	for row in csvfile:
+		week = row[wkcol]
+		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wklist.append(wk)
+		dict_data[(wk, str(row[agecol]))] = float(row[ilicol])
+		dict_wk[wk] = int(row[seascol])
+	print "Length of dict_data: %d" % len(dict_data)
+	wklist = set(wklist)
 
 
-
-
+#### (ORgen_wk function) generate odds ratios at the season-level for a given list of attack rates for children and adults
+# dict_data = completed dictionary with (season number, age group) as key and ILI count as value; dict_OR = empty dictionary where ORs will be stored; timelist = list of season numbers for which ORs will be calculated; 
+def ORgen_wk (dict_data, dict_OR, wklist):
+	for w in wklist:
+		c_attack = dict_data[(w, 'C')]/USchild # calculate child attack rate
+		a_attack = dict_data[(w, 'A')]/USadult # calculate adult attack rate
+		OR = (c_attack/(1-c_attack))/(a_attack/(1-a_attack)) # calculate odds ratio
+		dict_OR[w] = float(OR) # create dictionary for odds ratios
+	print "Length of dict_OR: %d" % len(dict_OR)
 
 
 

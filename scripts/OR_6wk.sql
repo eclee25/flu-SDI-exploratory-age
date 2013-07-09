@@ -4,6 +4,7 @@ Date: 7/7/13
 Function: 
 1) Pull incidence data for only 6 weeks before and after the peak for child and adult populations across all zip3s
 2) Pull incidence, zip3, and popstat data for only 6 weeks before and after the peak for child and adult populations
+3) Pull incidence for child and adult populations by week for the peak +/- 6 wk span across all zip3s (7/9/13)
 
 Command Line: mysql -u elizabeth -pbansa11ab 
 Data: flu table: SDI
@@ -73,6 +74,23 @@ GROUP BY flu.WEEK
 ;
 /* popstat should not be summed. note: the sum of flu.popstat is not a multiple of the popstat value displayed because popstat values change each calendar year and there are two calendar years represented in a single flu season. the popstat value that is exported will represent the population size in the first of those two calendar years. the values from year to year should not change drastically, so it is okay to use this first popstat value. */
 
+
+/* Function 3: Pull incidence for child and adult populations by week for the peak +/- 6 wk span across all zip3s (7/9/13) */
+SELECT season.SEAS_WK6, flu.WEEK, child.MARKER, sum(flu.ILI_m) 
+from flu RIGHT JOIN season ON (flu.WEEK = season.WEEK) RIGHT JOIN child ON (child.AGEGROUP = flu.AGEGROUP)
+WHERE flu.SERVICE_PLACE = "TOTAL" and flu.PATIENT_ZIP3 = "TOT" and season.SEAS_WK6 <> 0
+GROUP BY season.SEAS_WK6, flu.WEEK, child.MARKER
+;
+
+/* check that child marker works */
+SELECT season.SEAS_WK6, flu.WEEK, child.MARKER, sum(flu.ILI_m) 
+from flu RIGHT JOIN season ON (flu.WEEK = season.WEEK) RIGHT JOIN child ON (child.AGEGROUP = flu.AGEGROUP)
+WHERE flu.SERVICE_PLACE = "TOTAL" and flu.PATIENT_ZIP3 = "TOT" and season.SEAS_WK6 <> 0 and flu.AGEGROUP <> '<2 YEARS'
+GROUP BY season.SEAS_WK6, flu.WEEK, child.MARKER
+;
+/* yes it works - ILI counts in the "O" category were decreased */
+
+
 /* export data function 1 */
 SELECT season.SEAS_WK6, child.MARKER, sum(flu.ILI_m) 
 from flu RIGHT JOIN season ON (flu.WEEK = season.WEEK) RIGHT JOIN child ON (child.AGEGROUP = flu.AGEGROUP)
@@ -94,6 +112,18 @@ FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 ;
+
+/* export data function 3 */
+SELECT season.SEAS_WK6, flu.WEEK, child.MARKER, sum(flu.ILI_m) 
+from flu RIGHT JOIN season ON (flu.WEEK = season.WEEK) RIGHT JOIN child ON (child.AGEGROUP = flu.AGEGROUP)
+WHERE flu.SERVICE_PLACE = "TOTAL" and flu.PATIENT_ZIP3 = "TOT" and season.SEAS_WK6 <> 0
+GROUP BY season.SEAS_WK6, flu.WEEK, child.MARKER
+INTO OUTFILE '/tmp/OR_swk6_week.csv'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+;
+
 
 /* files were moved to SQL_export folder */
 
