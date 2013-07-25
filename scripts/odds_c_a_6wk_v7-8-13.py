@@ -67,9 +67,10 @@ plt.show()
 od.import_dwk(s6wk, s6wkdict, wkdict, 0, 1, 2, 3, weeks)
 od.ORgen_wk(s6wkdict, ORwkdict, weeks) 
 for s in seasons:
-	wkdummy = [key for key in weeks if wkdict[key] == int(s)]
+	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
 	wkdummy = set(wkdummy)
-	y = [ORwkdict[item] for item in wkdummy]
+# 	print sorted(wkdummy) # edit ECL 6/12 wkdummy needs to be sorted because dictionary values don't have an order. y-axis ORs need to match the correct week number
+	y = [ORwkdict[item] for item in sorted(wkdummy)]
 	x = range(7-len(wkdummy), 7)
 	print "season", s, len(wkdummy)
 	plt.plot(x, y, marker='o', color = colorvec[s-1], label= labelvec[s-1], linewidth = 2)

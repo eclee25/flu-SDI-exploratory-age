@@ -10,7 +10,7 @@
 ### 4. calculate OR per fips code per season
 ### 5. export data in format: fips code, OR
 ## Input Filenames: OR_swk6_zip3.csv (season, peak +/- 6wk season) choropleth_7-1-13.csv (weekly, Oct-May season)
-## Output Filenames: dict_fips_popsize.csv (for fips-popsize dictionary in python)
+## Output Filenames: zip3_fips_popsize.csv (zip3, fips, population size in 2010 dictionary), zip3_ILI_season.csv (zip3, ILI by season dictionary)
 ## Data Source: SDI 
 ## 
 
@@ -99,7 +99,7 @@ ddply(.data=test, .variables='zip3', summarize, .fun = function(x) x[(x$pop2010_
 test[(test$pop2010_ers2 ==max(test$pop2010_ers2)),6][[1]]
 test<-test[1,]
 
-### SWITCH TO PYTHON ### 7/10/13
+### SWITCH TO PYTHON to finish data cleaning ### 7/10/13
 # grab all unique zip3 and fips combinations from cw dataset
 cw2<-data.frame(cbind(cw$zip3, cw$FIPS_ers, cw$pop2010_ers))
 names(cw2)<-c('zip3','FIPS','pop2010')
@@ -119,6 +119,8 @@ d4<-ddply(.data=d3, .variables='ID', summarize, ILI = sum(ILI), popstat = sum(po
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
 write.csv(cw_exp, file="zip3_fips_popsize.csv", row.names=FALSE) # zip3-fips-popsize dataset
 write.csv(d4, file="zip3_ILI_season.csv", row.names=FALSE) # ILI data, cleaned zip3s, by season
+
+
 ####################################################################################
 
 # check that the number of unique zip3s is equal to the number of unique FIPS codes
@@ -128,6 +130,57 @@ write.csv(d4, file="zip3_ILI_season.csv", row.names=FALSE) # ILI data, cleaned z
 ### 5. export data in format: fips code, OR 
 
 ############################################################################
+#### INCIDENCE by SEASON MOVIE #### # 7/19/13
+library(plyr)
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export')
+d<-read.csv('choropleth_seasonincid_v7-1-13.csv', colClasses='character', header=FALSE)
+names(d)<-c('season','zip3','ILI','popstat')
+d$popstat<-as.numeric(d$popstat)
+d$season<-as.numeric(d$season)
+d$ILI<-as.numeric(d$ILI)
+dno0<-d[d$popstat>0,] # remove zip3s where popstat is 0
+dno0[dno0$popstat<dno0$ILI,] # show rows where popstat is less than ILI # none
+d_zip3<-ddply(.data=dno0, .variables='zip3', summarise, nseas=length(season))
+dropthese<-d_zip3[d_zip3$nseas<10,1]
+d2<-dno0[!(dno0$zip3 %in% dropthese),] # 843 zip3s are represented
+# this number is larger than the 545 zip3s represented in the OR by season charts because that dataset could include only zip3s for which there was complete adult and child data in order to divide by the appropriate adult and child population sizes. we have the "total" popstat variable here so missing child and adult data does not affect our ability to calculate the total population attack rate in terms of missing data in the denominator. we assume that there were were no ILI cases for that age group during that season (affects the numerator but not the denominator when calculating attack rate)
+
+unique(d2$zip3)# check that the correct zip3s were removed
+
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/mapping_code/cleanedmapdata')
+write.csv(d2,file = 'zip3_incid_season.txt', row.names=FALSE) # cleaned incidence by season data exported 7/19/13
+
+
+
+#######################################################
+## INCIDENCE by WEEK MOVIE ## # 7/23/13
+# how many zip3s are present in the choropleth_v7-1-13.csv (weekly) data?
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export')
+d<- read.csv('choropleth_v7-1-13.csv', colClasses='character')
+names(d)<-c('season','week','zip3','ILI','popstat')
+zip3cts<-table(d$zip3)
+length(zip3cts[zip3cts<496]) # show zip3s that do not appear every week for 10 seasons (343 zip3s)
+length(unique(d$zip3)) # 936 unique zip3s appear
+
+# how many zip3s will be included if we have the popstat variables for the entire season?
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/mapping_code/cleanedmapdata')
+d2<-read.csv('zip3_incid_season.txt', colClasses='character',header=TRUE)
+length(unique(d2$zip3)) # data for 843 zip3s could be calculated
+
+# drop data from d if zip3 does not appear in d2
+includethese<-unique(d2$zip3)
+d_cl<-d[(d$zip3 %in% includethese),]
+
+# compare popstat data in d_cl and d2
+d2[d2$zip3 == '200',]
+unique(d_cl[d_cl$zip3 == '200',]$popstat)
+# the values are the same except the values in d2 show only the popstat value for the first year in the flu season. There is one less value in the d2 list of values because it has dropped the popstat value for the calendar year 2010.
+
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/mapping_code/cleanedmapdata')
+write.csv(d_cl, file = 'zip3_incid_week.txt', row.names=FALSE) # cleaned incidence by week data exported 7/23/13 # includes only the 843 zip3s that have popstat data for each season in the zip3_incid_season.txt file (the popstat data in this file should be ignored)
+
+
+
 #### ORs by WEEK MOVIE ####
 
 # read in SDI data and cleanup

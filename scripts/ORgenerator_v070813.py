@@ -75,13 +75,13 @@ def import_dwk (csvfile, dict_data, dict_wk, seascol, wkcol, agecol, ilicol, wkl
 #### (ORgen_wk function) generate odds ratios at the season-level for a given list of attack rates for children and adults
 # dict_data = completed dictionary with (season number, age group) as key and ILI count as value; dict_OR = empty dictionary where ORs will be stored; timelist = list of season numbers for which ORs will be calculated; 
 def ORgen_wk (dict_data, dict_OR, wklist):
-	for w in wklist:
+	for w in set(wklist):
 		c_attack = dict_data[(w, 'C')]/USchild # calculate child attack rate
 		a_attack = dict_data[(w, 'A')]/USadult # calculate adult attack rate
 		OR = (c_attack/(1-c_attack))/(a_attack/(1-a_attack)) # calculate odds ratio
 		dict_OR[w] = float(OR) # create dictionary for odds ratios
 	print "Length of dict_OR: %d" % len(dict_OR)
-
+	
 
 
 
