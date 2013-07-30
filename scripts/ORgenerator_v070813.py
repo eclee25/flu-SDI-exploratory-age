@@ -54,7 +54,7 @@ def ORgen_seas (dict_data, dict_OR, timelist):
 		c_attack = dict_data[(t,'C')]/USchild # calculate child attack rate
 		a_attack = dict_data[(t,'A')]/USadult # calculate adult attack rate
 		OR = (c_attack/(1-c_attack))/(a_attack/(1-a_attack)) # calculate odds ratio
-		print OR
+# 		print OR
 		dict_OR[t] = float(OR) # create dictionary for odds ratios
 	print "Length of dict_OR: %d" % len(dict_OR)
 
@@ -81,7 +81,14 @@ def ORgen_wk (dict_data, dict_OR, wklist):
 		OR = (c_attack/(1-c_attack))/(a_attack/(1-a_attack)) # calculate odds ratio
 		dict_OR[w] = float(OR) # create dictionary for odds ratios
 	print "Length of dict_OR: %d" % len(dict_OR)
-	
 
+
+
+#### (import_gen_d function) generically import data into a dictionary
+# kcol = column for keys; vcol = column for dicitonary values; dict_gen = empty dictionary where data will be stored
+def import_gen_d (csvfile, dict_gen, kcol, vcol):
+	for row in csvfile:
+		dict_gen[int(row[kcol])] = str(row[vcol])
+	print "Length of new dict: %d" % len(dict_gen)
 
 

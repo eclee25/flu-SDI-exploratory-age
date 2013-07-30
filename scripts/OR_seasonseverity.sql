@@ -6,6 +6,7 @@ Function: Grab data that can serve as a proxy for season severity
 2) ILI cases over entire population during flu season (Oct to May)
 3) ILI cases in acute care facilities during peak weeks
 4) ILI cases in ERs during peak weeks
+5) ILI cases in acute care facilities during flu season
 
 Decided that ILI cases in acute care facilities during peak weeks seem to best match the information 
 Data export: explore/SQL_export/seasonseverity.csv (7/25/13)
@@ -102,6 +103,7 @@ SEAS_WK6 | sum(flu.ILI_m) | POPSTAT   | AR100000 |
 /* This metric is similar to the acute care facilities during peak weeks, except there is a much higher AR in season 9, possibly due to pH1N1. The ARs are also higher in general, which may be noise because ERs are a catch-all for severe patients and individuals without health  */
 
 
+/*5) ILI cases in acute care facilities during flu season*/
 SELECT season.SMALL_SEAS_NUM, sum(flu.ILI_m), flu.POPSTAT, sum(flu.ILI_m)/flu.POPSTAT*100000 as AR100000 from flu RIGHT JOIN season ON (flu.WEEK = season.WEEK)
 WHERE flu.PATIENT_ZIP3 = "TOT" and flu.AGEGROUP = "TOTAL" and flu.SERVICE_PLACE = "INPATIENT ACUTE CARE FACILITY" and season.SMALL_SEAS_NUM <> 0
 GROUP BY season.SMALL_SEAS_NUM
