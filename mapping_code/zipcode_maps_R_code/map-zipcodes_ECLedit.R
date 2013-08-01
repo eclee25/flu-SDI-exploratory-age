@@ -2,6 +2,7 @@
 ## Date: 7/19/13
 ## Function: 
 ### 1. draw OR map per season
+### 1b. draw log(OR map) per season 7/31/13
 ### 2. draw incidence map per season
 ### 3) incidence maps by week 7/23/13
 ## Note: need 11 color bins because that is the max that the diverging color brewer palette will take
@@ -69,10 +70,6 @@ quantile(communities$OR) #    0% (0.3044887)       25% (2.2441 670)       50% (3
 highOR<-communities[communities$OR>20,] # seems to include both urban and rural communities
 mergeddata$OR_bin<-cut(mergeddata$OR, breaks=c(seq(0,16, by=2), 20, 30, 65)) # bin the ORs
 
-# # r <- data.frame(OR_bin=sort(unique(mergeddata$OR_bin)), OR_legend=as.character(rainbow(length(unique(mergeddata$OR_bin))))) 
-# # # OR_legend does not represent the colors that will be displayed in the maps, but the colors won't display at all if I omit the "color" argument from aes
-# mergetwo <- mergeddata 
-
 popstat<-read.csv('zip3_incid_season.txt', header=T, sep=",", colClasses='character')
 popstat6<-popstat[popstat$season=='6',]
 # are all zip3s from mergeddata present in popstat10?
@@ -118,7 +115,7 @@ Houston[Houston$season=="5",]
 ############ end checks ################
 
 
-# 7/19/13 plots
+# 7/19/13 plots, labels were wrong
 # for (i in 1:10){
 #   Sdat<-mergetwo[mergetwo$season==as.character(i),]
 #   g <- ggplot(data=Sdat)
@@ -128,6 +125,59 @@ Houston[Houston$season=="5",]
 #   g <- g + scale_color_brewer(type="div", palette=7, labels=sort(unique(mergeddata$OR_bin), decreasing=TRUE)) 
 # #   ggsave(g, width=6, height=4, filename=paste("OR_map_S",i,".png", sep=''))
 # }
+
+
+
+
+# 1b) log OR maps by season
+#communities file should have a list of nodes and data (nodes = zipcodes, data = OR or incidence)
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata')
+communities <- read.csv('zip3_OR_season.txt', header=F, sep=",", colClasses='character') # includes zip3s that are present for all 10 seasons
+names(communities)<-c('season','zip3','OR')
+communities$OR<-as.numeric(communities$OR)
+communities$logOR<-log(communities$OR)
+
+latlong <- read.csv('zip3_ll.txt', header=F, sep=',', colClasses='character') # file for source of lat/longs
+names(latlong)<-c('zip3', 'latitude', 'longitude')
+latlong$latitude<-as.numeric(latlong$latitude)
+latlong$longitude<-as.numeric(latlong$longitude)
+
+mergeddata = merge(communities, latlong, by.x='zip3', by.y='zip3')
+
+# ORs are continuous, so they need to be binned
+# how many bins should there be?
+hist(communities$logOR, breaks=50, freq=FALSE)
+
+quantile(communities$logOR) #    0% (-1.1891212)       25% (0.8083344)       50% (1.2375569)        75% (1.6965425)      100% (4.1635060)
+# explore the large ORs
+highOR<-mergeddata[mergeddata$logOR>3,] # seem to be mostly rural areas
+mergeddata$logOR_bin<-cut(mergeddata$logOR, breaks=c(seq(-1.5,3.5, by=0.5), 4.5)) # bin the ORs
+
+popstat<-read.csv('zip3_incid_season.txt', header=T, sep=",", colClasses='character')
+popstat6<-popstat[popstat$season=='6',]
+# are all zip3s from mergeddata present in popstat10?
+sum(unique(mergeddata$zip3) %in% popstat6$zip3) # 843 zip3s
+length(unique(mergeddata$zip3)) # 843 zip3s - all zip3s from mergeddata are present in rucc
+mergethree <- merge(mergeddata, popstat6[,2:4], by = 'zip3')
+mergethree$popstat<-as.numeric(mergethree$popstat)
+mergethree$logOR_bin<-factor(mergethree$logOR_bin, levels=c("(-1.5,-1]", "(-1,-0.5]", "(-0.5,0]", "(0,0.5]", "(0.5,1]", "(1,1.5]", "(1.5,2]", "(2,2.5]", "(2.5,3]", "(3,3.5]", "(3.5,4.5]"))
+mergethree$logOR_bin<-factor(mergethree$logOR_bin, levels=rev(levels(mergethree$logOR_bin)))
+
+for (i in 1:10){
+  Sdat<-mergethree[mergethree$season==as.character(i),]
+  g <- ggplot(data=Sdat, aes(size=popstat))
+  g <- g + labs(title = paste("Log Odds Ratio, Season", i))
+  g <- g + scale_size_continuous(range=c(1,5))
+  g <- g + scale_size("population size")
+  g <- g + geom_point(aes(x=longitude, y=latitude, color=logOR_bin))
+  g <- g + labs(x=NULL, y=NULL)
+  g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
+  g <- g + scale_color_brewer("log odds ratio", type="div", palette=7, labels=sort(unique(mergethree$logOR_bin)), drop=FALSE) 
+#   ggsave(g, width=6, height=4, filename=paste("logOR_map_S",i,".png", sep=''))
+}
+
+
+
 
 
 # 2) incidence maps by season
@@ -161,19 +211,20 @@ sum(unique(mergeddata$zip3) %in% popstat6$zip3) # 843 zip3s
 length(unique(mergeddata$zip3)) # 843 zip3s - all zip3s from mergeddata are present in rucc
 mergethree <- merge(mergeddata, popstat6[,2:4], by = 'zip3')
 mergethree$popstat.y<-as.numeric(mergethree$popstat.y) # when popstat dataset was merged, popstat.y represents the popstat value in season 6.
-mergethree$attack1000_bin<-factor(mergethree$attack1000_bin, rev(levels(mergethree$attack1000_bin)))
+mergethree$attack1000_bin<-factor(mergethree$attack1000_bin, levels=rev(levels(mergethree$attack1000_bin)))
+
 
 
 for (i in 1:10){
   Sdat<-mergethree[mergethree$season==as.character(i),]
   g <- ggplot(data=Sdat, aes(size=popstat.y))
-  g <- g + labs(title = paste("Attack Rate per 1000, Season", i))
+  g <- g + labs(title = paste("Incidence per 1000, Season", i))
   g <- g + scale_size_continuous(range=c(1,5))
   g <- g + scale_size("population size")
   g <- g + geom_point(aes(x=longitude, y=latitude, color=attack1000_bin))
   g <- g + labs(x=NULL, y=NULL)
   g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
-  g <- g + scale_color_brewer("attack rate", type="div", palette=7, labels=sort(unique(mergethree$attack1000_bin)), drop=FALSE) 
+  g <- g + scale_color_brewer("incidence", type="div", palette=7, labels=levels(mergethree$attack1000_bin), drop=FALSE) 
 #   ggsave(g, width=6, height=4, filename=paste("Incid_map_S",i,".png", sep=''))
 }
 
@@ -184,19 +235,23 @@ mergethree[mergethree$zip3=='770',] # Houston
 
 # test with a few cities since there are many different OR bins
 Houston<-mergethree[(mergethree$zip3=='770' | mergethree$zip3=='945' | mergethree$zip3=='200' | mergethree$zip3=='900' | mergethree$zip3=='600' | mergethree$zip3=='331'),] # Houston & Norcal & DC & LA & Chicago
-for (i in 1:6){
+for (i in 1:3){
   Sdat<-Houston[Houston$season==as.character(i),]
   g <- ggplot(data=Sdat, aes(size=popstat.y))
-  g <- g + labs(title = paste("AR, Season", i))
+  g <- g + labs(title = paste("Incidence, Season", i))
   g <- g + scale_size_continuous(range=c(9,10))
   g <- g + scale_size("population size")
   g <- g + geom_point(aes(x=longitude, y=latitude, color=attack1000_bin))
   g <- g + labs(x=NULL, y=NULL)
   g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
-  g <- g + scale_color_brewer("odds ratio", type="div", palette=7, labels=sort(unique(mergethree$attack1000_bin)), drop=FALSE) 
+  g <- g + scale_color_brewer("incidence", type="div", palette=7, labels=levels(mergethree$attack1000_bin), drop=FALSE) 
 }
-Houston[Houston$season=="6",]
+Houston[Houston$season=="3",]
 ############ end checks ################
+
+
+
+
 
 
 # 3) incidence maps by week 7/31/13
@@ -217,14 +272,15 @@ mergeddata = merge(d, latlong, by.x='zip3', by.y='zip3')
 # attack are floats, so they need to be binned
 # how many bins should there be?
 hist(mergeddata$attack, breaks=1000, freq=FALSE)
-hist(mergeddata$attack, breaks=500, freq=FALSE,xlim=c(0,15), ylim=c(0, .1))
+hist(mergeddata$attack, breaks=1000, freq=FALSE,xlim=c(0,4), ylim=c(0, .1))
 hist(mergeddata$attack, breaks=50, freq=FALSE,xlim=c(15,65), ylim=c(0, 0.03))
 quantile(mergeddata$attack) #    0% (0.000000)       25% (0.000000)       50% (0.000000)        75% (0.000000)      100% (1074.533)
 # explore the large attack10000s
 highattack<-mergeddata[mergeddata$attack>8,] # relatively few instances and most of them fall during the 2008-2009 seasons, 786
 hist(highattack$attack, freq=FALSE)
 
-mergeddata$attack_bin<-cut(mergeddata$attack, breaks=c(seq(0,7, by=1), 15, 30, 70, 110), right=FALSE) # bin the attack rates
+mergeddata$attack_bin<-cut(mergeddata$attack, breaks=c(-Inf, seq(0,2, by=0.25), 5, 30, 110), right=TRUE) # bin the attack rates
+mergeddata[(mergeddata$attack_bin=='(-Inf,0]' & mergeddata$attack != 0),] # examine new bins, all of the incidences for the first bin are 0.
 uqwk <- sort(unique(mergeddata$week))
 
 ### change marker size based on size of urban area ### 7/24/13
@@ -244,18 +300,20 @@ sum(unique(mergeddata$zip3) %in% popstat6$zip3) # 843 zip3s
 length(unique(mergeddata$zip3)) # 843 zip3s - all zip3s from mergeddata are present in rucc
 mergethree <- merge(mergeddata, popstat6, by.x = 'zip3', by.y = 'zip3')
 mergethree$popstat<-as.numeric(mergethree$popstat)
-mergethree$attack_bin<-factor(mergethree$attack_bin, rev(levels(mergethree$attack_bin)))
+mergethree[mergethree$attack_bin=="(-Inf,0]",]$attack_bin<-NA
+mergethree$attack_bin<-factor(mergethree$attack_bin) # drop (-Inf,0] level since it no longer occurs
+mergethree$attack_bin<-factor(mergethree$attack_bin, levels=rev(levels(mergethree$attack_bin))) # reversed so low values are blue and high values are red
 
-for (i in 109:length(uqwk)){ # length(uqwk)
+for (i in 1:length(uqwk)){ # length(uqwk)
   Wdat<-mergethree[mergethree$week==uqwk[i],]
   g <- ggplot(data=Wdat, aes(size=popstat))
-  g <- g + labs(title = paste("Attack Rate per 10,000:", uqwk[i]))
+  g <- g + labs(title = paste("Incidence per 10,000:", uqwk[i]))
   g <- g + scale_size_continuous(range=c(1,5))
   g <- g + scale_size("population size")
   g <- g + geom_point(aes(x=longitude, y=latitude, color=attack_bin)) #, size=RUCCavg_m
   g <- g + labs(x=NULL, y=NULL)
   g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
-  g<- g + scale_color_brewer(type="div", palette=7, labels=sort(unique(mergethree$attack_bin)), drop=FALSE) 
+  g<- g + scale_color_brewer("incidence", type="div", palette=7, labels=levels(mergethree$attack_bin), drop=FALSE, na.value="grey85")
   ggsave(g, width=6, height=4, filename=paste("Incid_map_",uqwk[i],".png", sep=''))
   print(i)
 }
@@ -270,13 +328,13 @@ Houston<-mergethree[(mergethree$zip3=='770' | mergethree$zip3=='945' | mergethre
 for (i in 1:10){
   Sdat<-Houston[Houston$week==uqwk[i],]
   g <- ggplot(data=Sdat, aes(size=popstat))
-  g <- g + labs(title = paste("AR, Week", uqwk[i]))
+  g <- g + labs(title = paste("Incidence, Week", uqwk[i]))
   g <- g + scale_size_continuous(range=c(9,10))
   g <- g + scale_size("population size")
   g <- g + geom_point(aes(x=longitude, y=latitude, color=attack_bin))
   g <- g + labs(x=NULL, y=NULL)
   g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
-  g <- g + scale_color_brewer("odds ratio", type="div", palette=7, labels=sort(unique(mergethree$attack_bin)), drop=FALSE) 
+  g <- g + scale_color_brewer("incidence", type="div", palette=7, labels=sort(unique(mergethree$attack_bin)), drop=FALSE) 
 }
 Houston[Houston$week==uqwk[i],]
 ############ end check on maps ################
