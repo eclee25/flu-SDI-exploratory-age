@@ -5,6 +5,8 @@
 *.egg
 *.egg-info
 *.Rhistory
+*.csv
+*.zip
 SQL_export/
 R_export/
 Py_export/
