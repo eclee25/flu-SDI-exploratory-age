@@ -1,0 +1,11 @@
+*~
+*.[oa]
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+SQL_export/
+R_export/
+Py_export/
+SQL_import/
+graph_outputs/
