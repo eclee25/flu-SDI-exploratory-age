@@ -1,0 +1,479 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Age Dynamics in Seasonal Influenza, United States 2001-2010
+\end_layout
+
+\begin_layout Abstract
+August 2, 2013
+\end_layout
+
+\begin_layout Abstract
+Issues to consider: 
+\end_layout
+
+\begin_layout Abstract
+integration of spatial and age dynamics results?
+\end_layout
+
+\begin_layout Abstract
+discussion of differences between seasonal epidemics and pandemic?
+\end_layout
+
+\begin_layout Abstract
+what's the overarching story?
+\end_layout
+
+\begin_layout Section*
+Introduction
+\end_layout
+
+\begin_layout Itemize
+seasonal influenza facts - global health burden, facts about the US 
+\end_layout
+
+\begin_layout Itemize
+Why is it important to understand patterns in flu spread? flu is seasonal
+ and so has a regular public health burden each year, developing better
+ understanding of spatial and demographic patterns across seasons can be
+ used to target interventions to achieve different policy goals/ improve
+ decisionmaking about who to target after high risk groups (Bansal2010),
+ improve surveillance methods
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+spatial and age dynamics are two aspects that can help us understand mechanisms
+ that drive seasonal patterns because they constrain the way epidemics can
+ occur and drive immunity dynamics
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+some spatial flu studies discuss movement of flu in US throughout the season:
+ slight SW to NE gradient, no delay between urban and rural areas presumably
+ due to commuter related mixing, diffusion occurs over long distances before
+ the epidemic builds up within communities (Schanzer2011a); within-state
+ scale: as population size increases, correlation in weekly incidence increases
+ (Stark2012); W to E gradient, NV and CA have lowest absolute intensity
+ among states and ND and SD have highest absolute intensity while IL and
+ IN are moderate in absolute intensity, synchrony across entire US within
+ individual seasons- similar geographical patterns but variation in peak
+ week (Wenger2010); W to E patterns due to large air traffic hubs (Grais2004);
+ hemispheric synchrony (Viboud2004a -- perhaps less important here)
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+note: difference in geographic scales is important to consider and these
+ studies don't have zip3 level data for entire US
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+observed age dynamic trends in the literature: minimal work has been done
+ on this, particularly at the seasonal level
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+expand upon intro in qualifying exam
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+other pertinent observations (where to include this?): earlier seasons are
+ more 
+\begin_inset Quotes eld
+\end_inset
+
+pronounced
+\begin_inset Quotes erd
+\end_inset
+
+ (ie.
+ severe?) (Wenger2010)
+\end_layout
+
+\begin_layout Itemize
+What did we do and how is it new?
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+exploration of age dynamics across different seasonal and spatial attributes
+\end_layout
+
+\begin_layout Itemize
+we examine a new facet spatial dynamics by adding a comparison of incidence
+ in children and adults -- also includes comparison of spatial age dynamics
+ to general spatial dynamics (OR vs incidence maps)
+\end_layout
+
+\begin_layout Itemize
+verification of observed empirical patterns in percolation simulations on
+ age-structure networks
+\end_layout
+
+\end_deeper
+\begin_layout Section*
+\noindent
+Results
+\end_layout
+
+\begin_layout Standard
+note: 
+\begin_inset Quotes eld
+\end_inset
+
+mini-methods
+\begin_inset Quotes erd
+\end_inset
+
+ sections are at beginning of each subsection (SDI data analysis and simulations
+) to prime reader for results
+\end_layout
+
+\begin_layout Itemize
+general statement explaining logic of our subsequent analyses: observed
+ age-related patterns in a large dataset and then used percolation simulations
+ on an age-structure population to explore contact network patterns on a
+ few findings
+\end_layout
+
+\begin_layout Subsection*
+SDI data analysis
+\end_layout
+
+\begin_layout Itemize
+description of SDI dataset, calculation of OR, different definitions of
+ season 
+\end_layout
+
+\begin_layout Standard
+Many factors contribute to variability between seasons.
+ We explored the relationships between these factors and the odds ratio
+ of incidence in children and adults
+\end_layout
+
+\begin_layout Standard
+- note: could break 
+\begin_inset Quotes eld
+\end_inset
+
+Seasonal attributes
+\begin_inset Quotes erd
+\end_inset
+
+ into 3 smaller sections: 
+\begin_inset Quotes eld
+\end_inset
+
+Prominent strain
+\begin_inset Quotes erd
+\end_inset
+
+, 
+\begin_inset Quotes eld
+\end_inset
+
+Vaccine match
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+Seasonal epidemiology
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Seasonal attributes
+\end_layout
+
+\begin_layout Standard
+a) non H3 seasons have high ORs (subtype) note that H3 seasons also tend
+ to have lower vaccine matches because of unpredictable differences in Victoria/
+Yamguchi strain dominance.
+ The mechanistic reason for high ORs is thus confounded between prominent
+ subtype and vax match.
+ 
+\end_layout
+
+\begin_layout Standard
+b) high vax match seasons have high ORs and high variation (vaxmatch) note
+ that this is a slightly flawed percentage/categorization because we are
+ combining the match of the H1, H3, and B vaccine strains to the circulating
+ strains but we aren't capturing the interactive effect of the strains in
+ the vaccine
+\end_layout
+
+\begin_layout Standard
+d) mild seasons have higher ORs and variation in OR (and OR peaks) while
+ severe seasons have consistent and low ORs 02-03 and 06-07 are the only
+ two seasons with OR peaks and these seasons are the mildest seasons in
+ our dataset (odds_c_a_6wk_week).
+ OR and incidence peaks match in the mildest seasons because they are the
+ only ones that actually have peaks (this is more of an artifact of stochastic
+ variation in OR from week to week in severe seasons- the highest OR point
+ has nothing to do with incidence)
+\end_layout
+
+\begin_layout Standard
+e) severe seasons tend to have lower ORs and milder seasons have higher
+ ORs (OR_seasonseverity.png) the two metrics used to calculate OR and "severity"
+ are independent of each other.
+ Acute care and inpatient visits are primarily from young children and the
+ elderly and ORs are calculated with school-aged children and adults so
+ there should not be any particular correlation between these two datasets.This
+ is good because there should not be any natural correlation in the data
+ itself.
+\end_layout
+
+\begin_layout Itemize
+figures: 1) combine subtype, vaxmatch (or vaxmatch/subtype interaction),
+ season severity OR scatterplots
+\end_layout
+
+\begin_layout Subsubsection*
+Spatial attributes
+\end_layout
+
+\begin_layout Standard
+c) urban areas have greater variation among ORs (OR_urbanmetro__v6-7-13)
+ is there lower variation between ORs in different zip3s if it is a poor
+ vax match season?
+\end_layout
+
+\begin_layout Standard
+f) OR maps: - There is greater disparity between children and adults in
+ the East (VA, WV) and Southeast (Houston, FL) than in other areas of the
+ US.
+ - Severe seasons have low ORs and a tighter range (less difference across
+ spatial locations) of ORs across zip3s (S4, S5, S8).
+ Mild seasons have a larger range of ORs, have higher upper bounds in ORs,
+ and a more defined spatial pattern between East/SE and other parts of the
+ US (S3, S7)
+\end_layout
+
+\begin_layout Standard
+g) Compare OR and incidence: - Zip3s with high incidence generally retain
+ low to middling ORs, which suggests that areas hit heaviest by flu get
+ flu in their entire populations and not just in one age demographic (synchrony
+ across age groups).
+ There are some areas with low incidence that have high ORs, which might
+ mean that flu got to the child populations but failed to spread widely
+ in the adult population, and the incidence for the season is generally
+ low in the entire population.
+ - The West seems to have low ORs because they are not heavily hit with
+ flu (not because the season is more severe there).
+ - During the pandemic season (S9), however, high attack rate is more correlated
+ with high ORs, which may be explained by the idea that the pandemic more
+ greatly affected children and that the health-seeking behavior of children
+ was heightened during these seasons.
+ 
+\end_layout
+
+\begin_layout Itemize
+note: several other spatial epi papers discuss spatial synchrony within
+ seasons --> incidence by week: this might be out of the scope of this paper
+\end_layout
+
+\begin_layout Itemize
+figures: 1) synchronized peaks by OR, 2) some representation of OR maps,
+ 3) example juxtaposition of OR and incidence map that exemplifies 
+\end_layout
+
+\begin_layout Subsection*
+\noindent
+Simulations
+\end_layout
+
+\begin_layout Itemize
+goals in using simulations: to explore seasonal attribute observations that
+ higher season severity means lower OR and higher vaccine match means higher
+ OR.
+ Season severity is incorporated into the model as T value, and vaccine
+ match is incorporated as vaccine efficacy.
+\end_layout
+
+\begin_layout Itemize
+how do we use networks to perform simulations? what does it represent?
+\end_layout
+
+\begin_layout Itemize
+brief description of Vancouver network and the simulation specifications
+\end_layout
+
+\begin_layout Subsubsection*
+Season severity
+\end_layout
+
+\begin_layout Standard
+**findings
+\end_layout
+
+\begin_layout Itemize
+figures: 1) OR vs T value, 2) epidemic size and probability vs T value?
+ (provides general information about the simulations and results)
+\end_layout
+
+\begin_layout Subsubsection*
+Vaccine efficacy 
+\end_layout
+
+\begin_layout Standard
+**findings
+\end_layout
+
+\begin_layout Itemize
+figures: 1) OR vs efficacy value, 2) epidemic size and probability vs efficacy
+ value? (provides general info)
+\end_layout
+
+\begin_layout Section*
+Methods
+\end_layout
+
+\begin_layout Standard
+SDI data analysis
+\end_layout
+
+\begin_layout Itemize
+description of dataset
+\end_layout
+
+\begin_layout Itemize
+restate definitions of seasons and why we use them
+\end_layout
+
+\begin_layout Itemize
+which zip3s are included and how they were cleaned, assumptions about no
+ entry in dataset (0 cases)
+\end_layout
+
+\begin_layout Standard
+Simulations
+\end_layout
+
+\begin_layout Itemize
+detailed description of Vancouver network, simulation parameters and assumptions
+\end_layout
+
+\begin_layout Itemize
+figures: 1) representation of age structure in network, 2) degree distributions
+ by age?
+\end_layout
+
+\begin_layout Section*
+Discussion
+\end_layout
+
+\begin_layout Itemize
+severity = counter-intuitive finding that seasonal severity means low OR.
+ in a severe season, flu affects the entire population, which is why severe
+ seasons have low seasonal ORs and low ORs across all zip3s
+\end_layout
+
+\begin_layout Itemize
+spatial patterns corroborate urban and rural synchrony- likely due to urban
+ and rural commuting patterns as suggested by other papers (note: again,
+ this might be more of a side note than main finding since it is not age-related
+; it does however increase confidence in the validity of our data so it
+ might be worth mentioning)
+\end_layout
+
+\begin_layout Itemize
+**data findings in relation to simulation findings
+\end_layout
+
+\begin_layout Itemize
+note: is it possible to combine previous literature plus results of study
+ to describe some qualities of severe and mild seasons? (eg.
+ severe seasons tend to affect entire population, peak earlier) 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+do the qualities of seasonal flu epidemics hold for the 2009 H1N1 pandemic?
+ -- from the age dynamics perspective, pandemic season had very high ORs
+ across zip3s.
+ the pandemic was mild (so expect high ORs), but in addition, children were
+ more likely to be affected so this may have launched the OR even higher.
+ are there other differences between the seasonal and pandemic data?
+\end_layout
+
+\begin_layout Itemize
+maybe conventional wisdom of considering epidemics and pandemics as separate
+ beasts may not be as warranted as previously thought, aside from the unpredicta
+ble temporal differences
+\end_layout
+
+\end_deeper
+\end_body
+\end_document
