@@ -11,6 +11,8 @@
 #### call ORgenerator script to calculate odds ratios
 #### OR represents the average OR for all zip3s
 
+### rerun 8/7/13 with updated prominent subtype information
+
 ###Import data: vaxmatch.csv, zipcode_bysseas_cl_v6-12-13.csv
 
 ###Codebook
@@ -73,16 +75,16 @@ def vaxmatch_import (csvreadfile, season, s_marker, match1, match3, matchb, matc
 		season.append(int(row[0]))
 		s_marker.append(int(row[3]))
 		match1.append(float(row[4]))
-# # 		match3.append(float(row[5]))
+		match3.append(float(row[5]))
 		matchb.append(float(row[6]))
 		matcht.append(float(row[7]))
 		mlvl_marker.append(int(row[9]))
 
 
 ### import data ###
-vaxmatchin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/vaxmatch.csv','r')
+vaxmatchin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/vaxmatch2.csv','r')
 vaxmatch=csv.reader(vaxmatchin, delimiter=',')
-d1in=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/R_export/zipcode_bysseas_cl_v6-12-13.csv','r')
+d1in=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/zipcode_bysseas_cl_v6-12-13.csv','r')
 d1=csv.reader(d1in, delimiter=',')
 
 
@@ -98,9 +100,9 @@ print "length of avgORlist:", len(avgOR1), len(sdOR1)
 # OR vs qualitative bins for vaccine strain match level
 mlvllab = ['','very low', 'low', 'medium', 'high', 'very high','']
 xaxis = range(0,7)
-xaxjitter = [x + np.random.uniform(-0.5, 0.5, 1) for x in mlvlmarker]
-plt.errorbar(xaxjitter, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
-for num, mlvl, OR in zip(seasonnum, xaxjitter, avgOR1):
+# xaxjitter = [x + np.random.uniform(-0.3, 0.3, 1) for x in mlvlmarker]
+plt.errorbar(mlvlmarker, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
+for num, mlvl, OR in zip(seasonnum, mlvlmarker, avgOR1):
 	plt.annotate(num, xy = (mlvl, OR), xytext = (5,0), textcoords = 'offset points')
 plt.ylabel('Odds ratio of attack rate, child:adult (zip3 popstat normalized)')
 plt.xlabel('Vaccine strain match level')
@@ -110,9 +112,9 @@ ylim([2,7])
 plt.show()
 
 # OR vs vaccine strain match percent (across all three vaccine strains)
-xaxjitter = [x + np.random.uniform(-5, 5, 1) for x in totmatch]
-plt.errorbar(xaxjitter, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
-for num, perc, OR in zip(seasonnum, xaxjitter, avgOR1):
+# xaxjitter = [x + np.random.uniform(-5, 5, 1) for x in totmatch]
+plt.errorbar(totmatch, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
+for num, perc, OR in zip(seasonnum, totmatch, avgOR1):
 	plt.annotate(num, xy = (perc, OR), xytext = (5,0), textcoords = 'offset points')
 plt.ylabel('Odds ratio of attack rate, child:adult (zip3 popstat normalized)')
 plt.xlabel('Trivalent vaccine strain match (%)')
@@ -123,9 +125,9 @@ plt.show()
 
 
 # OR vs Influenza B vaccine strain match percent
-xaxjitter = [x + np.random.uniform(-5, 5, 1) for x in Bmatch]
-plt.errorbar(xaxjitter, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
-for num, perc, OR in zip(seasonnum, xaxjitter, avgOR1):
+# xaxjitter = [x + np.random.uniform(-5, 5, 1) for x in Bmatch]
+plt.errorbar(Bmatch, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
+for num, perc, OR in zip(seasonnum, Bmatch, avgOR1):
 	plt.annotate(num, xy = (perc, OR), xytext = (5,0), textcoords = 'offset points')
 plt.ylabel('Odds ratio of attack rate, child:adult (zip3 popstat normalized)')
 plt.xlabel('Influenza B vaccine match (%)')
@@ -135,9 +137,9 @@ ylim([2,7])
 plt.show()
 
 # OR vs H1 vaccine strain match percent
-xaxjitter = [x + np.random.uniform(-5, 5, 1) for x in H1match]
-plt.errorbar(xaxjitter, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
-for num, perc, OR in zip(seasonnum, xaxjitter, avgOR1):
+# xaxjitter = [x + np.random.uniform(-5, 5, 1) for x in H1match]
+plt.errorbar(H1match, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
+for num, perc, OR in zip(seasonnum, H1match, avgOR1):
 	plt.annotate(num, xy = (perc, OR), xytext = (5,0), textcoords = 'offset points')
 plt.ylabel('Odds ratio of attack rate, child:adult (zip3 popstat normalized)')
 plt.xlabel('H1 vaccine match (%)')
@@ -147,9 +149,9 @@ ylim([2,7])
 plt.show()
 
 # OR vs H3 vaccine strain match percent
-xaxjitter = [x + np.random.uniform(-5, 5, 1) for x in H3match]
-plt.errorbar(xaxjitter, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
-for num, perc, OR in zip(seasonnum, xaxjitter, avgOR1):
+# xaxjitter = [x + np.random.uniform(-5, 5, 1) for x in H3match]
+plt.errorbar(H3match, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
+for num, perc, OR in zip(seasonnum, H3match, avgOR1):
 	plt.annotate(num, xy = (perc, OR), xytext = (5,0), textcoords = 'offset points')
 plt.ylabel('Odds ratio of attack rate, child:adult (zip3 popstat normalized)')
 plt.xlabel('H3 vaccine match (%)')

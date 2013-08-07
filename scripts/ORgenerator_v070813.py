@@ -58,8 +58,16 @@ def ORgen_seas (dict_data, dict_OR, timelist):
 		dict_OR[t] = float(OR) # create dictionary for odds ratios
 	print "Length of dict_OR: %d" % len(dict_OR)
 
+#### (ARdict_seas function) generate dictionary for season number and attack rates of children and adults normalized by the entire US population
+def ARdict_seas (dict_data, dict_AR, timelist):
+	for t in timelist:
+		c_attack = dict_data[(t,'C')]/USchild*1000 # calculate child attack rate
+		a_attack = dict_data[(t,'A')]/USadult*1000 # calculate adult attack rate
+		dict_AR[t] = (c_attack, a_attack)
+
+
 #### (import_dwk function) import ILI data into a dictionary where season number and agegroup are the key and ILI count is the value
-# dict_data = empty dictionary where imported data will be stored, seascol = column number for season; agecol = column number for age group marker ('A', C', 'O'); ilicol = column number for ILI counts; wklist = empty list where unique weeks will be appended
+# dict_data = empty dictionary where imported data will be stored; dict_wk = empty dictionary where week and season numbers are keys and  seascol = column number for season; wkcol = column number for week; agecol = column number for age group marker ('A', C', 'O'); ilicol = column number for ILI counts; wklist = empty list where unique weeks will be appended
 # length of dictionary should equal number of rows in csvfile
 def import_dwk (csvfile, dict_data, dict_wk, seascol, wkcol, agecol, ilicol, wklist):
 	for row in csvfile:
@@ -90,5 +98,23 @@ def import_gen_d (csvfile, dict_gen, kcol, vcol):
 	for row in csvfile:
 		dict_gen[int(row[kcol])] = str(row[vcol])
 	print "Length of new dict: %d" % len(dict_gen)
+
+
+
+#### (import_cdc function) import ILI data into a dictionary where season number and agegroup are the key and ILI count is the value
+# dict_data = empty dictionary where imported data will be stored, wkcol = column number for wknum, childcol = column number for child ILI cases, adultcol = column number for adult ILI cases, wklist = empty list where unique weeks will be appended
+# length of dictionary should equal number of rows in csvfile
+def import_cdc (csvfile, dict_data, wkcol, childcol, adultcol, wklist):
+	for row in csvfile:
+		wknum = row[wkcol]
+		wklist.append(wknum)
+		dict_data[(wknum, 'C')] = float(row[childcol]) # cdc data is 5-24 for children
+		dict_data[(wknum, 'A')] = float(row[adultcol]) # cdc data is 25-64 for adults
+	print "Length of dict_data: %d" % len(dict_data)
+
+
+
+
+
 
 

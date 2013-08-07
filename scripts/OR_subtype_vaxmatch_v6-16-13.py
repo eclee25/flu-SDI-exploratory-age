@@ -69,9 +69,9 @@ def subtype_vaxmatch_import (csvreadfile, season, interact, s_label):
 
 
 ### import data ###
-d1in=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/R_export/zipcode_bysseas_cl_v6-12-13.csv','r') # 6/16 change file name
+d1in=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/zipcode_bysseas_cl_v6-12-13.csv','r') # 6/16 change file name
 d1=csv.reader(d1in, delimiter=',')
-subtypein=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/subtype3.csv','r')
+subtypein=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/subtype4.csv','r')
 subtype=csv.reader(subtypein, delimiter=',')
 
 ### program ###

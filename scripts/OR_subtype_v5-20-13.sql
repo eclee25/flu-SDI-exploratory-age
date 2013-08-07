@@ -10,7 +10,7 @@ USE sdi;
 /* export subtype data */
 
 SELECT * from subtype
-INTO OUTFILE '/tmp/subtype3.csv'
+INTO OUTFILE '/tmp/subtype4.csv'
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
