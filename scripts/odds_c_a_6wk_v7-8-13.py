@@ -28,7 +28,7 @@ from pylab import *
 import ORgenerator_v070813 as od 
 
 ### data structures ###
-s6dict, ORdict = {},{}
+s6dict, ORdict, s6ARdict = {},{},{}
 s6wkdict, ORwkdict, wkdict, weeks = {},{},{},[]
 
 
@@ -54,14 +54,27 @@ labelvec = ['00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-0
 # OR by season chart
 od.import_d(s6, s6dict, 0, 1, 2)
 od.ORgen_seas(s6dict, ORdict, seasons)
+od.ARdict_seas(s6dict, s6ARdict, seasons)
 keys = [int(key) for key in sorted(ORdict.keys())]
 values = [ORdict[k] for k in sorted(ORdict.keys())]
-print keys
+print keys #order in which seasons will be plotted
 # plot OR by season chart
 plt.plot(keys, values, marker='o', color = 'black', label= "total")
 plt.xlabel('Season number')
 plt.ylabel('Attack Rate OR, c:a (US pop normalized, peak +/- 6wks)')
 plt.show()
+# output data file of attack rates
+# with open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/AR1000_s6_season.txt', 'a') as f:
+# 	for k,v in s6ARdict.iteritems():
+# 		print k,v
+# 		f.write(str(k)) # season number
+# 		f.write(',')
+# 		f.write(str(v[0])) # child attack rate per 1000 for peak season
+# 		f.write(',')
+# 		f.write(str(v[1])) # adult attack rate per 1000 for peak season
+# 		f.write('\n')
+# f.close() # exported on 8/6/13
+
 
 # OR by week chart
 od.import_dwk(s6wk, s6wkdict, wkdict, 0, 1, 2, 3, weeks)
