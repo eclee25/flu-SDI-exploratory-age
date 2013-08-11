@@ -110,6 +110,17 @@ spatial and age dynamics are two aspects that can help us understand mechanisms
 
 \end_deeper
 \begin_layout Itemize
+observed age dynamic trends in the literature: minimal work has been done
+ on this, particularly at the seasonal level
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+expand upon intro in qualifying exam
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
 some spatial flu studies discuss movement of flu in US throughout the season:
  slight SW to NE gradient, no delay between urban and rural areas presumably
  due to commuter related mixing, diffusion occurs over long distances before
@@ -127,17 +138,6 @@ some spatial flu studies discuss movement of flu in US throughout the season:
 \begin_layout Itemize
 note: difference in geographic scales is important to consider and these
  studies don't have zip3 level data for entire US
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-observed age dynamic trends in the literature: minimal work has been done
- on this, particularly at the seasonal level
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-expand upon intro in qualifying exam
 \end_layout
 
 \end_deeper
@@ -475,5 +475,9 @@ ble temporal differences
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+future work
+\end_layout
+
 \end_body
 \end_document

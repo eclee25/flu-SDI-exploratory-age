@@ -7,8 +7,12 @@
 *.Rhistory
 *.csv
 *.zip
+*.ods
 SQL_export/
 R_export/
 Py_export/
 SQL_import/
 graph_outputs/
+scripts/season2_explore.py # exploratory only
+scripts/small_attack_rate_explore.sql # exploratory only
+
