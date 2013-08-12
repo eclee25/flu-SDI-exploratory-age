@@ -15,4 +15,4 @@ SQL_import/
 graph_outputs/
 scripts/season2_explore.py # exploratory only
 scripts/small_attack_rate_explore.sql # exploratory only
-
+descriptive_age_dynamics.lyx
