@@ -24,11 +24,7 @@
 # child = 5-19 yo, adult = 20-59 yo
 
 ### packages ###
-import matplotlib
-import csv
 import numpy as np
-import matplotlib.pyplot as plt
-from pylab import *
 from datetime import date
 
 ## local packages ##
