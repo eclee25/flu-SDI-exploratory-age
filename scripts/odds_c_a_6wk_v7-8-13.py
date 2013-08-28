@@ -7,6 +7,8 @@
 ###Function: 
 #### 1) draw OR by season charts where season is defined as the 6 weeks before and after the peak incidence week for the total population (new season definition)
 #### 2) draw OR by season charts for new season definition where OR is an average of ORs across zip3s
+#### 3) draw OR by AR per season for the 6 weeks before and after the peak incidence week for the total population (8/27/13)
+#### 4) draw OR by AR per week for the 6 weeks before and after the peak incidence week for the total population (8/27/13)
 
 ###Import data: SQL_export/OR_swk6.csv
 
@@ -20,16 +22,14 @@
 ### packages ###
 import matplotlib
 import csv
-import numpy as np
 import matplotlib.pyplot as plt
-from pylab import *
 
 ## local packages ##
-import ORgenerator_v070813 as od 
+import ORgenerator as od 
 
 ### data structures ###
-s6dict, ORdict, s6ARdict = {},{},{}
-s6wkdict, ORwkdict, wkdict, weeks = {},{},{},[]
+s6dict, ORdict, s6ARcadict, s6ARtotdict = {},{},{},{}
+s6wkdict, ORwkdict, ARwkdict, wkdict, weeks = {},{},{},{},[]
 
 
 ### parameters ###
@@ -52,9 +52,14 @@ labelvec = ['00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-0
 ### program ###
 
 # OR by season chart
-od.import_d(s6, s6dict, 0, 1, 2)
-od.ORgen_seas(s6dict, ORdict, seasons)
-od.ARdict_seas(s6dict, s6ARdict, seasons)
+
+# s6dict[(seasonnum, age marker)] = ILI ct
+s6dict = od.import_d(s6, 0, 1, 2)
+# ORdict[seasonnum] = OR
+ORdict = od.ORgen_seas(s6dict, seasons)
+# s6ARcadict[seasonnum] = (child attack rate per 1000, adult attack rate per 1000)
+# s6ARtotdict[seasonnum] = total attack rate per 100000 # see OR vs AR chart
+s6ARcadict, s6ARtotdict = od.ARdict_seas(s6dict, seasons)
 keys = [int(key) for key in sorted(ORdict.keys())]
 values = [ORdict[k] for k in sorted(ORdict.keys())]
 print keys #order in which seasons will be plotted
@@ -77,8 +82,12 @@ plt.show()
 
 
 # OR by week chart
-od.import_dwk(s6wk, s6wkdict, wkdict, 0, 1, 2, 3, weeks)
-od.ORgen_wk(s6wkdict, ORwkdict, weeks) 
+# s6wkdict[(week, age marker)] = ILI
+# wkdict[week] = seasonnum
+s6wkdict, wkdict = od.import_dwk(s6wk, 0, 1, 2, 3, weeks)
+# ORwkdict[week] = OR
+# ARwkdict[week] = total attack rate per 10000 # save for OR by AR per week chart
+ORwkdict, ARwkdict = od.ORgen_wk(s6wkdict, weeks) 
 for s in seasons:
 	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
 	wkdummy = set(wkdummy)
@@ -87,12 +96,38 @@ for s in seasons:
 	x = range(7-len(wkdummy), 7)
 	print "season", s, len(wkdummy)
 	plt.plot(x, y, marker='o', color = colorvec[s-1], label= labelvec[s-1], linewidth = 2)
-xlim([-6, 6])
-ylim([1,10])
+plt.xlim([-6, 6])
+plt.ylim([1,10])
 plt.xlabel('Week Number')
 plt.ylabel('Attack Rate OR, c:a (US pop normalized, peak +/- 6wks)')
 plt.legend(loc="upper right")
 plt.show()
 
 
+# OR by AR per season chart
+ARvals = [s6ARtotdict[k] for k in sorted(ORdict)]
+ORvals = [ORdict[k] for k in sorted(ORdict)]
+#order in which seasons will be plotted (check)
+print "plotted order of season in OR by AR:", sorted(ORdict) 
+# plot OR by AR season chart
+plt.scatter(ARvals, ORvals, marker='o', color = 'black', label= "total")
+for k, AR, OR in zip(sorted(ORdict), ARvals, ORvals):
+	plt.annotate(k, xy = (AR, OR), xytext = (5,0), textcoords = 'offset points')
+plt.xlabel('Peak Season Attack Rate per 100,000 (US pop)')
+plt.ylabel('Attack Rate OR, c:a (US pop normalized, peak +/- 6wks)')
+plt.show()
+
+
+# OR by AR per week chart
+# ARwkdict[week] = total attack rate per 10000 # save for OR by AR per week chart
+wkdummy = [key for key in sorted(weeks)]
+wkdummy = set(wkdummy)
+ORvals = [ORwkdict[week] for week in sorted(wkdummy)]
+ARvals = [ARwkdict[week] for week in sorted(wkdummy)]
+print "num points in OR by AR per wk:", len(ARvals)
+plt.scatter(ARvals, ORvals, marker='o', color = 'black', label= 'total')
+plt.xlabel('Peak Season Attack Rate per 10,000 (US pop)')
+plt.ylabel('Attack Rate OR, c:a (US pop normalized, peak +/- 6wks)')
+plt.legend(loc="upper right")
+plt.show()
 
