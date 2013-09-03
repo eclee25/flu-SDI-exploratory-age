@@ -61,7 +61,12 @@ for s in seasons:
 	# wkdummy will represent list of weeks for chart in season to use as key for OR dict
 	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
 	wkdummy = set(wkdummy)
-	if len(wkdummy) == 53:
+	if s == 1:
+		chartORs = [ORdict[wk] for wk in sorted(wkdummy)]
+		chartwks = xrange(13, 13 + len(sorted(wkdummy)))
+		print "season number and num weeks", s, len(wkdummy)
+		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
+	elif len(wkdummy) == 53:
 		# wkdummy needs to be sorted bc dict values don't have order
 		chartORs = [ORdict[wk] for wk in sorted(wkdummy)]
 		chartwks = xrange(len(sorted(wkdummy)))
@@ -73,9 +78,8 @@ for s in seasons:
 		chartORs.insert(13, avg53)
 		chartwks = xrange(len(sorted(wkdummy)) + 1)
 		print "season number and num weeks", s, len(wkdummy)
-		print "ORs", chartORs
 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
-plt.xlim([0, 53])
+plt.xlim([0, 52])
 plt.ylim([1, 10])
 plt.xlabel('Week Number')
 plt.ylabel('OR, c:a (US pop normalized)')
