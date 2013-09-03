@@ -29,7 +29,7 @@ import ORgenerator as od
 
 ### data structures ###
 s6dict, ORdict, s6ARcadict, s6ARtotdict = {},{},{},{}
-s6wkdict, ORwkdict, ARwkdict, wkdict, weeks = {},{},{},{},[]
+s6wkdict, ORwkdict, ARwkdict, wkdict = {},{},{},{}
 
 
 ### parameters ###
@@ -84,7 +84,7 @@ plt.show()
 # OR by week chart
 # s6wkdict[(week, age marker)] = ILI
 # wkdict[week] = seasonnum
-s6wkdict, wkdict = od.import_dwk(s6wk, 0, 1, 2, 3, weeks)
+s6wkdict, wkdict, weeks = od.import_dwk(s6wk, 0, 1, 2, 3)
 # ORwkdict[week] = OR
 # ARwkdict[week] = total attack rate per 10000 # save for OR by AR per week chart
 ORwkdict, ARwkdict = od.ORgen_wk(s6wkdict, weeks) 

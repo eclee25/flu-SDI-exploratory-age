@@ -77,10 +77,10 @@ def ARdict_seas (dict_data, timelist):
 
 
 #### (import_dwk function) import ILI data into a dictionary where season number and agegroup are the key and ILI count is the value
-# dict_data = store imported data; dict_wk = empty dictionary where week and season numbers are keys and  seascol = column number for season; wkcol = column number for week; agecol = column number for age group marker ('A', C', 'O'); ilicol = column number for ILI counts; wklist = empty list where unique weeks will be appended
+# dict_data = store imported data; dict_wk = empty dictionary where week and season numbers are keys and  seascol = column number for season; wkcol = column number for week; agecol = column number for age group marker ('A', C', 'O'); ilicol = column number for ILI counts; wklist = list where unique weeks will be appended
 # length of dictionary should equal number of rows in csvfile
-def import_dwk (csvfile, seascol, wkcol, agecol, ilicol, wklist):
-	dict_data, dict_wk = {}, {}
+def import_dwk (csvfile, seascol, wkcol, agecol, ilicol):
+	dict_data, dict_wk, wklist = {}, {}, []
 	for row in csvfile:
 		week = row[wkcol]
 		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
@@ -89,11 +89,11 @@ def import_dwk (csvfile, seascol, wkcol, agecol, ilicol, wklist):
 		dict_wk[wk] = int(row[seascol])
 	print "Length of dict_data: %d" % len(dict_data)
 	wklist = set(wklist)
-	return dict_data, dict_wk
+	return dict_data, dict_wk, wklist
 
 
 #### (ORgen_wk function) generate odds ratios at the season-level for a given list of attack rates for children and adults
-# dict_data = completed dictionary with (season number, age group) as key and ILI count as value; dict_OR = store ORs in dict; timelist = list of season numbers for which ORs will be calculated; 
+# dict_data = completed dictionary with (week, age group) as key and ILI count as value; dict_OR = store ORs in dict; timelist = list of season numbers for which ORs will be calculated; 
 def ORgen_wk (dict_data, wklist):
 	dict_OR, dict_AR = {},{}
 	for w in set(wklist):
