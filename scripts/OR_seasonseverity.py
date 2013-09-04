@@ -22,7 +22,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 ## local packages ##
-import ORgenerator_v070813 as od
+import ORgenerator as od
 
 ### data structures ###
 s6dict, ORdict = {},{}
@@ -42,9 +42,9 @@ sevin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/
 sev=csv.reader(sevin, delimiter=',')
 
 ### program ###
-od.import_d(s6, s6dict, 0, 1, 2)
-od.ORgen_seas(s6dict, ORdict, seasons)
-od.import_gen_d(sev, sevdict, 0, 3)
+s6dict = od.import_d(s6, 0, 1, 2)
+ORdict = od.ORgen_seas(s6dict, seasons)
+sevdict = od.import_gen_d(sev, 0, 3)
 
 # plot data
 xvals = [float(sevdict[k]) for k in sorted(sevdict)]
