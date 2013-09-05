@@ -1,8 +1,9 @@
 ## Name: Elizabeth Lee
 ## Date: 7/19/13
 ## Function: 
-### 1. draw OR map per season
-### 1b. draw log(OR map) per season 7/31/13
+### 1. draw OR map per season, popsize as bubble size
+### 1b. draw log(OR map) per season 7/31/13, popsize as bubble size
+### 1c. draw OR map per season, incidence as bubble size
 ### 2. draw incidence map per season
 ### 3) incidence maps by week 7/23/13
 ## Note: need 11 color bins because that is the max that the diverging color brewer palette will take
@@ -214,8 +215,76 @@ for (i in 1:10){
   ggsave(g, width=6, height=4, filename=paste("logOR_continentalmap_S",i,".png", sep=''))
 }
 
+#############################################################################################
+# 1c. draw OR map per season, incidence as bubble size
 
-##############################################################################################
+#communities file should have a list of nodes and data (nodes = zipcodes, data = OR or incidence)
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata')
+communities <- read.csv('zip3_OR_season.txt', header=F, sep=",", colClasses='character') # includes zip3s that are present for all 10 seasons
+names(communities)<-c('season','zip3','OR')
+communities$OR<-as.numeric(communities$OR)
+
+latlong <- read.csv('zip3_ll.txt', header=F, sep=',', colClasses='character') # file for source of lat/longs
+names(latlong)<-c('zip3', 'latitude', 'longitude')
+latlong$latitude<-as.numeric(latlong$latitude)
+latlong$longitude<-as.numeric(latlong$longitude)
+
+mergeddata = merge(communities, latlong, by.x='zip3', by.y='zip3')
+
+# ORs are floats, so they need to be binned
+# how many bins should there be?
+hist(communities$OR, breaks=50, freq=FALSE)
+hist(communities$OR, breaks=50, freq=FALSE,xlim=c(0,30))
+hist(communities$OR, breaks=50, freq=FALSE,xlim=c(15,65), ylim=c(0, 0.03))
+quantile(communities$OR) #    0% (0.3044887)       25% (2.2441 670)       50% (3.4471814)        75% (5.4550541)      100% (64.2965544)
+# explore the large ORs
+highOR<-communities[communities$OR>20,] # seems to include both urban and rural communities
+mergeddata$OR_bin<-cut(mergeddata$OR, breaks=c(seq(0,16, by=2), 20, 30, 65)) # bin the ORs
+
+popstat<-read.csv('zip3_incid_season.txt', header=T, sep=",", colClasses='character')
+popstat6<-popstat[popstat$season=='6',]
+# are all zip3s from mergeddata present in popstat10?
+sum(unique(mergeddata$zip3) %in% popstat6$zip3) # 843 zip3s
+length(unique(mergeddata$zip3)) # 843 zip3s - all zip3s from mergeddata are present in rucc
+mergethree <- merge(mergeddata, popstat6[,2:4], by = 'zip3')
+mergethree$popstat<-as.numeric(mergethree$popstat)
+mergethree$OR_bin<-factor(mergethree$OR_bin, rev(levels(mergethree$OR_bin)))
+mergethree$ILI<-as.numeric(mergethree$ILI)
+mergethree$AR1000<-mergethree$ILI/mergethree$popstat*1000
+
+# 7/29/13 unused factors are not dropped
+for (i in 1:10){
+  Sdat<-mergethree[mergethree$season==as.character(i),]
+  g <- ggplot(data=Sdat, aes(size=AR1000))
+  g <- g + labs(title = paste("Odds Ratio, Season", i))
+  g <- g + scale_size_continuous(range=c(1,5))
+  g <- g + scale_size("attack rate per 1000")
+  g <- g + geom_point(aes(x=longitude, y=latitude, color=OR_bin))
+  g <- g + labs(x=NULL, y=NULL)
+  g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
+  g <- g + scale_color_brewer("odds ratio", type="div", palette=7, labels=sort(unique(mergethree$OR_bin)), drop=FALSE) 
+  ggsave(g, width=6, height=4, filename=paste("OR_map_S",i,"_ARsize.png", sep=''))
+}
+
+## Continental US only ##
+# remove Alaska and Hawaii dots - continental US only
+AKHI<-c('995', '996', '997', '998', '999', '967', '968')
+mergefour<-mergethree[!(mergethree$zip3 %in% AKHI),]
+
+for (i in 1:10){
+  Sdat<-mergefour[mergefour$season==as.character(i),]
+  g <- ggplot(data=Sdat, aes(size=AR1000))
+  g <- g + labs(title = paste("Odds Ratio, Season", i))
+  g <- g + scale_size_continuous(range=c(1,5))
+  g <- g + scale_size("attack rate per 1000")
+  g <- g + geom_point(aes(x=longitude, y=latitude, color=OR_bin))
+  g <- g + labs(x=NULL, y=NULL)
+  g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
+  g <- g + scale_color_brewer("odds ratio", type="div", palette=7, labels=sort(unique(mergefour$OR_bin)), drop=FALSE)   
+  ggsave(g, width=6, height=4, filename=paste("OR_continentalmap_S",i,"_ARsize.png", sep=''))
+}
+
+#############################################################################################
 # 2) incidence maps by season
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata')
 communities <- read.csv('zip3_incid_season.txt', header=T, sep=",", colClasses='character') # includes zip3s that are present for all 10 seasons
