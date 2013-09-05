@@ -46,6 +46,8 @@ dfsumm<-function(x) {
   print(s)
 } 
 
+
+##############################################################################################
 # 1) OR maps by season
 #communities file should have a list of nodes and data (nodes = zipcodes, data = OR or incidence)
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata')
@@ -93,6 +95,24 @@ for (i in 1:10){
 #   ggsave(g, width=6, height=4, filename=paste("OR_map_S",i,".png", sep=''))
 }
 
+## Continental US only ##
+# remove Alaska and Hawaii dots - continental US only
+AKHI<-c('995', '996', '997', '998', '999', '967', '968')
+mergefour<-mergethree[!(mergethree$zip3 %in% AKHI),]
+
+for (i in 1:10){
+  Sdat<-mergefour[mergefour$season==as.character(i),]
+  g <- ggplot(data=Sdat, aes(size=popstat))
+  g <- g + labs(title = paste("Odds Ratio, Season", i))
+  g <- g + scale_size_continuous(range=c(1,5))
+  g <- g + scale_size("population size")
+  g <- g + geom_point(aes(x=longitude, y=latitude, color=OR_bin))
+  g <- g + labs(x=NULL, y=NULL)
+  g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
+  g <- g + scale_color_brewer("odds ratio", type="div", palette=7, labels=sort(unique(mergefour$OR_bin)), drop=FALSE)   
+  ggsave(g, width=6, height=4, filename=paste("OR_continentalmap_S",i,".png", sep=''))
+}
+
 ############# check that the maps are drawing the same thing ############
 mergethree[mergethree$zip3=='331',] # Miami, check that bins and colors and legend seem to match
 mergethree[mergethree$zip3=='900',] # LA
@@ -128,7 +148,7 @@ Houston[Houston$season=="5",]
 
 
 
-
+####################################################################################
 # 1b) log OR maps by season
 #communities file should have a list of nodes and data (nodes = zipcodes, data = OR or incidence)
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata')
@@ -176,10 +196,26 @@ for (i in 1:10){
 #   ggsave(g, width=6, height=4, filename=paste("logOR_map_S",i,".png", sep=''))
 }
 
+## Continental US only ##
+# remove Alaska and Hawaii dots - continental US only
+AKHI<-c('995', '996', '997', '998', '999', '967', '968')
+mergefour<-mergethree[!(mergethree$zip3 %in% AKHI),]
+
+for (i in 1:10){
+  Sdat<-mergefour[mergefour$season==as.character(i),]
+  g <- ggplot(data=Sdat, aes(size=popstat))
+  g <- g + labs(title = paste("Log Odds Ratio, Season", i))
+  g <- g + scale_size_continuous(range=c(1,5))
+  g <- g + scale_size("population size")
+  g <- g + geom_point(aes(x=longitude, y=latitude, color=logOR_bin))
+  g <- g + labs(x=NULL, y=NULL)
+  g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
+  g <- g + scale_color_brewer("log odds ratio", type="div", palette=7, labels=sort(unique(mergethree$logOR_bin)), drop=FALSE) 
+  ggsave(g, width=6, height=4, filename=paste("logOR_continentalmap_S",i,".png", sep=''))
+}
 
 
-
-
+##############################################################################################
 # 2) incidence maps by season
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata')
 communities <- read.csv('zip3_incid_season.txt', header=T, sep=",", colClasses='character') # includes zip3s that are present for all 10 seasons
@@ -254,6 +290,7 @@ Houston[Houston$season=="3",]
 
 
 
+##############################################################################################
 # 3) incidence maps by week 7/31/13
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata')
 d<-read.csv('zip3_incid_week_cl.txt', header=FALSE, colClasses='character')
