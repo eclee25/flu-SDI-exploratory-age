@@ -4,7 +4,9 @@
 ###Python template
 ###Author: Elizabeth Lee
 ###Date: 9/3/13
-###Function: OR vs lat/long chart
+###Function: 
+#### draw OR vs latitude chart
+#### draw OR vs longitude chart
 
 ###Import data: Py_export/zip3_OR_season.txt, Py_export/zip3_ll.txt
 
