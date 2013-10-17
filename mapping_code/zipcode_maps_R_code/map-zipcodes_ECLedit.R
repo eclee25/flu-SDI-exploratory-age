@@ -74,7 +74,7 @@ highOR<-communities[communities$OR>20,] # seems to include both urban and rural 
 mergeddata$OR_bin<-cut(mergeddata$OR, breaks=c(seq(0,16, by=2), 20, 30, 65)) # bin the ORs
 
 popstat<-read.csv('zip3_incid_season.txt', header=T, sep=",", colClasses='character')
-popstat6<-popstat[popstat$season=='6',]
+popstat6<-popstat[popstat$season=='6',] # use popstat values from season 6 since it is in the middle of the dataset
 # are all zip3s from mergeddata present in popstat10?
 sum(unique(mergeddata$zip3) %in% popstat6$zip3) # 843 zip3s
 length(unique(mergeddata$zip3)) # 843 zip3s - all zip3s from mergeddata are present in rucc
@@ -148,6 +148,65 @@ Houston[Houston$season=="5",]
 # }
 
 
+########################################################################################
+# 1a) Normalized OR maps by season
+#communities file should have a list of nodes and data (nodes = zipcodes, data = OR or incidence)
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata')
+communities <- read.csv('zip3_OR_season.txt', header=F, sep=",", colClasses='character') # includes zip3s that are present for all 10 seasons
+names(communities)<-c('season','zip3','OR')
+communities$OR<-as.numeric(communities$OR)
+
+latlong <- read.csv('zip3_ll.txt', header=F, sep=',', colClasses='character') # file for source of lat/longs
+names(latlong)<-c('zip3', 'latitude', 'longitude')
+latlong$latitude<-as.numeric(latlong$latitude)
+latlong$longitude<-as.numeric(latlong$longitude)
+
+# import reference dataset that has season ORs -- use for normalizing zip3 ORs
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Reference_datasets')
+seasOR <- read.csv('pk6OR-allzip3_season.csv', header = TRUE, sep = ',', colClasses = 'character')
+
+mergeddata = merge(communities, latlong, by.x = 'zip3', by.y = 'zip3')
+mergetwo <- merge(mergeddata, seasOR, by.x = 'season', by.y = 'season') # add ref OR to dataset
+mergetwo$pk6_OR <- as.numeric(mergetwo$pk6_OR)
+mergetwo$OR_norm <- mergetwo$OR/mergetwo$pk6_OR
+
+# ORs are floats, so they need to be binned
+# how many bins should there be?
+hist(mergetwo$OR_norm, breaks=50, freq=FALSE)
+hist(mergetwo$OR_norm, breaks=50, freq=FALSE,xlim=c(0,10))
+hist(mergetwo$OR_norm, breaks=100, freq=FALSE,xlim=c(0,4))
+quantile(mergetwo$OR_norm) #   0% 0.0615112    25%  0.5976017  50%  0.8529960  75% 1.2638488  100% 19.3109002
+mergetwo$ORnorm_bin<-cut(mergetwo$OR_norm, breaks=c(seq(0, 2.2, by = 0.3), 3, 4, 20)) # bin the ORs
+
+# bubble size = popsize
+popstat<-read.csv('zip3_incid_season.txt', header=T, sep=",", colClasses='character')
+popstat6<-popstat[popstat$season=='6',] # use popstat values from season 6 since it is in the middle of the dataset
+# are all zip3s from mergeddata present in popstat10?
+sum(unique(mergetwo$zip3) %in% popstat6$zip3) # 545 zip3s
+length(unique(mergetwo$zip3)) # 545 zip3s - all zip3s from mergeddata are present in rucc
+mergethree <- merge(mergetwo, popstat6[,2:4], by = 'zip3')
+mergethree$popstat<-as.numeric(mergethree$popstat)
+mergethree$ORnorm_bin<-factor(mergethree$ORnorm_bin, rev(levels(mergethree$ORnorm_bin)))
+
+## Continental US only ##
+# remove Alaska and Hawaii dots - continental US only
+AKHI<-c('995', '996', '997', '998', '999', '967', '968')
+mergefour<-mergethree[!(mergethree$zip3 %in% AKHI),]
+
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata/mapoutputs')
+for (i in 1:10){
+  Sdat<-mergefour[mergefour$season==as.character(i),]
+  g <- ggplot(data=Sdat, aes(size=popstat))
+  g <- g + labs(title = paste("Odds Ratio, Season", i))
+  g <- g + scale_size_continuous(range=c(1,5))
+  g <- g + scale_size("population size")
+  g <- g + geom_point(aes(x=longitude, y=latitude, color=ORnorm_bin))
+  g <- g + labs(x=NULL, y=NULL)
+  g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
+  g <- g + scale_color_brewer("normalized OR", type="div", palette=7, labels=sort(unique(mergefour$ORnorm_bin)), drop=FALSE)   
+  ggsave(g, width=6, height=4, filename=paste("ORnorm_continentalmap_S0",i,".png", sep=''))
+}
+
 
 ####################################################################################
 # 1b) log OR maps by season
@@ -175,7 +234,7 @@ highOR<-mergeddata[mergeddata$logOR>3,] # seem to be mostly rural areas
 mergeddata$logOR_bin<-cut(mergeddata$logOR, breaks=c(seq(-1.5,3.5, by=0.5), 4.5)) # bin the ORs
 
 popstat<-read.csv('zip3_incid_season.txt', header=T, sep=",", colClasses='character')
-popstat6<-popstat[popstat$season=='6',]
+popstat6<-popstat[popstat$season=='6',] # use popstat values from season 6 since it is in the middle of the dataset
 # are all zip3s from mergeddata present in popstat10?
 sum(unique(mergeddata$zip3) %in% popstat6$zip3) # 843 zip3s
 length(unique(mergeddata$zip3)) # 843 zip3s - all zip3s from mergeddata are present in rucc
@@ -242,15 +301,21 @@ highOR<-communities[communities$OR>20,] # seems to include both urban and rural 
 mergeddata$OR_bin<-cut(mergeddata$OR, breaks=c(seq(0,16, by=2), 20, 30, 65)) # bin the ORs
 
 popstat<-read.csv('zip3_incid_season.txt', header=T, sep=",", colClasses='character')
-popstat6<-popstat[popstat$season=='6',]
-# are all zip3s from mergeddata present in popstat10?
-sum(unique(mergeddata$zip3) %in% popstat6$zip3) # 843 zip3s
-length(unique(mergeddata$zip3)) # 843 zip3s - all zip3s from mergeddata are present in rucc
-mergethree <- merge(mergeddata, popstat6[,2:4], by = 'zip3')
-mergethree$popstat<-as.numeric(mergethree$popstat)
+# 9/13/13 attack rate was only shown for season6 but we want to show different attack rates by season
+# create a uq ID combining season number and zip3 - this will be used to merge the dataset with the ORs
+popstat$uqid <- paste(popstat$season, popstat$zip3, sep = '')
+mergeddata$uqid <- paste(mergeddata$season, mergeddata$zip3, sep = '')
+
+# are all of the zip3s in mergeddata also in popstat? - check before merging
+# there are a greater number of zip3s in popstat than in mergeddata, so 
+sum(unique(mergeddata$zip3) %in% popstat$zip3) # 545 zip3s
+length(unique(mergeddata$zip3)) # 545 zip3s - all zip3s from mergeddata are present in rucc
+
+# create attack rate variable in popstat
+popstat$AR1000 <- as.numeric(popstat$ILI)/as.numeric(popstat$popstat)*1000
+
+mergethree <- merge(mergeddata, popstat[,5:6], by = 'uqid')
 mergethree$OR_bin<-factor(mergethree$OR_bin, rev(levels(mergethree$OR_bin)))
-mergethree$ILI<-as.numeric(mergethree$ILI)
-mergethree$AR1000<-mergethree$ILI/mergethree$popstat*1000
 
 # 7/29/13 unused factors are not dropped
 for (i in 1:10){
@@ -263,7 +328,7 @@ for (i in 1:10){
   g <- g + labs(x=NULL, y=NULL)
   g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
   g <- g + scale_color_brewer("odds ratio", type="div", palette=7, labels=sort(unique(mergethree$OR_bin)), drop=FALSE) 
-  ggsave(g, width=6, height=4, filename=paste("OR_map_S",i,"_ARsize.png", sep=''))
+  ggsave(g, width=6, height=4, filename=paste("OR_map_S0",i,"_ARsize.png", sep=''))
 }
 
 ## Continental US only ##
@@ -281,7 +346,155 @@ for (i in 1:10){
   g <- g + labs(x=NULL, y=NULL)
   g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
   g <- g + scale_color_brewer("odds ratio", type="div", palette=7, labels=sort(unique(mergefour$OR_bin)), drop=FALSE)   
-  ggsave(g, width=6, height=4, filename=paste("OR_continentalmap_S",i,"_ARsize.png", sep=''))
+  ggsave(g, width=6, height=4, filename=paste("OR_continentalmap_S0",i,"_ARsize.png", sep=''))
+}
+
+#############################################################################################
+# 1d) normalized OR by season, attack rate as bubble size
+
+#communities file should have a list of nodes and data (nodes = zipcodes, data = OR or incidence)
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata')
+communities <- read.csv('zip3_OR_season.txt', header=F, sep=",", colClasses='character') # includes zip3s that are present for all 10 seasons
+names(communities)<-c('season','zip3','OR')
+communities$OR<-as.numeric(communities$OR)
+
+latlong <- read.csv('zip3_ll.txt', header=F, sep=',', colClasses='character') # file for source of lat/longs
+names(latlong)<-c('zip3', 'latitude', 'longitude')
+latlong$latitude<-as.numeric(latlong$latitude)
+latlong$longitude<-as.numeric(latlong$longitude)
+
+# import reference dataset that has season ORs -- use for normalizing zip3 ORs
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Reference_datasets')
+seasOR <- read.csv('pk6OR-allzip3_season.csv', header = TRUE, sep = ',', colClasses = 'character')
+
+mergeddata = merge(communities, latlong, by.x = 'zip3', by.y = 'zip3')
+mergetwo <- merge(mergeddata, seasOR, by.x = 'season', by.y = 'season') # add ref OR to dataset
+mergetwo$pk6_OR <- as.numeric(mergetwo$pk6_OR)
+mergetwo$OR_norm <- mergetwo$OR/mergetwo$pk6_OR
+
+# ORs are floats, so they need to be binned
+# how many bins should there be?
+hist(mergetwo$OR_norm, breaks=50, freq=FALSE)
+hist(mergetwo$OR_norm, breaks=50, freq=FALSE,xlim=c(0,10))
+hist(mergetwo$OR_norm, breaks=100, freq=FALSE,xlim=c(0,4))
+quantile(mergetwo$OR_norm) #   0% 0.0615112    25%  0.5976017  50%  0.8529960  75% 1.2638488  100% 19.3109002
+mergetwo$ORnorm_bin<-cut(mergetwo$OR_norm, breaks=c(seq(0, 2.2, by = 0.3), 3, 4, 20)) # bin the ORs
+
+popstat<-read.csv('zip3_incid_season.txt', header=T, sep=",", colClasses='character')
+# create a uq ID combining season number and zip3 - this will be used to merge the dataset with the ORs
+popstat$uqid <- paste(popstat$season, popstat$zip3, sep = '')
+mergetwo$uqid <- paste(mergetwo$season, mergetwo$zip3, sep = '')
+
+# are all of the zip3s in mergeddata also in popstat? - check before merging
+# there are a greater number of zip3s in popstat than in mergeddata, so 
+sum(unique(mergetwo$zip3) %in% popstat$zip3) # 545 zip3s
+length(unique(mergetwo$zip3)) # 545 zip3s - all zip3s from mergeddata are present in rucc
+
+# create attack rate variable in popstat
+popstat$AR1000 <- as.numeric(popstat$ILI)/as.numeric(popstat$popstat)*1000
+
+mergethree <- merge(mergetwo, popstat[,5:6], by = 'uqid')
+mergethree$ORnorm_bin<-factor(mergethree$ORnorm_bin, rev(levels(mergethree$ORnorm_bin)))
+
+## Continental US only ##
+# remove Alaska and Hawaii dots - continental US only
+AKHI<-c('995', '996', '997', '998', '999', '967', '968')
+mergefour<-mergethree[!(mergethree$zip3 %in% AKHI),]
+
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata/mapoutputs')
+for (i in 1:10){
+  Sdat<-mergefour[mergefour$season==as.character(i),]
+  g <- ggplot(data=Sdat, aes(size=AR1000))
+  g <- g + labs(title = paste("Odds Ratio, Season", i))
+  g <- g + scale_size_continuous(range=c(1,5))
+  g <- g + scale_size("attack rate per 1000")
+  g <- g + geom_point(aes(x=longitude, y=latitude, color=ORnorm_bin))
+  g <- g + labs(x=NULL, y=NULL)
+  g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
+  g <- g + scale_color_brewer("normalized OR", type="div", palette=7, labels=sort(unique(mergefour$ORnorm_bin)), drop=FALSE)   
+  ggsave(g, width=6, height=4, filename=paste("ORnorm_continentalmap_S0",i,"_ARsize.png", sep=''))
+}
+
+#############################################################################################
+# 1e) normalized OR by season, normalized attack rate as bubble size
+
+#communities file should have a list of nodes and data (nodes = zipcodes, data = OR or incidence)
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata')
+communities <- read.csv('zip3_OR_season.txt', header=F, sep=",", colClasses='character') # includes zip3s that are present for all 10 seasons
+names(communities)<-c('season','zip3','OR')
+communities$OR<-as.numeric(communities$OR)
+
+latlong <- read.csv('zip3_ll.txt', header=F, sep=',', colClasses='character') # file for source of lat/longs
+names(latlong)<-c('zip3', 'latitude', 'longitude')
+latlong$latitude<-as.numeric(latlong$latitude)
+latlong$longitude<-as.numeric(latlong$longitude)
+
+# import reference dataset that has season ORs -- use for normalizing zip3 ORs
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Reference_datasets')
+seasOR <- read.csv('pk6OR-allzip3_season.csv', header = TRUE, sep = ',', colClasses = 'character')
+
+mergeddata = merge(communities, latlong, by.x = 'zip3', by.y = 'zip3')
+mergetwo <- merge(mergeddata, seasOR, by.x = 'season', by.y = 'season') # add ref OR to dataset
+mergetwo$pk6_OR <- as.numeric(mergetwo$pk6_OR)
+mergetwo$OR_norm <- mergetwo$OR/mergetwo$pk6_OR
+
+# ORs are floats, so they need to be binned
+# how many bins should there be?
+hist(mergetwo$OR_norm, breaks=50, freq=FALSE)
+hist(mergetwo$OR_norm, breaks=50, freq=FALSE,xlim=c(0,10))
+hist(mergetwo$OR_norm, breaks=100, freq=FALSE,xlim=c(0,4))
+quantile(mergetwo$OR_norm) #   0% 0.0615112    25%  0.5976017  50%  0.8529960  75% 1.2638488  100% 19.3109002
+mergetwo$ORnorm_bin<-cut(mergetwo$OR_norm, breaks=c(seq(0, 2.2, by = 0.3), 3, 4, 20)) # bin the ORs
+
+# import attack rate for bubble size
+popstat<-read.csv('zip3_incid_season.txt', header=T, sep=",", colClasses='character')
+# create a uq ID combining season number and zip3 - this will be used to merge the dataset with the ORs
+popstat$uqid <- paste(popstat$season, popstat$zip3, sep = '')
+mergetwo$uqid <- paste(mergetwo$season, mergetwo$zip3, sep = '')
+
+# are all of the zip3s in mergeddata also in popstat? - check before merging
+# there are a greater number of zip3s in popstat than in mergeddata, so 
+sum(unique(mergetwo$zip3) %in% popstat$zip3) # 545 zip3s
+length(unique(mergetwo$zip3)) # 545 zip3s - all zip3s from mergeddata are present in rucc
+
+# create attack rate variable in popstat
+popstat$AR <- as.numeric(popstat$ILI)/as.numeric(popstat$popstat)
+
+mergethree <- merge(mergetwo, popstat[,5:6], by = 'uqid')
+mergethree$ORnorm_bin<-factor(mergethree$ORnorm_bin, rev(levels(mergethree$ORnorm_bin)))
+
+
+# import seasonal attack rate reference
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Reference_datasets')
+AR_ref <- read.csv('AR-allzip3_season.csv', header = TRUE, colClasses = 'character')
+mergethree <- merge(mergethree, AR_ref, by = 'season')
+mergethree$attackrate <- as.numeric(mergethree$attackrate)
+mergethree$AR_norm <- mergethree$AR / mergethree$attackrate
+
+# bin normalized attack rates bc they are floats
+# how many bins should there be?
+hist(mergethree$AR_norm, breaks=50, freq=FALSE)
+quantile(mergethree$AR_norm) #   0.02399209 0.45435468 0.76870995 1.26884483 6.74975292 
+mergethree$ARnorm_bin<-cut(mergethree$AR_norm, breaks=c(seq(0, 2.2, by = 0.3), 3, 4, 7)) # bin the ORs
+
+
+## Continental US only ##
+# remove Alaska and Hawaii dots - continental US only
+AKHI<-c('995', '996', '997', '998', '999', '967', '968')
+mergefour<-mergethree[!(mergethree$zip3 %in% AKHI),]
+
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata/mapoutputs')
+for (i in 1:10){
+  Sdat<-mergefour[mergefour$season==as.character(i),]
+  g <- ggplot(data=Sdat, aes(size=AR_norm))
+  g <- g + labs(title = paste("Odds Ratio, Season", i))
+  g <- g + scale_size_continuous(range=c(1,5))
+  g <- g + scale_size("normalized attack rate")
+  g <- g + geom_point(aes(x=longitude, y=latitude, color=ORnorm_bin))
+  g <- g + labs(x=NULL, y=NULL)
+  g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
+  g <- g + scale_color_brewer("normalized OR", type="div", palette=7, labels=sort(unique(mergefour$ORnorm_bin)), drop=FALSE)   
+  ggsave(g, width=6, height=4, filename=paste("ORnorm_continentalmap_S0",i,"_ARnorm.png", sep=''))
 }
 
 #############################################################################################
@@ -314,11 +527,10 @@ popstat6<-popstat[popstat$season=='6',]
 # are all zip3s from mergeddata present in popstat10?
 sum(unique(mergeddata$zip3) %in% popstat6$zip3) # 843 zip3s
 length(unique(mergeddata$zip3)) # 843 zip3s - all zip3s from mergeddata are present in rucc
+
 mergethree <- merge(mergeddata, popstat6[,2:4], by = 'zip3')
 mergethree$popstat.y<-as.numeric(mergethree$popstat.y) # when popstat dataset was merged, popstat.y represents the popstat value in season 6.
 mergethree$attack1000_bin<-factor(mergethree$attack1000_bin, levels=rev(levels(mergethree$attack1000_bin)))
-
-
 
 for (i in 1:10){
   Sdat<-mergethree[mergethree$season==as.character(i),]
@@ -330,8 +542,27 @@ for (i in 1:10){
   g <- g + labs(x=NULL, y=NULL)
   g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
   g <- g + scale_color_brewer("incidence", type="div", palette=7, labels=levels(mergethree$attack1000_bin), drop=FALSE) 
-#   ggsave(g, width=6, height=4, filename=paste("Incid_map_S",i,".png", sep=''))
+  ggsave(g, width=6, height=,4 filename=paste("Incid_map_S",i,".png", sep=''))
 }
+
+## Continental US only ##
+# remove Alaska and Hawaii dots - continental US only
+AKHI<-c('995', '996', '997', '998', '999', '967', '968')
+mergefour<-mergethree[!(mergethree$zip3 %in% AKHI),]
+
+for (i in 1:10){
+  Sdat<-mergefour[mergefour$season==as.character(i),]
+  g <- ggplot(data=Sdat, aes(size=popstat.y))
+  g <- g + labs(title = paste("Incidence per 1000, Season", i))
+  g <- g + scale_size_continuous(range=c(1,5))
+  g <- g + scale_size("population size")
+  g <- g + geom_point(aes(x=longitude, y=latitude, color=attack1000_bin))
+  g <- g + labs(x=NULL, y=NULL)
+  g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
+  g <- g + scale_color_brewer("incidence", type="div", palette=7, labels=levels(mergethree$attack1000_bin), drop=FALSE) 
+  ggsave(g, width=6, height=4, filename=paste("Incid_continentalmap_S0",i,".png", sep=''))
+}
+
 
 ############# check that the maps are drawing the same thing ############
 mergethree[mergethree$zip3=='331',] # Miami, check that bins and colors and legend seem to match
@@ -421,6 +652,25 @@ for (i in 1:length(uqwk)){ # length(uqwk)
   g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
   g<- g + scale_color_brewer("incidence", type="div", palette=7, labels=levels(mergethree$attack_bin), drop=FALSE, na.value="grey85")
   ggsave(g, width=6, height=4, filename=paste("Incid_map_",uqwk[i],".png", sep=''))
+  print(i)
+}
+
+## Continental US only ##
+# remove Alaska and Hawaii dots - continental US only
+AKHI<-c('995', '996', '997', '998', '999', '967', '968')
+mergefour<-mergethree[!(mergethree$zip3 %in% AKHI),]
+
+for (i in 1:length(uqwk)){ # length(uqwk)
+  Wdat<-mergefour[mergefour$week==uqwk[i],]
+  g <- ggplot(data=Wdat, aes(size=popstat))
+  g <- g + labs(title = paste("Incidence per 10,000:", uqwk[i]))
+  g <- g + scale_size_continuous(range=c(1,5))
+  g <- g + scale_size("population size")
+  g <- g + geom_point(aes(x=longitude, y=latitude, color=attack_bin)) #, size=RUCCavg_m
+  g <- g + labs(x=NULL, y=NULL)
+  g <- g + theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank())
+  g<- g + scale_color_brewer("incidence", type="div", palette=7, labels=levels(mergefour$attack_bin), drop=FALSE, na.value="grey85")
+  ggsave(g, width=6, height=4, filename=paste("Incid_continental_map_",uqwk[i],".png", sep=''))
   print(i)
 }
 
