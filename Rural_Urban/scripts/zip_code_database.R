@@ -42,7 +42,7 @@
 # 9 	    424   	2,610,176
 # U.S. total 	3,143 	308,745,538
 ###################################################
-setwd('/home/elee/Downloads')
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Rural_Urban/R_import') # 10/29/13 changed directory
 
 dfsumm<-function(x) {
 	if(!class(x)[1]%in%c("data.frame","matrix"))
@@ -296,7 +296,7 @@ ers2$mergeID<-paste(ers2$state_ers, ers2$county_cl_ers)
 # why are there 3151 uq mergeIDs in zcd3 and 3143 uq mergeIDs in ers2?
 notmatch3<-setdiff(zcd3$mergeID, ers2$mergeID) 
 # [1] "PA monongalia county" "PA mahoning county"   "MD mineral county"    "VA mcdowell county"   "WV washington county" "WV martin county"    
-[7] "GA cleburne county"   "LA chicot county" 
+# [7] "GA cleburne county"   "LA chicot county" 
 notmatch4<-setdiff(ers2$mergeID, zcd3$mergeID) # empty vector
 # PA monongalia county
 ers2[grep('monongalia', ers2$mergeID),] # 15439 == fayette county (zip-codes.com); monongalia county no longer exists in PA (only exists in WV now)

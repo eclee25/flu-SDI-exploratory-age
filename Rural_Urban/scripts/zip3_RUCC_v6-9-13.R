@@ -41,7 +41,7 @@ dfsumm<-function(x) {
 } 
 
 ####
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Rural_Urban/R_export')
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Rural_Urban/R_export') # 10/29/13 changed folder name
 og<-read.csv('zip3_RUCC2013avg.csv', header=T, colClasses='character')
 dfsumm(og)
 og2<-cbind(og$zip3, og$state_ers, og$RUCC_mn, og$RUCCavg_m)
