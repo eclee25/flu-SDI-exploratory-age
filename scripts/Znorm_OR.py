@@ -3,8 +3,10 @@
 ##############################################
 ###Python template
 ###Author: Elizabeth Lee
-###Date: 9/2/13
-###Function: draw OR by week for all weeks
+###Date: 1/8/14
+###Function: 
+## Z-normalize (subtract mean and divide by SD) OR time series -- time series with values greater than 1 are mild seasons?
+## Z-normalize OR time series based on mean and SD of first 10 weeks of flu season -- can first 10 weeks tell you about severity of flu season in first few weeks of second year?
 
 ###Import data: 
 
@@ -21,16 +23,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import sys
 
+
 ## local modules ##
-import ORgenerator as od 
+import ORgenerator as od
 
 ### data structures ###
-# ilidict[(week, age marker)] = ILI
-# wkdict[week] = seasonnum
-ilidict, wkdict = {}, {} # unnecessary
-# ORdict[week] = OR
-# ARdict[week] = attack rate per 10000
-ORdict, ARdict = {}, {}
+# ORdict_znorm[week] = OR_znorm
+ORdict_znorm = {}
 
 ### parameters ###
 USchild = 20348657 + 20677194 + 22040343 #US child popn from 2010 Census
@@ -51,45 +50,67 @@ data=csv.reader(datain, delimiter=',')
 
 ### program ###
 
-# OR by week chart
+# all data
+ilidict, wkdict, weeks = od.import_dwk(data, 0, 1, 2, 3)
 # ilidict[(week, age marker)] = ILI
 # wkdict[week] = seasonnum
-# weeks = unique list of weeks for dataset
-ilidict, wkdict, weeks = od.import_dwk(data, 0, 1, 2, 3)
 ORdict, ARdict = od.ORgen_wk(ilidict, weeks)
+# ORdict[week] = OR
+# ARdict[week] = attack rate per 10000
+
+# offices/op data only
+
+## processing step: z-normalization ##
 for s in seasons:
 	# wkdummy will represent list of weeks for chart in season to use as key for OR dict
 	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
 	wkdummy = set(wkdummy)
+	# all data
+	s_mean = np.mean([ORdict[wk] for wk in sorted(wkdummy)])
+	s_sd = np.std([ORdict[wk] for wk in sorted(wkdummy)])
+	dictdummyls = [(ORdict[wk]-s_mean)/s_sd for wk in sorted(wkdummy)]
+	print 's, s_mean, s_sd:', s, s_mean, s_sd
+	for w, z in zip(sorted(wkdummy), dictdummyls):
+		ORdict_znorm[w] = z
+# 	# offices/op data
+# 	s_mean2 = np.mean([ORdict2[wk] for wk in sorted(wkdummy)])
+# 	s_sd2 = np.std([ORdict2[wk] for wk in sorted(wkdummy)])
+# 	dictdummyls2 = [(ORdict2[wk]-s_mean2)/s_sd2 for wk in sorted(wkdummy)]
+# 	for w, z in zip(sorted(wkdummy), dictdummyls2):
+# 		ORdict_znorm2[w] = z
+	
+## plots ##	
+for s in seasons:
+	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
+	wkdummy = set(wkdummy)
 	if s == 1:
-		chartORs = [ORdict[wk] for wk in sorted(wkdummy)]
+		chartORs = [ORdict_znorm[wk] for wk in sorted(wkdummy)]
 		chartwks = xrange(13, 13 + len(sorted(wkdummy)))
 		print "season number and num weeks", s, len(wkdummy)
 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
 	elif len(wkdummy) == 53:
-		# wkdummy needs to be sorted bc dict values don't have order
-		chartORs = [ORdict[wk] for wk in sorted(wkdummy)]
+		chartORs = [ORdict_znorm[wk] for wk in sorted(wkdummy)]
 		chartwks = xrange(len(sorted(wkdummy)))
 		print "season number and num weeks", s, len(wkdummy)
 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
 	else:
-		chartORs = [ORdict[wk] for wk in sorted(wkdummy)]
+		chartORs = [ORdict_znorm[wk] for wk in sorted(wkdummy)]
 		avg53 = (chartORs[12] + chartORs[13])/2
 		chartORs.insert(13, avg53)
 		chartwks = xrange(len(sorted(wkdummy)) + 1)
 		print "season number and num weeks", s, len(wkdummy)
 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
-plt.plot([33, 33], [0, 10], color = 'k', linewidth = 1)
+# vertical line representing end of flu season
+plt.plot([33, 33], [-5, 5], color = 'k', linewidth = 1)
+# horizontal line representing sd = 1
+plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
 plt.xlim([0, 52])
-plt.ylim([0, 10])
+plt.ylim([-5, 5])
 plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
-plt.ylabel('OR, child:adult', fontsize=24)
-# plt.ylabel('OR, US pop normalized', fontsize=24)
-plt.legend(loc = 'upper left')
+plt.ylabel('z-normalized OR, child:adult', fontsize=24)
+plt.legend(loc = 'lower right')
 plt.xticks(xrange(53), xlabels)
 plt.show()
 
-
-
-
-
+	
+	
