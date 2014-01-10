@@ -121,6 +121,24 @@ def ORgen_wk (dict_data, wklist):
 	return dict_OR, dict_AR
 
 ##############################################
+#### (ORincid_wk function) dict_data = completed dictionary with (week, age group) as key and ILI count as value; dict_OR = store ORs in dict; timelist = list of season numbers for which ORs will be calculated; dict_ageAR = store tuple of child and adult incidence with week as key
+def ORincid_wk (dict_data, wklist):
+	''' Generate odds ratios at the week-level. Create one dictionary where key is the week and value is the OR. Create a second dictionary where key is the week and value is a tuple of the child and adult attack rates per 100,000 for the week. 
+	'''
+
+	dict_OR, dict_ageAR = {},{}
+	for w in set(wklist):
+		c_attack = dict_data[(w, 'C')]/USchild # calculate child attack rate
+		a_attack = dict_data[(w, 'A')]/USadult # calculate adult attack rate
+		OR = (c_attack/(1-c_attack))/(a_attack/(1-a_attack)) # calculate odds ratio
+		dict_OR[w] = float(OR) # create dictionary for odds ratios
+		c_attack = c_attack * 100000
+		a_attack = a_attack * 100000
+		dict_ageAR[w] = (c_attack, a_attack)
+	print "Length of dict_OR: %d" % len(dict_OR)
+	return dict_OR, dict_ageAR
+
+##############################################
 #### (import_gen_d function) kcol = column for keys; vcol = column for dicitonary values; dict_gen = empty dictionary where data will be stored
 def import_gen_d (csvfile, kcol, vcol):
 	''' Generic function for importing data into a dictionary. 
