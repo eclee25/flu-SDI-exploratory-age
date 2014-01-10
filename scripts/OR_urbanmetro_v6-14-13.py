@@ -101,9 +101,12 @@ ruralOR = np.mean([OR for bin, OR in zip(rucc_bin, y1) if bin == 3])
 metrosd = np.std([OR for bin, OR in zip(rucc_bin, y1) if bin == 1])
 smallmetrosd = np.std([OR for bin, OR in zip(rucc_bin, y1) if bin == 2])
 ruralsd = np.std([OR for bin, OR in zip(rucc_bin, y1) if bin == 3])
-print 'Urban metro OR & sd', metroOR, metrosd # 4.35, 3.68
-print 'Small metro OR & sd', smallmetroOR, smallmetrosd # 4.29, 10.92
-print 'Rural OR & sd', ruralOR, ruralsd # 4.14, 4.31
+metroct = len([OR for bin, OR in zip(rucc_bin, y1) if bin == 1])
+smallmetroct = len([OR for bin, OR in zip(rucc_bin, y1) if bin == 2])
+ruralct = len([OR for bin, OR in zip(rucc_bin, y1) if bin == 3])
+print 'Urban metro OR & sd & num zip3s', metroOR, metrosd, metroct # 4.35, 3.68, 3782
+print 'Small metro OR & sd & num zip3s', smallmetroOR, smallmetrosd, smallmetroct # 4.29, 10.92, 2909
+print 'Rural OR & sd & num zip3s', ruralOR, ruralsd, ruralct # 4.14, 4.31, 1154
 
 
 # OR vs. urban rural code (all seasons together)

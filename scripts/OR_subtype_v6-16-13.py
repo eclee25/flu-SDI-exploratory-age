@@ -103,10 +103,11 @@ subtypelab = ['','H1','H3','B','H1 & H3','H1 & B','H3 & B','H1 & H3 & B','']
 plt.errorbar(subtypeplot, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
 for num, subtype, OR in zip(seasonnum, subtypeplot, avgOR1):
 	plt.annotate(num, xy = (subtype, OR), xytext = (10,0), textcoords = 'offset points')
-plt.ylabel('Odds ratio of attack rate, child:adult (zip3 popstat normalized)')
-plt.xlabel('Prominent Subtypes')
+# plt.ylabel('Odds ratio of attack rate, child:adult (zip3 popstat normalized)') # original plot label
+plt.ylabel('OR, seasonal attack rate', fontsize=24)  # 12/1/13 presentation label
+plt.xlabel('Prominent Subtypes', fontsize=24)
 plt.legend(loc="upper left")
-plt.xticks(xaxis, subtypelab)
+plt.xticks(xaxis, subtypelab, fontsize=14)
 ylim([2,7])
 plt.show()
 

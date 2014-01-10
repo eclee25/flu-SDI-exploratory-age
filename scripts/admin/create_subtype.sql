@@ -1,7 +1,7 @@
 /*----SQL TEMPLATE----
 Author: Elizabeth Lee
 Date: 5/20/13
-Function: Create table subtype that lists the prominent flu subtypes for each season of the dataset. Prominent subtype is defined as at least 20% of all isolates that were typed or subtyped in that season.
+Function: Create table subtype that lists the prominent flu subtypes for each season of the dataset. Prominent subtype is defined as at least 20% of all isolates that were typed or subtyped in that season. CDC defines flu season as October through mid-May (approximately weeks 40 to 20).
 
 Command Line: mysql -u elizabeth -pbansa11ab <create_subtype.sql
 

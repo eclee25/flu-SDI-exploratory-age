@@ -96,8 +96,10 @@ plt.show()
 plt.errorbar(match_iso, avgOR1, yerr=sdOR1, marker='o', color = 'black', label= "all cases", linestyle='None')
 for lab, perc, OR in zip(psubtypelab, match_iso, avgOR1):
 	plt.annotate(lab, xy = (perc, OR), xytext = (-8,6), textcoords = 'offset points')
-plt.ylabel('Odds ratio of attack rate, child:adult (zip3 popstat normalized)')
-plt.xlabel('Matched isolates (prominent subtypes only)/ Total isolates')
+# plt.ylabel('Odds ratio of attack rate, child:adult (zip3 popstat normalized)')
+plt.ylabel('OR, seasonal attack rate', fontsize=24)
+# plt.xlabel('Matched isolates (prominent subtypes only)/ Total isolates')
+plt.xlabel('Magnitude of Matched Isolates Among Prominent Subtypes', fontsize=24) # 12/1/13 presentation label
 plt.legend(loc="upper left")
 ylim([2, 7])
 plt.show()

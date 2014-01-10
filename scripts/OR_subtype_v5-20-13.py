@@ -72,13 +72,14 @@ def subtype_import (csvreadfile, season, s_marker, ds_marker, H1iso_perc, H3iso_
 			ds_marker.append(3) # plurality of B isolates
 
 ### import data ###
-d1in=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a1.csv','r')
+d1in=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/odds_c_a1.csv','r')
 d1=csv.reader(d1in, delimiter=',')
-d3ain=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a3_a.csv','r')
+d3ain=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/odds_c_a3_a.csv','r')
 d3a=csv.reader(d3ain, delimiter=',')
-d3bin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/odds_c_a3_b.csv','r')
+d3bin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/odds_c_a3_b.csv','r')
 d3b=csv.reader(d3bin, delimiter=',')
-subtypein=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/SQL_export/subtype3.csv','r')
+# subtypein=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/subtype4.csv','r')
+subtypein=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/subtype5.csv','r')
 subtype=csv.reader(subtypein, delimiter=',')
 
 ### program ###
@@ -94,21 +95,22 @@ ORgen(y3b, child3b, adult3b)
 # subtypeplot, y1, y3a, y3b, seasonnum = subtypeplot[-1], y1[-1], y3a[-1], y3b[-1], seasonnum[-1]
 
 # OR vs. qualitative code of prominent subtype (20% isolate = prominent)
-xaxis = range(1,8)
-subtypelab = ['H1','H3','B','H1 & H3','H1 & B','H3 & B','H1 & H3 & B']
-plt.scatter(subtypeplot, y1, marker='o', color = 'black', label= "all cases")
+xaxis = range(1,6)
+subtypelab = ['H1', 'H1 & B', 'H1 & H3 & B', 'H3 & B','H3',]
+plt.scatter(subtypeplot[1:], y1[1:], marker='o', color = 'black', label= "all cases")
 # plt.scatter(subtypeplot, y3a, marker='o', color = 'red', label= "severe cases")
 # plt.scatter(subtypeplot, y3b, marker='o', color = 'green', label= "milder cases")
-for num, subtype, OR in zip(seasonnum, subtypeplot, y1):
-	plt.annotate(num, xy = (subtype, OR), xytext = (10,0), textcoords = 'offset points')
+for num, subtype, OR in zip(seasonnum[1:], subtypeplot[1:], y1[1:]):
+	plt.annotate(num, xy = (subtype, OR), xytext = (10,0), textcoords = 'offset points', fontsize = 16)
 # for num, subtype, OR in zip(seasonnum, subtypeplot, y3a):
 # 	plt.annotate(num, xy = (subtype, OR), xytext = (-10,0), textcoords = 'offset points')
 # for num, subtype, OR in zip(seasonnum, subtypeplot, y3b):
 # 	plt.annotate(num, xy = (subtype, OR), xytext = (-10,5), textcoords = 'offset points')
-# plt.ylabel('Odds ratio of attack rate, child:adult (US popn normalized)')
-plt.xlabel('Prominent Subtypes')
-plt.legend(loc="upper left")
-plt.xticks(xaxis, subtypelab)
+# plt.ylabel('Odds ratio of attack rate, child:adult (US popn normalized)') # original plot label
+plt.ylabel('OR, child:adult, seasonal attack rate', fontsize=24)  # 12/1/13 presentation label
+plt.xlabel('Prominent Subtypes', fontsize=24)
+plt.xticks(xaxis, subtypelab, fontsize=16)
+plt.yticks(fontsize=18)
 plt.show()
 
 # OR vs. qualitative code of plurality subtype (greatest percentage of isolates)
