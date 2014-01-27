@@ -36,7 +36,7 @@ ORdict_znorm2 = {} # offices/OP only
 USchild = 20348657 + 20677194 + 22040343 # US child popn from 2010 Census
 USadult = 21585999 + 21101849 + 19962099 + 20179642 + 20890964 + 22708591 + 22298125 + 19664805 # US adult popn from 2010 Census
 seasons = range(2,11) # seasons for which ORs will be generated
-normwks = 25 # number of weeks at beginning of season over which OR will be normalized
+normwks = 10 # number of weeks at beginning of season over which OR will be normalized
 
 ### plotting settings ###
 colorvec = ['grey', 'black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkviolet', 'hotpink']
@@ -118,7 +118,7 @@ plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
 plt.xlim([0, 52])
 plt.ylim([-10, 15])
 plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
-plt.ylabel('z-normalized OR, child:adult', fontsize=24)
+plt.ylabel('z-normalized OR (%s wks), child:adult' % normwks, fontsize=24)
 plt.legend(loc = 'upper left')
 plt.xticks(xrange(53), xlabels)
 plt.show()
@@ -151,7 +151,7 @@ plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
 plt.xlim([0, 52])
 plt.ylim([-10, 15])
 plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
-plt.ylabel('z-normalized OR, child:adult - offices/OP only', fontsize=24)
+plt.ylabel('z-normalized OR (%s wks), child:adult - offices/OP only' % normwks, fontsize=24)
 plt.legend(loc = 'upper left')
 plt.xticks(xrange(53), xlabels)
 plt.show()
