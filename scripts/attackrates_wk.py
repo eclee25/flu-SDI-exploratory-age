@@ -39,7 +39,7 @@ xplot = range(1,35)
 xlabels = range(40,54)
 xlabels.extend(range(1,21))
 colorvec = ['black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkviolet', 'hotpink']
-labelvec = ['01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '09-10']
+labelvec = ['2001-02', '2002-03', '2003-04', '2004-05', '2005-06', '2006-07', '2007-08', '2008-09', '2009-10']
 
 
 
@@ -84,8 +84,8 @@ calcAR(d_swili, d_spop, d_sAR)
 for snum in np.arange(2,11):
 	print len(xplot), len(d_sAR[snum])
 	plt.plot(xplot, d_sAR[snum], marker='o', color=colorvec[snum-2], label=labelvec[snum-2], linewidth=2)
-plt.xlabel('Week Number')
-plt.ylabel('Incidence per 100,000')
+plt.xlabel('Week Number', fontsize=24)
+plt.ylabel('Incidence per 100,000', fontsize=24)
 plt.legend(loc="upper right")
 plt.xticks(xplot,xlabels)
 plt.show()
