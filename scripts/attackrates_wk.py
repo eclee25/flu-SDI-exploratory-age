@@ -85,7 +85,7 @@ for snum in np.arange(2,11):
 	print len(xplot), len(d_sAR[snum])
 	plt.plot(xplot, d_sAR[snum], marker='o', color=colorvec[snum-2], label=labelvec[snum-2], linewidth=2)
 plt.xlabel('Week Number', fontsize=24)
-plt.ylabel('Incidence per 100,000', fontsize=24)
+plt.ylabel('U.S. Incidence per 100,000', fontsize=24)
 plt.legend(loc="upper right")
 plt.xticks(xplot,xlabels)
 plt.show()
