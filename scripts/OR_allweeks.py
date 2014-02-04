@@ -80,7 +80,7 @@ for s in seasons:
 		print "season number and num weeks", s, len(wkdummy)
 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
 plt.plot([33, 33], [0, 10], color = 'k', linewidth = 1)
-plt.xlim([0, 52])
+plt.xlim([0, 53])
 plt.ylim([0, 10])
 plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
 plt.ylabel('OR, child:adult', fontsize=24)

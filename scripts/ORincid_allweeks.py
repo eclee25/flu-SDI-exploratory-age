@@ -114,8 +114,8 @@ for s in seasons:
 	yax_AR.set_ylim([0, 100])
 	yax_AR.set_yticks(xrange(0,110,10))
 	yax_AR.set_ylabel('Incidence Rate per 100,000', fontsize=24)
-	plt.xlim([0, 52])
-	plt.xticks(xrange(53), xlabels)
+	plt.xlim([0, 33])
+	plt.xticks(xrange(33), xlabels[:33])
 	plt.show()
 
 

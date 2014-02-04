@@ -115,12 +115,16 @@ for s in seasons:
 plt.plot([33, 33], [-10, 15], color = 'k', linewidth = 1)
 # horizontal line representing sd = 1
 plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
-plt.xlim([0, 52])
+# grey bar for classification area
+plt.fill([15, 17, 17, 15], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
+# grey bar for early warning area
+# plt.fill([8, 11, 11, 8], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
+plt.xlim([0, 33])
 plt.ylim([-10, 15])
 plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
 plt.ylabel('z-normalized OR (%s wks), child:adult' % normwks, fontsize=24)
 plt.legend(loc = 'upper left')
-plt.xticks(xrange(53), xlabels)
+plt.xticks(xrange(33), xlabels[:33])
 plt.show()
 
 # offices/OP only
