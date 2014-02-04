@@ -56,7 +56,7 @@ xlabels.extend(range(1,40))
 
 ### functions ###
 def incid_reg_wk (dict_ILI, weeklist, zip3list, seasonnum, hhsregion): 
-	''' Generate child and adult ILI incidence at the week level for each HHS region by adding child and adult ILI cases for all zip3s in that region for that week. Create a dictionary where (season, region, agegroup) = [incidwk1, incidwkd2, ...]. This function returns one value in the dictionary. '''
+	''' Generate child and adult ILI incidence at the week level for each HHS region by adding child and adult ILI cases for all zip3s in that region for that week. Generates values for an incidence dictionary where dict_incid[(season, region, agegroup)] = [incidwk1, incidwkd2, ...]. This function returns the list of ILI cases for each week in the season-region combination for children and adults. '''
 	# dict_incid[(season, region, agegroup) = [incidwk1, incidwk2]
 	incidwklist_child, incidwklist_adult = [], []
 	
@@ -73,7 +73,7 @@ def incid_reg_wk (dict_ILI, weeklist, zip3list, seasonnum, hhsregion):
 	
 	
 def reg_season (dict_seasonweeks, dict_z3hhs, seasonnum, hhsregion):
-	''' Return a list of weeks and zip3s for a given season and HHS region. These lists will be fed into a different functionthat generates child and adult ILI incidence at the weekly level.
+	''' Return a list of weeks and a list of zip3s for a given season and HHS region. These lists will be fed into a different function that generates child and adult ILI ILI counts at the weekly level for a single season and region.
 	'''
 	weeklist = dict_seasonweeks[seasonnum]
 	zip3list = [key for key in dict_z3hhs if dict_z3hhs[key] == hhsregion]
