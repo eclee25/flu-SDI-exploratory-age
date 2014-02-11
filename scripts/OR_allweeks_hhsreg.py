@@ -36,11 +36,15 @@ d_pop, d_z3hhs = {}, {} # from pop data
 d_ILI, d_seasonweeks = {}, defaultdict(list) # from OR data
 # d_incid[(season, region, agegroup)] = [incidwk1, incidwk2, ...]
 d_incid = defaultdict(list)
+# d_CAincidrate[(season, region)] = [sum of C&A/sum of C&A pop*10000 in wk1, sum of C&A/sum of C&A pop*10000 in wk2]
+# incidence rate per 100
+d_CAincidrate = defaultdict(list)
 # d_OR[(season, region)] = [ORwk1, ORwk2, ...]
 d_OR = defaultdict(list)
 # d_normOR[(season, region)] = [normORwk1, normORwk2, ...]
 # ORs are normalized by first 'normwks' weeks of season in that specific region
 d_normOR = defaultdict(list)
+
 
 
 ### parameters ###
@@ -106,11 +110,14 @@ for k in d_seasonweeks:
 # data processing
 for snum, regnum in product(seasons, regions):
 	wklsdummy, z3lsdummy = reg_season(d_seasonweeks, d_z3hhs, snum, regnum)
-	# dict_incid[(season, region, agegroup)] = [incidwk1, incidwk2]
+	# d_incid[(season, region, agegroup)] = [incidwk1, incidwk2]
 	c_incid, a_incid = incid_reg_wk(d_ILI, wklsdummy, z3lsdummy, snum, regnum)
 	d_incid[(snum, regnum, 'C')] = c_incid
 	d_incid[(snum, regnum, 'A')] = a_incid
-	c_pop_dummy, a_pop_dummy = sum([d_pop[(zip3, season, 'C')] for zip3 in z3lsdummy]), sum([d_pop[(zip3, season, 'A')] for zip3 in z3lsdummy])
+	c_pop_dummy, a_pop_dummy = sum([d_pop[(zip3, snum, 'C')] for zip3 in z3lsdummy]), sum([d_pop[(zip3, snum, 'A')] for zip3 in z3lsdummy])
+	
+	# d_CAincidrate[(season, region)] = [sum of C&A/sum of C&A pop in wk1, sum of C&A/sum of C&A pop in wk2]
+	d_CAincidrate[(snum, regnum)] = [(c + a)/(c_pop_dummy + a_pop_dummy)*10000 for c, a, in zip(d_incid[(snum, regnum, 'C')], d_incid[(snum, regnum, 'A')])]
 	
 	# create OR dictionary
 	# dict_OR[(season, region)] = [ORwk1, ORwk2, ...]
@@ -122,7 +129,7 @@ for snum, regnum in product(seasons, regions):
 	d_normOR[(snum, regnum)] = [(OR - mndummy)/sddummy for OR in d_OR[(snum, regnum)]]
 
 ### plots ###
-# regular OR plots by season
+# regular OR plots by region for each season
 for s in seasons:
 	for r in regions:
 		if s == '01':
@@ -151,7 +158,7 @@ for s in seasons:
 	plt.xticks(xrange(53), xlabels)
 	plt.show()
 		
-# normalized OR plots by season
+# normalized OR plots by region for each season
 for s in seasons:
 	for r in regions:
 		if s == '01':
@@ -180,11 +187,38 @@ for s in seasons:
 	plt.xlabel('Week Number, Season %s' % int(s), fontsize=24)
 	plt.ylabel('z-normalized OR (%s wks), child:adult' % normwks, fontsize=24)
 	plt.legend(loc = 'upper left')
+	plt.xticks(xrange(52), xlabels)
+	plt.show()	
+		
+# sum of child and adult incidence by region for each season
+for s in seasons:
+	for r in regions:
+		if s == '01':
+			chartincids = d_CAincidrate[(s, r)]
+			chartwks = xrange(13, 13 + len(chartincids))
+			print 'snumber, region, num weeks', s, r, len(chartincids)
+			plt.plot(chartwks, chartincids, marker = 'o', color = colorvec[int(r)-1], label = labelvec[int(r)-1], linewidth = 2)
+		elif len(d_CAincidrate[(s, r)]) == 53:
+			chartincids = d_CAincidrate[(s, r)]
+			chartwks = xrange(len(chartincids))
+			print 'snumber, region, num weeks', s, r, len(chartincids)
+			plt.plot(chartwks, chartincids, marker = 'o', color = colorvec[int(r)-1], label = labelvec[int(r)-1], linewidth = 2)
+		else:
+			chartincids = d_CAincidrate[(s, r)]
+			avg53 = (chartincids[12] + chartincids[13])/2
+			chartincids.insert(13, avg53)
+			chartwks = xrange(len(chartincids))
+			print 'snumber, region, num weeks', s, r, len(chartincids)
+			plt.plot(chartwks, chartincids, marker = 'o', color = colorvec[int(r)-1], label = labelvec[int(r)-1], linewidth = 2)
+	# vertical line representing end of flu season
+	plt.plot([33, 33], [-10, 25], color = 'k', linewidth = 1)
+	plt.xlim([0, 52])
+	plt.ylim([0, 9])
+	plt.xlabel('Week Number, Season %s' % int(s), fontsize=24)
+	plt.ylabel('Child & adult incidence per 10,000', fontsize=24)
+	plt.legend(loc = 'upper right')
 	plt.xticks(xrange(53), xlabels)
-	plt.show()
-		
-		
-		
+	plt.show()	
 		
 		
 		

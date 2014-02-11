@@ -72,6 +72,7 @@ ORdict2, ARdict2 = od.ORgen_wk(ilidict2, weeks)
 
 ## processing step: z-normalization ##
 for s in seasons:
+	print 'Season:', s
 	# wkdummy will represent list of weeks for chart in season to use as key for OR dict
 	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
 	wkdummy = set(wkdummy)
@@ -79,13 +80,14 @@ for s in seasons:
 	s_mean = np.mean([ORdict[wk] for wk in sorted(wkdummy)[:normwks]])
 	s_sd = np.std([ORdict[wk] for wk in sorted(wkdummy)[:normwks]])
 	dictdummyls = [(ORdict[wk]-s_mean)/s_sd for wk in sorted(wkdummy)]
-	print 's, s_mean, s_sd:', s, s_mean, s_sd
+# 	print 'All data: s_mean, s_sd, s_cv:', s_mean, s_sd, s_sd/s_mean
 	for w, z in zip(sorted(wkdummy), dictdummyls):
 		ORdict_znorm[w] = z
 	# offices/op data
 	s_mean2 = np.mean([ORdict2[wk] for wk in sorted(wkdummy)[:normwks]])
 	s_sd2 = np.std([ORdict2[wk] for wk in sorted(wkdummy)[:normwks]])
 	dictdummyls2 = [(ORdict2[wk]-s_mean2)/s_sd2 for wk in sorted(wkdummy)]
+	print 'Office data: s_mean, s_sd, s_cv:', s_mean2, s_sd2, s_sd2/s_mean2
 	for w, z in zip(sorted(wkdummy), dictdummyls2):
 		ORdict_znorm2[w] = z
 	
