@@ -2,7 +2,6 @@
 Author: Elizabeth Lee
 Date: 8/7/13
 Function: extract attack rates for entire population by week and include season denominations
-
 Command Line: mysql -u elizabeth -pbansa11ab sdi <attackrates_wk.sql
 Data: flu table: SDI
 */

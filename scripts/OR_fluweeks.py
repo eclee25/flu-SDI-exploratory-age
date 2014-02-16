@@ -3,8 +3,8 @@
 ##############################################
 ###Python template
 ###Author: Elizabeth Lee
-###Date: 9/2/13
-###Function: draw OR by week for all weeks
+###Date: 2/13/14
+###Function: draw OR by week for flu weeks
 
 ###Import data: 
 
@@ -79,14 +79,14 @@ for s in seasons:
 		chartwks = xrange(len(sorted(wkdummy)) + 1)
 		print "season number and num weeks", s, len(wkdummy)
 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
-plt.plot([33, 33], [0, 10], color = 'k', linewidth = 1)
-plt.xlim([0, 52])
+# plt.plot([33, 33], [0, 10], color = 'k', linewidth = 1)
+plt.xlim([0, 35])
 plt.ylim([0, 10])
 plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
 plt.ylabel('OR, child:adult', fontsize=24)
 # plt.ylabel('OR, US pop normalized', fontsize=24)
 plt.legend(loc = 'upper left')
-plt.xticks(xrange(53), xlabels)
+plt.xticks(xrange(1, 35), xlabels[:36])
 plt.show()
 
 

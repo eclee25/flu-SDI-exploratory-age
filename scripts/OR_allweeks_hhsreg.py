@@ -182,12 +182,20 @@ for s in seasons:
 	plt.plot([33, 33], [-10, 15], color = 'k', linewidth = 1)
 	# horizontal line representing sd = 1
 	plt.plot([0, 53], [1, 1], color = 'k', linewidth = 1)
+	# horizontal line representing sd = -1
+	plt.plot([0, 53], [-1, -1], color = 'k', linewidth = 1)
+	# grey bar for mild classification area
+	plt.fill([15, 17, 17, 15], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
+	# grey bar for severe classification area
+	plt.fill([15, 17, 17, 15], [-1, -1, -10, -10], facecolor='grey', alpha=0.4)
+	# grey bar for mild early warning area
+	plt.fill([8, 11, 11, 8], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
 	plt.xlim([0, 52])
 	plt.ylim([-10, 15])
 	plt.xlabel('Week Number, Season %s' % int(s), fontsize=24)
 	plt.ylabel('z-normalized OR (%s wks), child:adult' % normwks, fontsize=24)
 	plt.legend(loc = 'upper left')
-	plt.xticks(xrange(52), xlabels)
+	plt.xticks(xrange(53), xlabels)
 	plt.show()	
 		
 # sum of child and adult incidence by region for each season

@@ -90,6 +90,17 @@ for s in seasons:
 	print 'Office data: s_mean, s_sd, s_cv:', s_mean2, s_sd2, s_sd2/s_mean2
 	for w, z in zip(sorted(wkdummy), dictdummyls2):
 		ORdict_znorm2[w] = z
+
+## processing: grab average z-OR during weeks 2-4 ##
+for s in seasons:
+	# wkdummy will represent list of weeks for chart in season to use as key for OR dict
+	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
+	wkdummy = set(wkdummy)
+	# all data
+	class_mn = np.mean([ORdict_znorm[wk] for wk in sorted(wkdummy)[15:17]])
+	print 'Season:', s, class_mn
+# input these values into R directly (createF3.R)
+
 	
 ## plots ##	
 # all data
@@ -115,12 +126,16 @@ for s in seasons:
 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
 # vertical line representing end of flu season
 plt.plot([33, 33], [-10, 15], color = 'k', linewidth = 1)
-# horizontal line representing sd = 1
+# horizontal line representing sd = 1 (sd>1 is mild)
 plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
-# grey bar for classification area
+# horizontal line representing sd = -1 (sd<1 is severe)
+plt.plot([0, 52], [-1, -1], color = 'k', linewidth = 1)
+# grey bar for mild classification area
 plt.fill([15, 17, 17, 15], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
-# grey bar for early warning area
-# plt.fill([8, 11, 11, 8], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
+# grey bar for severe classification area
+plt.fill([15, 17, 17, 15], [-1, -1, -10, -10], facecolor='grey', alpha=0.4)
+# grey bar for mild early warning area
+plt.fill([8, 11, 11, 8], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
 plt.xlim([0, 33])
 plt.ylim([-10, 15])
 plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
@@ -154,6 +169,14 @@ for s in seasons:
 plt.plot([33, 33], [-10, 15], color = 'k', linewidth = 1)
 # horizontal line representing sd = 1
 plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
+# horizontal line representing sd = -1 (sd<1 is severe)
+plt.plot([0, 52], [-1, -1], color = 'k', linewidth = 1)
+# grey bar for mild classification area
+plt.fill([15, 17, 17, 15], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
+# grey bar for severe classification area
+plt.fill([15, 17, 17, 15], [-1, -1, -10, -10], facecolor='grey', alpha=0.4)
+# grey bar for mild early warning area
+plt.fill([8, 11, 11, 8], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
 plt.xlim([0, 52])
 plt.ylim([-10, 15])
 plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
