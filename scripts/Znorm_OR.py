@@ -5,8 +5,8 @@
 ###Author: Elizabeth Lee
 ###Date: 1/8/14
 ###Function: 
-## Z-normalize (subtract mean and divide by SD) OR time series -- time series with values greater than 1 are mild seasons?
-## Z-normalize OR time series based on mean and SD of first 10 weeks of flu season -- can first 10 weeks tell you about severity of flu season in first few weeks of second year?
+## Z-normalize (subtract mean and divide by SD) OR time series -- time series with average values greater than 1 during the classification periods are mild seasons -- time series with average values less than -1 during the classification periods are severe seasons
+## Z-normalize OR time series based on mean and SD of first 7 or 10 weeks of flu season -- can first 7 or 10 weeks tell you about severity of flu season in first few weeks of second year?
 
 ###Import data: 
 
@@ -36,7 +36,7 @@ ORdict_znorm2 = {} # offices/OP only
 USchild = 20348657 + 20677194 + 22040343 # US child popn from 2010 Census
 USadult = 21585999 + 21101849 + 19962099 + 20179642 + 20890964 + 22708591 + 22298125 + 19664805 # US adult popn from 2010 Census
 seasons = range(2,11) # seasons for which ORs will be generated
-normwks = 10 # number of weeks at beginning of season over which OR will be normalized
+normwks = 7 # number of weeks at beginning of season over which OR will be normalized
 
 ### plotting settings ###
 colorvec = ['grey', 'black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkviolet', 'hotpink']
@@ -72,7 +72,6 @@ ORdict2, ARdict2 = od.ORgen_wk(ilidict2, weeks)
 
 ## processing step: z-normalization ##
 for s in seasons:
-	print 'Season:', s
 	# wkdummy will represent list of weeks for chart in season to use as key for OR dict
 	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
 	wkdummy = set(wkdummy)
@@ -80,29 +79,27 @@ for s in seasons:
 	s_mean = np.mean([ORdict[wk] for wk in sorted(wkdummy)[:normwks]])
 	s_sd = np.std([ORdict[wk] for wk in sorted(wkdummy)[:normwks]])
 	dictdummyls = [(ORdict[wk]-s_mean)/s_sd for wk in sorted(wkdummy)]
+	print s, s_mean, s_sd
+	print "sorted(wkdummy)", sorted(wkdummy)
+	print "ORdict", [ORdict[wk] for wk in sorted(wkdummy)]
+	print "zORdict", dictdummyls
 # 	print 'All data: s_mean, s_sd, s_cv:', s_mean, s_sd, s_sd/s_mean
 	for w, z in zip(sorted(wkdummy), dictdummyls):
 		ORdict_znorm[w] = z
+	
 	# offices/op data
 	s_mean2 = np.mean([ORdict2[wk] for wk in sorted(wkdummy)[:normwks]])
 	s_sd2 = np.std([ORdict2[wk] for wk in sorted(wkdummy)[:normwks]])
 	dictdummyls2 = [(ORdict2[wk]-s_mean2)/s_sd2 for wk in sorted(wkdummy)]
-	print 'Office data: s_mean, s_sd, s_cv:', s_mean2, s_sd2, s_sd2/s_mean2
+# 	print 'Office data: s_mean, s_sd, s_cv:', s_mean2, s_sd2, s_sd2/s_mean2
 	for w, z in zip(sorted(wkdummy), dictdummyls2):
 		ORdict_znorm2[w] = z
 
-## processing: grab average z-OR during weeks 2-4 ##
-for s in seasons:
-	# wkdummy will represent list of weeks for chart in season to use as key for OR dict
-	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
-	wkdummy = set(wkdummy)
-	# all data
-	class_mn = np.mean([ORdict_znorm[wk] for wk in sorted(wkdummy)[15:17]])
-	print 'Season:', s, class_mn
-# input these values into R directly (createF3.R)
-
 	
 ## plots ##	
+# open file to write zOR averages
+fwriter = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/zOR_avgs.csv', 'w+')
+fwriter.write('season,retro_mn,early_mn,fluwks_mn\n')
 # all data
 for s in seasons:
 	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
@@ -124,18 +121,22 @@ for s in seasons:
 		chartwks = xrange(len(sorted(wkdummy)) + 1)
 		print "season number and num weeks", s, len(wkdummy)
 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
+	# processing: grab average z-OR during weeks 2-3 and weeks 48-50 (after adding week 53 to all seasons)
+	class_mn = np.mean(chartORs[15:17])
+	early_mn = np.mean(chartORs[8:11])
+	tot_mn = np.mean(chartORs[:33])
+	fwriter.write('%s,%s,%s,%s\n' % (s, class_mn, early_mn, tot_mn))
+fwriter.close()
 # vertical line representing end of flu season
 plt.plot([33, 33], [-10, 15], color = 'k', linewidth = 1)
 # horizontal line representing sd = 1 (sd>1 is mild)
 plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
 # horizontal line representing sd = -1 (sd<1 is severe)
 plt.plot([0, 52], [-1, -1], color = 'k', linewidth = 1)
-# grey bar for mild classification area
-plt.fill([15, 17, 17, 15], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
-# grey bar for severe classification area
-plt.fill([15, 17, 17, 15], [-1, -1, -10, -10], facecolor='grey', alpha=0.4)
-# grey bar for mild early warning area
-plt.fill([8, 11, 11, 8], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
+# grey bar for classification period
+plt.fill([15, 16, 16, 15], [-10, -10, 15, 15], facecolor='grey', alpha=0.4)
+# grey bar for early warning area
+plt.fill([8, 10, 10, 8], [-10, -10, 15, 15], facecolor='grey', alpha=0.4)
 plt.xlim([0, 33])
 plt.ylim([-10, 15])
 plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
@@ -143,45 +144,43 @@ plt.ylabel('z-normalized OR (%s wks), child:adult' % normwks, fontsize=24)
 plt.legend(loc = 'upper left')
 plt.xticks(xrange(33), xlabels[:33])
 plt.show()
+#
+# # offices/OP only
+# for s in seasons:
+# 	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
+# 	wkdummy = set(wkdummy)
+# 	if s == 1:
+# 		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
+# 		chartwks = xrange(13, 13 + len(sorted(wkdummy)))
+# 		print "season number and num weeks", s, len(wkdummy)
+# 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
+# 	elif len(wkdummy) == 53:
+# 		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
+# 		chartwks = xrange(len(sorted(wkdummy)))
+# 		print "season number and num weeks", s, len(wkdummy)
+# 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
+# 	else:
+# 		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
+# 		avg53 = (chartORs[12] + chartORs[13])/2
+# 		chartORs.insert(13, avg53)
+# 		chartwks = xrange(len(sorted(wkdummy)) + 1)
+# 		print "season number and num weeks", s, len(wkdummy)
+# 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
+# # vertical line representing end of flu season
+# plt.plot([33, 33], [-10, 15], color = 'k', linewidth = 1)
+# # horizontal line representing sd = 1
+# plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
+# # horizontal line representing sd = -1 (sd<1 is severe)
+# plt.plot([0, 52], [-1, -1], color = 'k', linewidth = 1)
+# # grey bar for classification period
+# plt.fill([15, 16, 16, 15], [-10, -10, 15, 15], facecolor='grey', alpha=0.4)
+# # grey bar for early warning period
+# plt.fill([8, 10, 10, 8], [-10, -10, 15, 15], facecolor='grey', alpha=0.4)
+# plt.xlim([0, 52])
+# plt.ylim([-10, 15])
+# plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
+# plt.ylabel('z-normalized OR (%s wks), child:adult - offices/OP only' % normwks, fontsize=24)
+# plt.legend(loc = 'upper left')
+# plt.xticks(xrange(53), xlabels)
+# plt.show()
 
-# offices/OP only
-for s in seasons:
-	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
-	wkdummy = set(wkdummy)
-	if s == 1:
-		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
-		chartwks = xrange(13, 13 + len(sorted(wkdummy)))
-		print "season number and num weeks", s, len(wkdummy)
-		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
-	elif len(wkdummy) == 53:
-		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
-		chartwks = xrange(len(sorted(wkdummy)))
-		print "season number and num weeks", s, len(wkdummy)
-		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
-	else:
-		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
-		avg53 = (chartORs[12] + chartORs[13])/2
-		chartORs.insert(13, avg53)
-		chartwks = xrange(len(sorted(wkdummy)) + 1)
-		print "season number and num weeks", s, len(wkdummy)
-		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
-# vertical line representing end of flu season
-plt.plot([33, 33], [-10, 15], color = 'k', linewidth = 1)
-# horizontal line representing sd = 1
-plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
-# horizontal line representing sd = -1 (sd<1 is severe)
-plt.plot([0, 52], [-1, -1], color = 'k', linewidth = 1)
-# grey bar for mild classification area
-plt.fill([15, 17, 17, 15], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
-# grey bar for severe classification area
-plt.fill([15, 17, 17, 15], [-1, -1, -10, -10], facecolor='grey', alpha=0.4)
-# grey bar for mild early warning area
-plt.fill([8, 11, 11, 8], [1, 1, 15, 15], facecolor='grey', alpha=0.4)
-plt.xlim([0, 52])
-plt.ylim([-10, 15])
-plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
-plt.ylabel('z-normalized OR (%s wks), child:adult - offices/OP only' % normwks, fontsize=24)
-plt.legend(loc = 'upper left')
-plt.xticks(xrange(53), xlabels)
-plt.show()
-	

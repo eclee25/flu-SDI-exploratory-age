@@ -28,6 +28,8 @@
 
 ### packages ###
 from datetime import date
+import numpy as np
+import bisect
 
 ## local packages ##
 ### data structures ###
@@ -106,7 +108,7 @@ def import_dwk (csvfile, seascol, wkcol, agecol, ilicol):
 ##############################################
 #### (ORgen_wk function) dict_data = completed dictionary with (week, age group) as key and ILI count as value; dict_OR = store ORs in dict; timelist = list of season numbers for which ORs will be calculated; 
 def ORgen_wk (dict_data, wklist):
-	''' Generate odds ratios at the week-level. Create one dictionary where key is the week and value is the OR. Create a second dictionary where key is the week and value is the total attack rate by 10,000 for the week. 
+	''' Generate odds ratios at the week-level. Create one dictionary where key is the week and value is the OR. Create a second dictionary where key is the week and value is the total incidence by 10,000 for the week. 
 	'''
 	
 	dict_OR, dict_AR = {},{}
@@ -193,5 +195,44 @@ def import_z3_OR_season(fname):
 		dict_z3_OR_season[(int(fields[0]), fields[1])] = float(fields[2])
 	return dict_z3_OR_season
 
+##############################################
+def import_relative_early_period(filename, weekcol, seasoncol):
+	''' Import weeks that define relative classification periods. Early warning periods are defined as the three week period that starts with the week of Thanksgiving. Retrospective periods are defined as the two first weeks of the epidemic, which is defined .... For the early warning period definition, the function accepts data files with the date of the Sunday of the week of Thanksgiving, which is how the SDI data is reported. For the retrospective period definition, the function accepts data files with the first week number in the retrospective period.
+	'''
+
+	dict_Thanksgiving = {}
+	# dict_Thanksgiving[seasonnum] = Sunday of Thanksgiving week date in date format
+	for line in filename:
+		week_og = line[weekcol]
+		wk = date(int(week_og[6:]), int(week_og[:2]), int(week_og[3:5]))
+		season = int(line[seasoncol][2:])
+		dict_Thanksgiving[season] = wk
+	return dict_Thanksgiving
+	
+##############################################
+def  import_relative_retro_period(weekdummy, dict_AR, attribute, definition_type, retrospective_period):
+	''' Cum_incid definition type returns a list of the two consecutive weeks that comprise the retrospective period when defining the retrospective period in terms of the week when the cumulative incidence surpasses a certain threshold proportion. 'attribute' represents the threshold proportion, and the week after the threshold has been surpassed is the first week returned in the list.
+
+Peak_wk definition type returns a list of the two consecutive weeks that comprise the retrospective period when defining the retrospective period in terms of the number of weeks prior to the peak incidence week in the season. 'attribute' represents the number of weeks prior to the peak week.
+
+In both cases, 'retrospective_period' refers to the number of weeks in the retrospective classification period.
+	'''
+	
+	incid_weekly = [dict_AR[week] for week in weekdummy]
+	preval_weekly = np.cumsum(incid_weekly)
+	
+	if definition_type == 'cum_incid':
+		threshold = attribute * sum(incid_weekly)
+		index = bisect.bisect(preval_weekly, threshold)
+		print 'cum', [weekdummy[i] for i in xrange(index, index+retrospective_period)]
+		return [weekdummy[i] for i in xrange(index, index+retrospective_period)]
+	elif definition_type == 'peak_wk':
+		peak_index = incid_weekly.index(max(incid_weekly))
+		index = peak_index - attribute
+		print 'pk', [weekdummy[i] for i in xrange(index, index+retrospective_period)]
+		return [weekdummy[i] for i in xrange(index, index+retrospective_period)]
+	else:
+		print 'definition_type error'
+		return [float('nan') for rp in xrange(retrospective_period)]
 
 
