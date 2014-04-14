@@ -36,7 +36,7 @@ ORdict_znorm2 = {} # offices/OP only
 USchild = 20348657 + 20677194 + 22040343 # US child popn from 2010 Census
 USadult = 21585999 + 21101849 + 19962099 + 20179642 + 20890964 + 22708591 + 22298125 + 19664805 # US adult popn from 2010 Census
 seasons = range(2,11) # seasons for which ORs will be generated
-normwks = 25 # number of weeks at beginning of season over which OR will be normalized
+normwks = 25 # number of weeks during summer
 
 ### plotting settings ###
 colorvec = ['grey', 'black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkviolet', 'hotpink']
@@ -92,6 +92,17 @@ for s in seasons:
 	print 'office data: s, s_mean, s_sd:', s, s_mean2, s_sd2
 	for w, z in zip(sorted(wkdummy), dictdummyls2):
 		ORdict_znorm2[w] = z
+
+## processing: grab average z-OR during weeks 2-4 and weeks 48-51 ##
+for s in seasons:
+	# wkdummy will represent list of weeks for chart in season to use as key for OR dict
+	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
+	wkdummy = set(wkdummy)
+	# all data
+	class_mn = np.mean([ORdict_znorm[wk] for wk in sorted(wkdummy)[15:17]])
+	early_mn = np.mean([ORdict_znorm[wk] for wk in sorted(wkdummy)[8:11]])
+	tot_mn = np.mean([ORdict_znorm[wk] for wk in sorted(wkdummy)[:33]])
+	print 'Season:', s, class_mn, early_mn, tot_mn
 	
 ## plots ##	
 # all data
