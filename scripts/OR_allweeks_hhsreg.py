@@ -47,19 +47,21 @@ d_OR, d_normOR = defaultdict(list), defaultdict(list)
 # d_classmn_by_season[season] = [classification mean for region 1, classification mean for region 2, ...]
 # d_rank_by_season[season] = [rank of classmn for region 1, rank of classmn for region 2, ...]
 # d_rank_by_region[region] = [rank of classmn for season 1, rank of classmn for season 2, ...]
-d_classmn_by_season, d_rank_by_season, d_rank_by_region = defaultdict(list), defaultdict(list), defaultdict(list)
+d_classmn_by_season, d_classmn_by_region, d_rank_by_season, d_rank_by_region = defaultdict(list), defaultdict(list), defaultdict(list), defaultdict(list)
+# lists for mean and SD of classification z-OR by region for mild, moderate, and severe seasons
+avg_zOR_mild, avg_zOR_mild_sd, avg_zOR_mod, avg_zOR_mod_sd, avg_zOR_sev, avg_zOR_sev_sd = [],[],[],[],[],[]
 # lists for mean rank and SD of rank by region for mild, moderate, and severe seasons
 avg_ranks_mild, avg_ranks_mild_sd, avg_ranks_mod, avg_ranks_mod_sd, avg_ranks_sev, avg_ranks_sev_sd = [],[],[],[],[],[]
 
 
 ### parameters ###
 regions = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-seasons = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10']
-normwks = 10 # number of weeks at beginning of season over which OR will be normalized
+seasons = ['02', '03', '04', '05', '06', '07', '08', '09', '10']
+normwks = 7 # number of weeks at beginning of season over which OR will be normalized
 # index positions of different categories of seasons (index positions are season number minus 1)
-mild_seas_pos = [2, 5, 6, 8] # seasons 3, 6, 7, 9
-mod_seas_pos = [1, 4] # seasons 2, 5
-sev_seas_pos = [3, 7, 9] # seasons 4, 8, 10 (pandemic)
+mild_seas_pos = [1, 4, 5, 7] # seasons 3, 6, 7, 9
+mod_seas_pos = [0, 3] # seasons 2, 5
+sev_seas_pos = [2, 6, 8] # seasons 4, 8, 10 (pandemic)
 
 
 ### plotting settings ###
@@ -132,13 +134,19 @@ for snum, regnum in product(seasons, regions):
 	# dict_OR[(season, region)] = [ORwk1, ORwk2, ...]
 	d_OR[(snum, regnum)] = [((c/c_pop_dummy)/(1-(c/c_pop_dummy)))/((a/a_pop_dummy)/(1-(a/a_pop_dummy))) for c, a in zip(d_incid[(snum, regnum, 'C')], d_incid[(snum, regnum, 'A')])]
 	
+	# add 53rd week to every season-region combination that has 52 weeks in the season
+	if len(d_OR[(snum, regnum)]) == 52:
+		avg53 = (d_OR[(snum, regnum)][12] + d_OR[(snum, regnum)][13])/2
+		d_OR[(snum, regnum)].insert(13, avg53)
+	
 	# create normalized OR dictionary
 	mndummy = np.mean(d_OR[(snum, regnum)][:normwks])
 	sddummy = np.std(d_OR[(snum, regnum)][:normwks])
 	d_normOR[(snum, regnum)] = [(OR - mndummy)/sddummy for OR in d_OR[(snum, regnum)]]
 
-# export means for classification
+# # export means for classification 4/8/14 (added wk 53)
 # fwriter = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/zOR_allweeks_hhsreg_avgs.csv', 'w+')
+# fwriter.write('season,region,retro_mn,early_mn\n')
 # for snum, rnum in product(seasons, regions):
 # 	classmn = np.mean(d_normOR[(snum, rnum)][15:17])
 # 	earlymn = np.mean(d_normOR[(snum, rnum)][8:11])
@@ -146,7 +154,7 @@ for snum, regnum in product(seasons, regions):
 # 	fwriter.write('%s,%s,%s,%s\n' % (snum, rnum, classmn, earlymn))
 # fwriter.close()
 
-# create dict for classification (retrospective) means for average rank analysis
+# create dict for classification (retrospective) means for average classmn/rank analysis
 for s in seasons:
 	classmn_ls = [np.mean(d_normOR[(s, r)][15:17]) for r in regions]
 	classmn_arr = np.array(classmn_ls)
@@ -156,11 +164,14 @@ for s in seasons:
 	d_classmn_by_season[s] = classmn_ls
 	d_rank_by_season[s] = ranks_ls
 	
-# create dict of ranks by region based on ranks by season data
+# create dict of classmn/ranks by region based on classmn/ranks by season data
 for r in regions:
+	d_classmn_by_region[r] = [d_classmn_by_season[s][int(r)-1] for s in seasons]
 	d_rank_by_region[r] = [d_rank_by_season[s][int(r)-1] for s in seasons]
-	
-# data processing for average severity rank by mild/moderate/severe seasons
+
+
+
+# data processing for average severity clasmn/rank by mild/moderate/severe seasons
 for r in regions:
 	dummy_mild = [d_rank_by_region[r][s] for s in mild_seas_pos]
 	avg_ranks_mild.append(np.mean(dummy_mild))
@@ -172,39 +183,77 @@ for r in regions:
 	avg_ranks_sev.append(np.mean(dummy_sev))
 	avg_ranks_sev_sd.append(np.std(dummy_sev))
 	
+	dummy_mild = [d_classmn_by_region[r][s] for s in mild_seas_pos]
+	avg_zOR_mild.append(np.mean(dummy_mild))
+	avg_zOR_mild_sd.append(np.std(dummy_mild))
+	dummy_mod = [d_classmn_by_region[r][s] for s in mod_seas_pos]
+	avg_zOR_mod.append(np.mean(dummy_mod))
+	avg_zOR_mod_sd.append(np.std(dummy_mod))
+	dummy_sev = [d_classmn_by_region[r][s] for s in sev_seas_pos]
+	avg_zOR_sev.append(np.mean(dummy_sev))
+	avg_zOR_sev_sd.append(np.std(dummy_sev))
+
+print d_classmn_by_region['5']
 
 
-### plots ###
-# average severity rank vs. region for all seasons
-reg_int = [int(r) for r in regions]
-avg_ranks = [np.mean(d_rank_by_region[r]) for r in regions]
-avg_ranks_sd = [np.std(d_rank_by_region[r]) for r in regions]
-plt.bar(reg_int, avg_ranks, yerr = avg_ranks_sd, align = 'center')
+# ### plots ###
+# # average severity rank vs. region for all seasons
+# reg_int = [int(r) for r in regions]
+# avg_ranks = [np.mean(d_rank_by_region[r]) for r in regions]
+# avg_ranks_sd = [np.std(d_rank_by_region[r]) for r in regions]
+# plt.bar(reg_int, avg_ranks, yerr = avg_ranks_sd, align = 'center')
+# plt.xlabel('Region')
+# plt.ylabel('Mean Retrospective Rank (Most Severe = Rank 1)')
+# plt.xlim([0.5, 10.5])
+# plt.xticks(np.arange(1, 11), np.arange(1, 11))
+# plt.show()
+
+# average zOR vs. region for all seasons
+avg_zOR = [d_classmn_by_region[r] for r in regions]
+plt.boxplot(avg_zOR)
 plt.xlabel('Region')
-plt.ylabel('Mean Retrospective Rank (Most Severe = Rank 1)')
+plt.ylabel('Retrospective z-OR (Severe < -1, Mild > 1)')
 plt.xlim([0.5, 10.5])
+plt.ylim([-5, 15])
 plt.xticks(np.arange(1, 11), np.arange(1, 11))
 plt.show()
 
+# # average severity rank vs. region for mild, moderate & severe seasons
+# width = .3
+# reg_int_mild = [int(r)-width for r in regions]
+# reg_int_mod = [int(r) for r in regions]
+# reg_int_sev = [int(r)+width for r in regions]
+#
+# fig, ax = plt.subplots()
+# mildbar = ax.bar(reg_int_mild, avg_ranks_mild, width, yerr = avg_ranks_mild_sd, label = sevvec[0], color = 'y', align='center')
+# modbar = ax.bar(reg_int_mod, avg_ranks_mod, width, yerr = avg_ranks_mod_sd, label = sevvec[1], color = 'b', align='center')
+# sevbar = ax.bar(reg_int_sev, avg_ranks_sev, width, yerr = avg_ranks_sev_sd, label = sevvec[2], color = 'r', align='center')
+# ax.set_xlabel('Region')
+# ax.set_ylabel('Mean Retrospective Rank (Most Severe = Rank 1)')
+# ax.set_xticks(reg_int_mod)
+# ax.set_xticklabels(np.arange(1, 11))
+# ax.legend(loc = 'upper left')
+# plt.show()
 
-# average severity rank vs. region for mild, moderate & severe seasons
+# average zOR vs. region for mild, moderate & severe seasons
 width = .3
 reg_int_mild = [int(r)-width for r in regions]
 reg_int_mod = [int(r) for r in regions]
 reg_int_sev = [int(r)+width for r in regions]
 
 fig, ax = plt.subplots()
-mildbar = ax.bar(reg_int_mild, avg_ranks_mild, width, yerr = avg_ranks_mild_sd, label = sevvec[0], color = 'y', align='center')
-modbar = ax.bar(reg_int_mod, avg_ranks_mod, width, yerr = avg_ranks_mod_sd, label = sevvec[1], color = 'b', align='center')
-sevbar = ax.bar(reg_int_sev, avg_ranks_sev, width, yerr = avg_ranks_sev_sd, label = sevvec[2], color = 'r', align='center')
+mildbar = ax.boxplot(reg_int_mild, avg_zOR_mild, width, label = sevvec[0], color = 'y')
+modbar = ax.boxplot(reg_int_mod, avg_zOR_mod, width, label = sevvec[1], color = 'b')
+sevbar = ax.boxplot(reg_int_sev, avg_zOR_sev, width, label = sevvec[2], color = 'r')
 ax.set_xlabel('Region')
-ax.set_ylabel('Mean Retrospective Rank (Most Severe = Rank 1)')
+ax.set_ylabel('Mean Retrospective z-OR (Severe < -1, Mild > 1)')
 ax.set_xticks(reg_int_mod)
 ax.set_xticklabels(np.arange(1, 11))
 ax.legend(loc = 'upper left')
+ax.set_ylim([-5, 30])
 plt.show()
 
-
+#
 # # regular OR plots by region for each season
 # for s in seasons:
 # 	for r in regions:
@@ -304,7 +353,7 @@ plt.show()
 # 	plt.legend(loc = 'upper right')
 # 	plt.xticks(xrange(53), xlabels)
 # 	plt.show()	
-# 		
+		
 		
 		
 		
