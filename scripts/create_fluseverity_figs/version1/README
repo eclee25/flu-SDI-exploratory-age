@@ -1,0 +1,12 @@
+README - figures for severity manuscript
+
+Figure 2 
+/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/scripts
+attackrates_wk.py (panel A)
+OR_fluweeks.py (panel B)
+
+
+Figure 3
+/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/scripts
+Znorm_OR.py (panels B & C)
+OR_seasonseverity.sql (attack rate vs benchmark index by season)

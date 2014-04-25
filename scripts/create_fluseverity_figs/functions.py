@@ -1,0 +1,205 @@
+#!/usr/bin/python
+
+##############################################
+###Python template
+###Author: Elizabeth Lee
+###Date: 4/24/14
+
+## Purpose: script of functions for data cleaning and processing to draw flu severity figures; supports figures in create_fluseverity_figs
+
+
+###Command Line: would not be called from command line directly 
+##############################################
+
+##############################################
+# header
+from collections import defaultdict
+from datetime import date
+from itertools import product
+import numpy as np
+
+##############################################
+# global parameters
+
+gp_normweeks = 7 # baseline normalization period
+gp_retro_duration = 2 # duration of retrospective period in weeks
+gp_begin_retro_week = 3 # number of weeks before the peak incidence week that the retrospective period should begin (that season only)
+gp_early_duration = 2 # duration of the early warning period in weeks
+gp_begin_early_week = 2 # number of weeks after the week with Thanksgiving that the early warning period should begin (that season only)
+gp_plotting_seasons = xrange(2,10) # season numbers for which data will be plotted (eg. Season 2 = 2001-02)
+
+
+
+##############################################
+def classif_zOR_processing(csv_incidence, csv_population):
+	''' Calculate retrospective and early warning zOR classification values for each season, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normwks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_zOR_processing function is nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR.
+	dict_wk[week] = seasonnum
+	dict_incid[week] = ILI cases per 10,000 in US population during second calendar year of flu season
+	dict_OR[week] = OR
+	dict_zOR[week] = zOR
+	dict_classifzOR[seasonnum] = (mean retrospective zOR, mean early warning zOR)
+	'''
+	
+	main()
+	# dict_wk[week] = seasonnum; dict_incid[week] = ILI cases per 10,000 in US population, dict_OR[week] = OR; dict_zOR[week] = zOR
+	dict_wk, dict_incid, dict_OR, dict_zOR = week_zOR_processing(csv_incidence, csv_population)
+	
+	list_allweeks = sorted([week for week in dict_wk])
+	for s in gp_plotting_seasons:
+		weekdummy = sorted([key for key in list_allweeks if dict_wk[key] == s])
+		incid_dummy = [dict_incid[wk] for wk in weekdummy]
+		
+		
+		# retrospective classification
+		peak_index = incid_dummy.index(max(incid_dummy))
+		begin_retro = peak_index - gp_begin_retro_week
+		retro_weeks = [weekdummy[i] for i in xrange(begin_retro, begin_retro+gp_retro_duration)]
+		
+		# when to add 53rd week to zOR time series? before or after calculating mean zORs for classification?
+		# convert incid/OR/zOR dicts to (season to list of values sorted by week) at some point?
+	
+	
+	
+
+##############################################
+def season_H3perc (csvreadfile):
+	''' Import SQL_EXPORT/subtype5.csv data, which includes information on prominent subtype, subtypes of isolates that were identified, and isolates that match with the vaccine strains. Return a dictionary with season and proportion of H3 isolates of all isolates collected that season.
+	dict_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
+	'''
+	
+	main()
+	
+	season = []
+	for row in csvreadfile:
+		H1i, H3i, Bi, TOTi = float(row[4]), float(row[5]), float(row[6]), float(row[7])
+		season.append(int(row[0])) # season number
+		
+	# dict_H3[seasonnum] = proportion H3 isolates of all isolates collected that season
+	dict_H3 = dict(zip(season, H3i/TOTi))
+	
+	return dict_H3
+
+##############################################
+def week_OR_processing(csv_incidence, csv_population):
+	''' Import SQL_export/OR_allweeks_outpatient.csv data (or other OR_allweeks...csv data), which includes season number, week, age group, and ILI incid. Import SQL_export/totalpop_age.csv data, which includes calendar year, age group, and US population. Return dictionary with week to season number, week to ILI cases per 10,000 in total US population, and dictionary with week to OR. OR attack rates for children and adults will be calculated based on popstat variable of the population in the second calendar year of the flu season (eg. 2001-02 season is based on 2002 population).
+	dict_wk[week] = seasonnum
+	dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season
+	dict_OR[week] = OR
+	'''
+	
+	main()
+	
+	## import ILI data ##
+	# dict_ILI_week[(week, agegroup code)] = ILI cases; dict_wk[week] = seasonnum
+	dict_ILI, dict_wk = {}, {}
+	for row in csv_incidence: 
+		week = row[1]
+		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		dict_ILI_week[(wk, str(row[2]))] = float(row[3])
+		dict_wk[wk] = int(row[0])
+	
+	# define age group ranges
+	age_keys = ['C', 'A', 'O']
+	children = ['5-9 YEARS', '10-14 YEARS', '15-19 YEARS']
+	adults = ['20-29 YEARS', '30-39 YEARS', '40-49 YEARS', '50-59 YEARS']
+	other = ['<2 YEARS', '2-4 YEARS', '60-69 YEARS', '70-79 YEARS', '80 YEARS']
+	dict_ages = defaultdict(list)
+	# dict_ages[agegroup code] = [agegroup bin 1, age group bin 2,... in text]
+	dict_ages = dict(zip(age_keys, [children, adults, other]))
+	
+	## import population data ##
+	dict_pop_age = {}
+	for row in csv_population:
+		calendar_year = str(row[0])
+		season = int(calendar_year[2:])
+		age = row[1]
+		# dict_pop_age[(seasonnum, age in text)] = population
+		dict_pop_age[(season, age)] = int(row[2]) 
+	
+	# dict_pop[(season, agegroup code)] = population size of agegroup
+	seasons = list(set([k[0] for k in dict_pop_age]))
+	age_texts = list(set([k[1] for k in dict_pop_age]))
+	dict_pop = {}
+	for s, ak in product(seasons, age_keys):
+		dict_pop[(s, ak)] = float(sum([dict_pop_age[(s, at)] for at in age_texts if at in dict_ages[ak]]))
+	
+	# generate incidence per 10,000 in US population and OR at the weekly level
+	for wk in dict_wk:
+		s = dict_wk[wk]
+		# dict_incid[week] = ILI incidence per 10,000 in US pop in second calendar year of flu season
+		tot_incid = sum([dict_ILI_week[(wk, age)] for age in age_keys])/sum([dict_pop[(s, age)] for age in age_keys]) * 10000
+		dict_incid[wk] = tot_incid
+		# dict_OR[week] = OR
+		child_attack = dict_ILI_week[(wk, 'C')]/dict_pop[(s, 'C')]
+		adult_attack = dict_ILI_week[(wk, 'A')]/dict_pop[(s, 'A')]
+		OR = (child_attack/(1-child_attack))/(adult_attack/(1-adult_attack))
+		dict_OR[wk] = float(OR)
+	
+	return dict_wk, dict_incid, dict_OR
+
+##############################################
+def week_plotting_dicts(csv_incidence, csv_population):
+	'''Return dictionaries for season to incidence, OR, and zOR by week as a list, adding 53rd week data as the average of week 52 and week 1 if necessary. Dictionary keys are created only for seasons in gp: plotting_seasons, where 'gp' is a global parameter defined within functions.py.
+	'''
+	
+	main()
+	# dict_wk[week] = seasonnum; dict_incid[week] = ILI cases per 10,000 in US population, dict_OR[week] = OR; dict_zOR[week] = zOR
+	dict_wk, dict_incid, dict_OR, dict_zOR = week_zOR_processing(csv_incidence, csv_population)
+	
+	dict_incid53ls, dict_OR53ls, dict_zOR53ls = defaultdict(list), defaultdict(list), defaultdict(list)
+	for s in gp_plotting_seasons:
+		incid53dummy = [dict_incid[wk] for wk in sorted(dict_wk) if dict_wk[wk] == s]
+		OR53dummy = [dict_OR[wk] for wk in sorted(dict_wk) if dict_wk[wk] == s]
+		zOR53dummy = [dict_zOR[wk] for wk in sorted(dict_wk) if dict_wk[wk] == s]
+		if len(incid53dummy) == 52:
+			a53incid = (incid53dummy[12]+incid53dummy[13])/2.
+			a53OR = (OR53dummy[12]+OR53dummy[13])/2.
+			a53zOR = (zOR53dummy[12]+zOR53dummy[13])/2.
+			incid53dummy.insert(13, a53incid)
+			OR53dummy.insert(13, a53OR)
+			zOR53dummy.insert(13, a53zOR)
+		# dict_incid53ls[seasonnum] = [ILI wk 40, ILI wk 41,...]
+		# dict_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...]
+		# dict_zOR53ls[seasonnum] = [zOR wk 40, zOR wk 41, ...]
+		dict_incid53ls[s] = incid53dummy
+		dict_OR53ls[s] = OR53dummy
+		dict_zOR53ls[s] = zOR53dummy
+
+##############################################
+def week_zOR_processing(csv_incidence, csv_population):
+	''' Calculate zOR by week based on normwks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. The function 'week_OR_processing' is nested within this function. Return dictionary of week to season number, week to OR, and week to zOR.
+	dict_wk[week] = seasonnum
+	dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season
+	dict_OR[week] = OR
+	dict_zOR[week] = zOR
+	'''
+	
+	main()
+	# dict_wk[week] = seasonnum; dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season, dict_OR[week] = OR
+	dict_wk, dict_incid, dict_OR = week_OR_processing(csv_incidence, csv_population)
+	
+	list_allweeks = sorted([week for week in dict_wk])
+	for s in gp_plotting_seasons:
+		weekdummy = sorted([key for key in list_allweeks if dict_wk[key] == s])
+		season_mean = np.mean([dict_OR[wk] for wk in weekdummy[:gp_normwks]])
+		season_sd = np.std([dict_OR[wk] for wk in weekdummy[:gp_normwks]])
+		list_dictdummy = [(dict_OR[wk]-season_mean)/season_sd for wk in weekdummy]
+		for w, z in zip(weekdummy, list_dictdummy):
+			dict_zOR[w] = z
+	
+	return dict_wk, dict_incid, dict_OR, dict_zOR
+	
+
+##############################################
+##############################################
+##############################################
+
+##############################################
+# footer
+
+def main():
+	print('Doing stuff in module', __name__)
+
+if __name__ == '__main__':
+	print('Executed from the command line')
+	main()
