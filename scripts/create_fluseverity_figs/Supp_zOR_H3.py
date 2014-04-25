@@ -13,6 +13,7 @@
 
 
 ### notes ###
+# The original source of isolate information is the CDC Flu Season Summaries, CDC surveillance system (not the WHO/NREVSS system).
 # subtype5.csv: season, season yrs, subtype, subtype marker, H1 isolates, H3 isolates, B isolates, total isolates, H1 match, H3 match, B match, total match
 # prominent subtype marker: 1 = H1; 2 = H1 & B; 3 = H1 & H3 & B; 4 = H3 & B; 5 = H3
 # dominant subtype marker: 1 = H1 plurality; 2 = H3 plurality; 3 = B plurality
@@ -27,78 +28,67 @@ import matplotlib.pyplot as plt
 import functions as fxn
 
 ### data structures ###
-
-
-# d_retrozOR[seasonnum] = mean zOR during relative classification period
 # d_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
-d_zOR = {}
-
+# d_classifzOR[seasonnum] =  (mean retrospective zOR, mean early warning zOR)
 
 ### functions ###
-
-
-
-
-
-
-### import data ###
-incidin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/OR_allweeks_outpatient.csv','r')
-incid = csv.reader(incidin, delimiter=',')
-
-popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/totalpop_age.csv', 'r')
-pop = csv.reader(popin, delimiter=',')
-
+### data files ###
 subvaxin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/subtype5.csv', 'r')
 subvax = csv.reader(subvaxin, delimiter=',')
+incidin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/OR_allweeks_outpatient.csv','r')
+incid = csv.reader(incidin, delimiter=',')
+popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/totalpop_age.csv', 'r')
+pop = csv.reader(popin, delimiter=',')
+thanksin=open('/home/elee/Dropbox/My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv', 'r')
+thanksin.readline() # remove header
+thanks=csv.reader(thanksin, delimiter=',')
 
+nrevss_subin = open('/home/elee/Dropbox/My_Bansal_Lab/Clean_Data_for_Import/NREVSS_Isolates_Season.csv', 'r')
+nrevss_subin.readline() # remove header
+nrevss_sub = csv.reader(nrevss_subin, delimiter=',')
 
-
-### plotting parameters ###
-snums = xrange(2, 11)
+### called/local plotting parameters ###
+ps = fxn.gp_plotting_seasons
+sl = fxn.gp_seasonlabels
+fs = 24
+fssml = 16
 
 ### program ###
 # import data
-d_H3 = fxn.season_H3perc(subvax)
+# d_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
+# d_classifzOR[seasonnum] =  (mean retrospective zOR, mean early warning zOR)
+d_H3cdc = fxn.season_H3perc_CDC(subvax)
+d_H3nrevss = fxn.season_H3perc_NREVSS(nrevss_sub)
+d_classifzOR = fxn.classif_zOR_processing(incid, pop, thanks)
 
-
-
-
-
+# plot values
+H3cdc = [d_H3cdc[s] for s in ps]
+H3nrevss = [d_H3nrevss[s] for s in ps]
+classifzOR = [d_classifzOR[s][0] for s in ps]
 
 # draw plots
-sevix = [d_ix[s] for s in snums]
-sevix_veff = [d_ix[s] for s in vaxeffT_seas]
+# figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
 
-# CDC index vs. trivalent vax strain match 
-trivax = [d_vaxmatch[s][3] for s in snums]
-plt.plot(trivax, sevix, marker = 'o', color = 'black', linestyle = 'None')
-for s, x, y in zip(snums, trivax, sevix):
-	plt.annotate(s, xy=(x, y), xytext=(-7,5), textcoords='offset points', fontsize=16)
-plt.ylabel('Benchmark index', fontsize=24)
-plt.xlabel('Trivalent vaccine strain match (%)', fontsize=24)
-plt.xticks(fontsize=16)
-plt.yticks(fontsize=16)
-plt.xlim([0, 100])
-plt.show()
+plt.plot(H3cdc, classifzOR, marker = 'o', color = 'black', linestyle = 'None')
+for s, x, y in zip(sl, H3cdc, classifzOR):
+	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+plt.ylabel('Mean Retrospective zOR', fontsize=fs)
+plt.xlabel('H3 Proportion of Subtyped Isolates (CDC)', fontsize=fs)
+plt.xticks(fontsize=fssml)
+plt.yticks(fontsize=fssml)
+plt.xlim([0,1])
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_H3_cdc.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.close()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+plt.plot(H3nrevss, classifzOR, marker = 'o', color = 'black', linestyle = 'None')
+for s, x, y in zip(sl, H3nrevss, classifzOR):
+	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
+plt.ylabel('Mean Retrospective zOR', fontsize=fs)
+plt.xlabel('H3 Proportion of Subtyped Isolates (NREVSS)', fontsize=fs)
+plt.xticks(fontsize=fssml)
+plt.yticks(fontsize=fssml)
+plt.xlim([0,1])
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.close()
 
 

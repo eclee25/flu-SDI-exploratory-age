@@ -19,8 +19,7 @@ from itertools import product
 import numpy as np
 
 ##############################################
-# global parameters
-
+# global parameters - methods
 gp_normweeks = 7 # baseline normalization period
 gp_retro_duration = 2 # duration of retrospective period in weeks
 gp_begin_retro_week = 3 # number of weeks before the peak incidence week that the retrospective period should begin (that season only)
@@ -29,9 +28,13 @@ gp_begin_early_week = 2 # number of weeks after the week with Thanksgiving that 
 gp_plotting_seasons = xrange(2,10) # season numbers for which data will be plotted (eg. Season 2 = 2001-02)
 
 ##############################################
+# global parameters - plotting
+gp_seasonlabels = ['01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09']
+
+##############################################
 def classif_zOR_processing(csv_incidence, csv_population, csv_Thanksgiving):
 	''' Calculate retrospective and early warning zOR classification values for each season, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. The retrospective period is designated relative to the peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving.
-	Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normwks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_plotting_dicts and Thanksgiving_import functions are nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR.
+	Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normweeks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_plotting_dicts and Thanksgiving_import functions are nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR.
 	dict_wk[week] = seasonnum
 	dict_classifzOR[seasonnum] = (mean retrospective zOR, mean early warning zOR)
 	'''
@@ -67,19 +70,40 @@ def classif_zOR_processing(csv_incidence, csv_population, csv_Thanksgiving):
 	return dict_classifzOR
 
 ##############################################
-def season_H3perc (csvreadfile):
-	''' Import SQL_EXPORT/subtype5.csv data, which includes information on prominent subtype, subtypes of isolates that were identified, and isolates that match with the vaccine strains. Return a dictionary with season and proportion of H3 isolates of all isolates collected that season.
+def season_H3perc_CDC (csvreadfile):
+	''' Import SQL_EXPORT/subtype5.csv data, which includes information on prominent subtype, subtypes of isolates that were identified, and isolates that match with the vaccine strains. Return a dictionary with season and proportion of H3 isolates of all isolates collected that season. The original source of isolate information is the CDC Flu Season Summaries, CDC surveillance system (not the WHO/NREVSS system).
 	dict_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
 	'''
-	main(season_H3perc)
+	main(season_H3perc_CDC)
 	
-	season = []
+	dict_dummy = {}
 	for row in csvreadfile:
 		H1i, H3i, Bi, TOTi = float(row[4]), float(row[5]), float(row[6]), float(row[7])
-		season.append(int(row[0])) # season number
+		season = int(row[0]) # season number
+		# include only seasons in gp_plotting_seasons in returned dictionary
+		dict_dummy[season] = H3i/TOTi
+
+	# dict_H3[seasonnum] = proportion H3 isolates of all isolates collected that season
+	dict_H3 = dict((s, dict_dummy[s]) for s in gp_plotting_seasons)
 	
-	# include only seasons in gp_plotting_seasons in returned dictionary
-	dict_dummy = dict(zip(season, H3i/TOTi))
+	return dict_H3
+
+##############################################
+def season_H3perc_NREVSS (csvreadfile):
+	''' Import My_Bansal_Lab/Clean_Data_for_Import/NREVSS_Isolates_Season.csv data, which includes information on year, number of samples positive for flu, A samples, B samples, subtyped A samples, A/H1 samples, A/H3 samples, B samples, A/2009H1N1 samples, total speciments tested. Return a dictionary with season and proportion of H3 isolates of all subtyped flu isolates collected that season. The original source of isolate information is the CDC Flu Season Summaries, WHO NREVSS surveillance system (not the CDC system).
+	dict_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
+	'''
+	main(season_H3perc_NREVSS)
+	
+	dict_dummy = {}
+	for row in csvreadfile:
+		A_sub, B = int(row[4]), int(row[3])
+		TOTi = A_sub + B
+		H3i = float(row[6])
+		season = int(row[0][7:]) # season number
+		# include only seasons in gp_plotting_seasons in returned dictionary
+		dict_dummy[season] = H3i/TOTi
+
 	# dict_H3[seasonnum] = proportion H3 isolates of all isolates collected that season
 	dict_H3 = dict((s, dict_dummy[s]) for s in gp_plotting_seasons)
 	
@@ -113,7 +137,7 @@ def week_OR_processing(csv_incidence, csv_population):
 	
 	## import ILI data ##
 	# dict_ILI_week[(week, agegroup code)] = ILI cases; dict_wk[week] = seasonnum
-	dict_ILI, dict_wk = {}, {}
+	dict_ILI_week, dict_wk = {}, {}
 	for row in csv_incidence: 
 		week = row[1]
 		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
@@ -146,6 +170,7 @@ def week_OR_processing(csv_incidence, csv_population):
 		dict_pop[(s, ak)] = float(sum([dict_pop_age[(s, at)] for at in age_texts if at in dict_ages[ak]]))
 	
 	# generate incidence per 10,000 in US population and OR at the weekly level
+	dict_incid, dict_OR = {}, {}
 	for wk in dict_wk:
 		s = dict_wk[wk]
 		# dict_incid[week] = ILI incidence per 10,000 in US pop in second calendar year of flu season
@@ -194,7 +219,7 @@ def week_plotting_dicts(csv_incidence, csv_population):
 
 ##############################################
 def week_zOR_processing(csv_incidence, csv_population):
-	''' Calculate zOR by week based on normwks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. The function 'week_OR_processing' is nested within this function. Return dictionary of week to season number, week to OR, and week to zOR.
+	''' Calculate zOR by week based on normweeks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. The function 'week_OR_processing' is nested within this function. Return dictionary of week to season number, week to OR, and week to zOR.
 	dict_wk[week] = seasonnum
 	dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season
 	dict_OR[week] = OR
@@ -204,10 +229,11 @@ def week_zOR_processing(csv_incidence, csv_population):
 	# dict_wk[week] = seasonnum; dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season, dict_OR[week] = OR
 	dict_wk, dict_incid, dict_OR = week_OR_processing(csv_incidence, csv_population)
 	
+	dict_zOR = {}
 	for s in gp_plotting_seasons:
 		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
-		season_mean = np.mean([dict_OR[wk] for wk in weekdummy[:gp_normwks]])
-		season_sd = np.std([dict_OR[wk] for wk in weekdummy[:gp_normwks]])
+		season_mean = np.mean([dict_OR[wk] for wk in weekdummy[:gp_normweeks]])
+		season_sd = np.std([dict_OR[wk] for wk in weekdummy[:gp_normweeks]])
 		list_dictdummy = [(dict_OR[wk]-season_mean)/season_sd for wk in weekdummy]
 		for w, z in zip(weekdummy, list_dictdummy):
 			dict_zOR[w] = z
@@ -219,8 +245,7 @@ def week_zOR_processing(csv_incidence, csv_population):
 # footer
 
 def main(function):
-	print 'Doing stuff in module', __name__
-	print 'function', function.__name__
+	print 'Running', __name__, function.__name__
 
 if __name__ == '__main__':
 	print 'Executed from the command line'
