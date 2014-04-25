@@ -170,7 +170,6 @@ for r in regions:
 	d_rank_by_region[r] = [d_rank_by_season[s][int(r)-1] for s in seasons]
 
 
-
 # data processing for average severity clasmn/rank by mild/moderate/severe seasons
 for r in regions:
 	dummy_mild = [d_rank_by_region[r][s] for s in mild_seas_pos]
@@ -182,18 +181,6 @@ for r in regions:
 	dummy_sev = [d_rank_by_region[r][s] for s in sev_seas_pos]
 	avg_ranks_sev.append(np.mean(dummy_sev))
 	avg_ranks_sev_sd.append(np.std(dummy_sev))
-	
-	dummy_mild = [d_classmn_by_region[r][s] for s in mild_seas_pos]
-	avg_zOR_mild.append(np.mean(dummy_mild))
-	avg_zOR_mild_sd.append(np.std(dummy_mild))
-	dummy_mod = [d_classmn_by_region[r][s] for s in mod_seas_pos]
-	avg_zOR_mod.append(np.mean(dummy_mod))
-	avg_zOR_mod_sd.append(np.std(dummy_mod))
-	dummy_sev = [d_classmn_by_region[r][s] for s in sev_seas_pos]
-	avg_zOR_sev.append(np.mean(dummy_sev))
-	avg_zOR_sev_sd.append(np.std(dummy_sev))
-
-print d_classmn_by_region['5']
 
 
 # ### plots ###
@@ -208,14 +195,15 @@ print d_classmn_by_region['5']
 # plt.xticks(np.arange(1, 11), np.arange(1, 11))
 # plt.show()
 
-# average zOR vs. region for all seasons
+# # average zOR vs. region for all seasons
 avg_zOR = [d_classmn_by_region[r] for r in regions]
+print 'avg_zor', avg_zOR
 plt.boxplot(avg_zOR)
-plt.xlabel('Region')
 plt.ylabel('Retrospective z-OR (Severe < -1, Mild > 1)')
 plt.xlim([0.5, 10.5])
 plt.ylim([-5, 15])
-plt.xticks(np.arange(1, 11), np.arange(1, 11))
+plt.xticks(xrange(1, 11), labelvec, rotation = 'vertical')
+plt.subplots_adjust(bottom = 0.3)
 plt.show()
 
 # # average severity rank vs. region for mild, moderate & severe seasons
@@ -236,22 +224,39 @@ plt.show()
 # plt.show()
 
 # average zOR vs. region for mild, moderate & severe seasons
-width = .3
-reg_int_mild = [int(r)-width for r in regions]
-reg_int_mod = [int(r) for r in regions]
-reg_int_sev = [int(r)+width for r in regions]
+x_axis = [int(r) for r in regions]
 
-fig, ax = plt.subplots()
-mildbar = ax.boxplot(reg_int_mild, avg_zOR_mild, width, label = sevvec[0], color = 'y')
-modbar = ax.boxplot(reg_int_mod, avg_zOR_mod, width, label = sevvec[1], color = 'b')
-sevbar = ax.boxplot(reg_int_sev, avg_zOR_sev, width, label = sevvec[2], color = 'r')
-ax.set_xlabel('Region')
-ax.set_ylabel('Mean Retrospective z-OR (Severe < -1, Mild > 1)')
-ax.set_xticks(reg_int_mod)
-ax.set_xticklabels(np.arange(1, 11))
-ax.legend(loc = 'upper left')
-ax.set_ylim([-5, 30])
+# list of lists organized by region
+avg_zOR_mild = [np.mean([d_classmn_by_region[r][s] for s in mild_seas_pos]) for r in regions]
+avg_zOR_mod = [np.mean([d_classmn_by_region[r][s] for s in mod_seas_pos]) for r in regions]
+avg_zOR_sev = [np.mean([d_classmn_by_region[r][s] for s in sev_seas_pos]) for r in regions]
+sd_mild = [np.std([d_classmn_by_region[r][s] for s in mild_seas_pos]) for r in regions]
+sd_mod = [np.std([d_classmn_by_region[r][s] for s in mod_seas_pos]) for r in regions]
+sd_sev = [np.std([d_classmn_by_region[r][s] for s in sev_seas_pos]) for r in regions]
+
+# # plot all data points
+# x_mild = [np.repeat(int(r), len(mild_seas_pos)) for r in regions]
+# x_mod = [np.repeat(int(r), len(mod_seas_pos)) for r in regions]
+# x_sev = [np.repeat(int(r), len(sev_seas_pos)) for r in regions]
+
+# plot all data points
+# avg_zOR_mild = [d_classmn_by_region[r][s] for r, s in product(regions, mild_seas_pos)]
+# avg_zOR_mod = [d_classmn_by_region[r][s] for r, s in product(regions, mod_seas_pos)]
+# avg_zOR_sev = [d_classmn_by_region[r][s] for r, s in product(regions, sev_seas_pos)]
+
+plt.errorbar([x-0.15 for x in x_axis], avg_zOR_mild, label = sevvec[0], yerr = sd_mild, color = 'y', fmt = 'o')
+plt.errorbar(x_axis, avg_zOR_mod, label = sevvec[1], yerr = sd_mod, color = 'b', fmt = 'o')
+plt.errorbar([x+0.15 for x in x_axis], avg_zOR_sev, label = sevvec[2], yerr = sd_sev, color = 'r', fmt = 'o')
+plt.hlines(-1, 0.5, 10.5, linestyles = 'solid')
+plt.hlines(1, 0.5, 10.5, linestyles = 'solid')
+plt.ylabel('Mean Retrospective z-OR')
+plt.ylim([-5, 25])
+plt.xlim([0.5, 10.5])
+plt.xticks(xrange(1, 11), labelvec, rotation = 'vertical')
+plt.legend(loc = 'upper left')
+plt.subplots_adjust(bottom = 0.3)
 plt.show()
+
 
 #
 # # regular OR plots by region for each season

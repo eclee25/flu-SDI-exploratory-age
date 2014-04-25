@@ -35,7 +35,7 @@ ORdict_znorm2 = {} # offices/OP only
 ### parameters ###
 USchild = 20348657 + 20677194 + 22040343 # US child popn from 2010 Census
 USadult = 21585999 + 21101849 + 19962099 + 20179642 + 20890964 + 22708591 + 22298125 + 19664805 # US adult popn from 2010 Census
-seasons = range(2,11) # seasons for which ORs will be generated
+seasons = range(2,10) # seasons for which ORs will be generated
 normwks = 7 # number of weeks at beginning of season over which OR will be normalized
 
 ### plotting settings ###
@@ -49,7 +49,8 @@ xlabels.extend(range(1,40))
 ### import data ###
 datain=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/OR_allweeks.csv','r')
 data=csv.reader(datain, delimiter=',')
-data2in=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/OR_allweeks_office.csv','r')
+# 4/23/14 changed to outpatient data
+data2in=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/OR_allweeks_outpatient.csv','r')
 data2=csv.reader(data2in, delimiter=',')
 
 ### program ###
@@ -96,91 +97,107 @@ for s in seasons:
 		ORdict_znorm2[w] = z
 
 	
-## plots ##	
-# open file to write zOR averages
-fwriter = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/zOR_avgs.csv', 'w+')
-fwriter.write('season,retro_mn,early_mn,fluwks_mn\n')
-# all data
-for s in seasons:
-	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
-	wkdummy = set(wkdummy)
-	if s == 1:
-		chartORs = [ORdict_znorm[wk] for wk in sorted(wkdummy)]
-		chartwks = xrange(13, 13 + len(sorted(wkdummy)))
-		print "season number and num weeks", s, len(wkdummy)
-		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
-	elif len(wkdummy) == 53:
-		chartORs = [ORdict_znorm[wk] for wk in sorted(wkdummy)]
-		chartwks = xrange(len(sorted(wkdummy)))
-		print "season number and num weeks", s, len(wkdummy)
-		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
-	else:
-		chartORs = [ORdict_znorm[wk] for wk in sorted(wkdummy)]
-		avg53 = (chartORs[12] + chartORs[13])/2
-		chartORs.insert(13, avg53)
-		chartwks = xrange(len(sorted(wkdummy)) + 1)
-		print "season number and num weeks", s, len(wkdummy)
-		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
-	# processing: grab average z-OR during weeks 2-3 and weeks 48-50 (after adding week 53 to all seasons)
-	class_mn = np.mean(chartORs[15:17])
-	early_mn = np.mean(chartORs[8:11])
-	tot_mn = np.mean(chartORs[:33])
-	fwriter.write('%s,%s,%s,%s\n' % (s, class_mn, early_mn, tot_mn))
-fwriter.close()
-# vertical line representing end of flu season
-plt.plot([33, 33], [-10, 15], color = 'k', linewidth = 1)
-# horizontal line representing sd = 1 (sd>1 is mild)
-plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
-# horizontal line representing sd = -1 (sd<1 is severe)
-plt.plot([0, 52], [-1, -1], color = 'k', linewidth = 1)
-# grey bar for classification period
-plt.fill([15, 16, 16, 15], [-10, -10, 15, 15], facecolor='grey', alpha=0.4)
-# grey bar for early warning area
-plt.fill([8, 10, 10, 8], [-10, -10, 15, 15], facecolor='grey', alpha=0.4)
-plt.xlim([0, 33])
-plt.ylim([-10, 15])
-plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
-plt.ylabel('z-normalized OR (%s wks), child:adult' % normwks, fontsize=24)
-plt.legend(loc = 'upper left')
-plt.xticks(xrange(33), xlabels[:33])
-plt.show()
-#
-# # offices/OP only
+# ## plots ##	
+# # open file to write zOR averages
+# # fwriter = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/zOR_avgs.csv', 'w+')
+# # fwriter.write('season,retro_mn,early_mn,fluwks_mn\n')
+# # all data
 # for s in seasons:
 # 	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
 # 	wkdummy = set(wkdummy)
 # 	if s == 1:
-# 		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
+# 		chartORs = [ORdict_znorm[wk] for wk in sorted(wkdummy)]
 # 		chartwks = xrange(13, 13 + len(sorted(wkdummy)))
 # 		print "season number and num weeks", s, len(wkdummy)
 # 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
 # 	elif len(wkdummy) == 53:
-# 		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
+# 		chartORs = [ORdict_znorm[wk] for wk in sorted(wkdummy)]
 # 		chartwks = xrange(len(sorted(wkdummy)))
 # 		print "season number and num weeks", s, len(wkdummy)
 # 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
 # 	else:
-# 		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
+# 		chartORs = [ORdict_znorm[wk] for wk in sorted(wkdummy)]
 # 		avg53 = (chartORs[12] + chartORs[13])/2
 # 		chartORs.insert(13, avg53)
 # 		chartwks = xrange(len(sorted(wkdummy)) + 1)
 # 		print "season number and num weeks", s, len(wkdummy)
 # 		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
+# 	# processing: grab average z-OR during weeks 2-3 and weeks 48-50 (after adding week 53 to all seasons)
+# 	class_mn = np.mean(chartORs[15:17])
+# 	early_mn = np.mean(chartORs[8:11])
+# 	tot_mn = np.mean(chartORs[:33])
+# # 	fwriter.write('%s,%s,%s,%s\n' % (s, class_mn, early_mn, tot_mn))
+# # fwriter.close()
 # # vertical line representing end of flu season
 # plt.plot([33, 33], [-10, 15], color = 'k', linewidth = 1)
-# # horizontal line representing sd = 1
+# # horizontal line representing sd = 1 (sd>1 is mild)
 # plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
 # # horizontal line representing sd = -1 (sd<1 is severe)
 # plt.plot([0, 52], [-1, -1], color = 'k', linewidth = 1)
 # # grey bar for classification period
 # plt.fill([15, 16, 16, 15], [-10, -10, 15, 15], facecolor='grey', alpha=0.4)
-# # grey bar for early warning period
+# # grey bar for early warning area
 # plt.fill([8, 10, 10, 8], [-10, -10, 15, 15], facecolor='grey', alpha=0.4)
-# plt.xlim([0, 52])
+# plt.xlim([0, 33])
 # plt.ylim([-10, 15])
 # plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
-# plt.ylabel('z-normalized OR (%s wks), child:adult - offices/OP only' % normwks, fontsize=24)
+# plt.ylabel('z-normalized OR (%s wks), child:adult' % normwks, fontsize=24)
 # plt.legend(loc = 'upper left')
-# plt.xticks(xrange(53), xlabels)
+# plt.xticks(xrange(33), xlabels[:33])
 # plt.show()
+
+# offices/OP only
+# fwriter = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/zOR_avgs_outpatient.csv', 'w+')
+# fwriter.write('season,retro_mn,early_mn,fluwks_mn\n')
+for s in seasons:
+	wkdummy = [key for key in sorted(weeks) if wkdict[key] == int(s)]
+	wkdummy = set(wkdummy)
+	if s == 1:
+		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
+		chartwks = xrange(13, 13 + len(sorted(wkdummy)))
+		print "season number and num weeks", s, len(wkdummy)
+		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
+	elif len(wkdummy) == 53:
+		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
+		chartwks = xrange(len(sorted(wkdummy)))
+		print "season number and num weeks", s, len(wkdummy)
+		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
+	elif s == 9:
+		chartOR_dummy = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
+		avg53 = (chartOR_dummy[12] + chartOR_dummy[13])/2
+		chartOR_dummy.insert(13, avg53)
+		chartORs = chartOR_dummy[:29]
+		chartwks = xrange(len(chartORs))
+		print "season number and num weeks", s, len(wkdummy)
+		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
+	else:
+		chartORs = [ORdict_znorm2[wk] for wk in sorted(wkdummy)]
+		avg53 = (chartORs[12] + chartORs[13])/2
+		chartORs.insert(13, avg53)
+		chartwks = xrange(len(chartORs))
+		print "season number and num weeks", s, len(wkdummy)
+		plt.plot(chartwks, chartORs, marker = 'o', color = colorvec[s-1], label = labelvec[s-1], linewidth = 2)
+# 	# processing: grab average z-OR during weeks 2-3 and weeks 48-50 (after adding week 53 to all seasons)
+# 	class_mn = np.mean(chartORs[15:17])
+# 	early_mn = np.mean(chartORs[8:11])
+# 	tot_mn = np.mean(chartORs[:33])
+# 	fwriter.write('%s,%s,%s,%s\n' % (s, class_mn, early_mn, tot_mn))
+# fwriter.close()
+# vertical line representing end of flu season
+plt.plot([33, 33], [-50, 50], color = 'k', linewidth = 1)
+# horizontal line representing sd = 1
+plt.plot([0, 52], [1, 1], color = 'k', linewidth = 1)
+# horizontal line representing sd = -1 (sd<1 is severe)
+plt.plot([0, 52], [-1, -1], color = 'k', linewidth = 1)
+# grey bar for retrospective period
+plt.fill([15, 20, 20, 15], [-50, -50, 50, 50], facecolor='grey', alpha=0.4)
+# grey bar for early warning period
+plt.fill([8, 11, 11, 8], [-50, -50, 50, 50], facecolor='grey', alpha=0.4)
+plt.xlim([0, 33])
+plt.ylim([-15, 20])
+plt.xlabel('Week Number', fontsize=24) # 12/1/13 increase size
+plt.ylabel('zOR (%s week baseline), child:adult' % normwks, fontsize=24)
+plt.legend(loc = 'upper left')
+plt.xticks(xrange(34), xlabels)
+plt.show()
 
