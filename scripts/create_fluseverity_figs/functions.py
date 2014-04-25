@@ -28,56 +28,79 @@ gp_early_duration = 2 # duration of the early warning period in weeks
 gp_begin_early_week = 2 # number of weeks after the week with Thanksgiving that the early warning period should begin (that season only)
 gp_plotting_seasons = xrange(2,10) # season numbers for which data will be plotted (eg. Season 2 = 2001-02)
 
-
-
 ##############################################
-def classif_zOR_processing(csv_incidence, csv_population):
-	''' Calculate retrospective and early warning zOR classification values for each season, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normwks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_zOR_processing function is nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR.
+def classif_zOR_processing(csv_incidence, csv_population, csv_Thanksgiving):
+	''' Calculate retrospective and early warning zOR classification values for each season, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. The retrospective period is designated relative to the peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving.
+	Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normwks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_plotting_dicts and Thanksgiving_import functions are nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR.
 	dict_wk[week] = seasonnum
-	dict_incid[week] = ILI cases per 10,000 in US population during second calendar year of flu season
-	dict_OR[week] = OR
-	dict_zOR[week] = zOR
 	dict_classifzOR[seasonnum] = (mean retrospective zOR, mean early warning zOR)
 	'''
+	main(classif_zOR_processing)
+	# dict_wk[week] = seasonnum, dict_incid53ls[seasonnum] = [ILI wk 40, ILI wk 41,...], dict_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...], dict_zOR53ls[seasonnum] = [zOR wk 40, zOR wk 41, ...]
+	dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls = week_plotting_dicts(csv_incidence, csv_population)
 	
-	main()
-	# dict_wk[week] = seasonnum; dict_incid[week] = ILI cases per 10,000 in US population, dict_OR[week] = OR; dict_zOR[week] = zOR
-	dict_wk, dict_incid, dict_OR, dict_zOR = week_zOR_processing(csv_incidence, csv_population)
+	dict_classifzOR = {}
 	
-	list_allweeks = sorted([week for week in dict_wk])
+	# import Thanksgiving data
+	dict_Thanksgiving = Thanksgiving_import(csv_Thanksgiving)
+	
 	for s in gp_plotting_seasons:
-		weekdummy = sorted([key for key in list_allweeks if dict_wk[key] == s])
-		incid_dummy = [dict_incid[wk] for wk in weekdummy]
+		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
 		
-		
-		# retrospective classification
-		peak_index = incid_dummy.index(max(incid_dummy))
+		# peak-based retrospective classification
+		peak_index = dict_incid53ls[s].index(max(dict_incid53ls[s]))
 		begin_retro = peak_index - gp_begin_retro_week
-		retro_weeks = [weekdummy[i] for i in xrange(begin_retro, begin_retro+gp_retro_duration)]
+		# list of week indices in retrospective period
+		retro_indices = xrange(begin_retro, begin_retro+gp_retro_duration)
+		mean_retro_zOR = np.mean([dict_zOR53ls[s][i] for i in retro_indices])
 		
-		# when to add 53rd week to zOR time series? before or after calculating mean zORs for classification?
-		# convert incid/OR/zOR dicts to (season to list of values sorted by week) at some point?
+		# Thanksgiving-based early warning classification
+		Thx_index = weekdummy.index(dict_Thanksgiving[s])
+		begin_early = Thx_index + gp_begin_early_week
+		# list of week indices in early warning period
+		early_indices = xrange(begin_early, begin_early+gp_early_duration)
+		mean_early_zOR = np.mean([dict_zOR53ls[s][i] for i in early_indices])
 	
-	
-	
+		# dict_classifzOR[seasonnum] = (mean retrospective zOR, mean early warning zOR)
+		dict_classifzOR[s] = (mean_retro_zOR, mean_early_zOR)
+		
+	return dict_classifzOR
 
 ##############################################
 def season_H3perc (csvreadfile):
 	''' Import SQL_EXPORT/subtype5.csv data, which includes information on prominent subtype, subtypes of isolates that were identified, and isolates that match with the vaccine strains. Return a dictionary with season and proportion of H3 isolates of all isolates collected that season.
 	dict_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
 	'''
-	
-	main()
+	main(season_H3perc)
 	
 	season = []
 	for row in csvreadfile:
 		H1i, H3i, Bi, TOTi = float(row[4]), float(row[5]), float(row[6]), float(row[7])
 		season.append(int(row[0])) # season number
-		
+	
+	# include only seasons in gp_plotting_seasons in returned dictionary
+	dict_dummy = dict(zip(season, H3i/TOTi))
 	# dict_H3[seasonnum] = proportion H3 isolates of all isolates collected that season
-	dict_H3 = dict(zip(season, H3i/TOTi))
+	dict_H3 = dict((s, dict_dummy[s]) for s in gp_plotting_seasons)
 	
 	return dict_H3
+
+##############################################
+def Thanksgiving_import(csv_Thanksgiving):
+	''' Import Thanksgiving data from My_Bansal_Lab/ThanksgivingWeekData_cl.csv. Columns in dataset are year, week, total number of specimens, A/H1 samples, A/unable to subtype samples, A/H3 samples, A/2009H1N1 samples, A/no subtype information samples, B samples, A/H3N2v samples, percent of samples positive for flu, HHS region number, unique ID, season (the second calendar year of the flu season), date of the Sunday immediately preceding Thanksgiving. Return a dictionary with season to Sunday date of Thanksgiving week. These dates are used to determine which weeks fall under the early warning classification period.
+	dict_Thanksgiving[seasonnum] = date of the Sunday immediately preceding Thanksgiving
+	'''
+	main(Thanksgiving_import)
+	
+	dict_Thanksgiving = {}
+	for row in csv_Thanksgiving:
+		week_og = row[14]
+		Twk = date(int(week_og[6:]), int(week_og[:2]), int(week_og[3:5]))
+		season = int(row[13][2:])
+		# dict_Thanksgiving[seasonnum] = date of the Sunday immediately preceding Thanksgiving
+		dict_Thanksgiving[season] = Twk
+		
+	return dict_Thanksgiving
 
 ##############################################
 def week_OR_processing(csv_incidence, csv_population):
@@ -86,8 +109,7 @@ def week_OR_processing(csv_incidence, csv_population):
 	dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season
 	dict_OR[week] = OR
 	'''
-	
-	main()
+	main(week_OR_processing)
 	
 	## import ILI data ##
 	# dict_ILI_week[(week, agegroup code)] = ILI cases; dict_wk[week] = seasonnum
@@ -140,9 +162,12 @@ def week_OR_processing(csv_incidence, csv_population):
 ##############################################
 def week_plotting_dicts(csv_incidence, csv_population):
 	'''Return dictionaries for season to incidence, OR, and zOR by week as a list, adding 53rd week data as the average of week 52 and week 1 if necessary. Dictionary keys are created only for seasons in gp: plotting_seasons, where 'gp' is a global parameter defined within functions.py.
+	dict_wk[week] = seasonnum
+	dict_incid53ls[seasonnum] = [ILI wk 40, ILI wk 41,...]
+	dict_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...]
+	dict_zOR53ls[seasonnum] = [zOR wk 40, zOR wk 41, ...]
 	'''
-	
-	main()
+	main(week_plotting_dicts)
 	# dict_wk[week] = seasonnum; dict_incid[week] = ILI cases per 10,000 in US population, dict_OR[week] = OR; dict_zOR[week] = zOR
 	dict_wk, dict_incid, dict_OR, dict_zOR = week_zOR_processing(csv_incidence, csv_population)
 	
@@ -164,6 +189,8 @@ def week_plotting_dicts(csv_incidence, csv_population):
 		dict_incid53ls[s] = incid53dummy
 		dict_OR53ls[s] = OR53dummy
 		dict_zOR53ls[s] = zOR53dummy
+	
+	return dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls
 
 ##############################################
 def week_zOR_processing(csv_incidence, csv_population):
@@ -173,14 +200,12 @@ def week_zOR_processing(csv_incidence, csv_population):
 	dict_OR[week] = OR
 	dict_zOR[week] = zOR
 	'''
-	
-	main()
+	main(week_zOR_processing)
 	# dict_wk[week] = seasonnum; dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season, dict_OR[week] = OR
 	dict_wk, dict_incid, dict_OR = week_OR_processing(csv_incidence, csv_population)
 	
-	list_allweeks = sorted([week for week in dict_wk])
 	for s in gp_plotting_seasons:
-		weekdummy = sorted([key for key in list_allweeks if dict_wk[key] == s])
+		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
 		season_mean = np.mean([dict_OR[wk] for wk in weekdummy[:gp_normwks]])
 		season_sd = np.std([dict_OR[wk] for wk in weekdummy[:gp_normwks]])
 		list_dictdummy = [(dict_OR[wk]-season_mean)/season_sd for wk in weekdummy]
@@ -188,18 +213,15 @@ def week_zOR_processing(csv_incidence, csv_population):
 			dict_zOR[w] = z
 	
 	return dict_wk, dict_incid, dict_OR, dict_zOR
-	
 
 ##############################################
-##############################################
-##############################################
-
 ##############################################
 # footer
 
-def main():
-	print('Doing stuff in module', __name__)
+def main(function):
+	print 'Doing stuff in module', __name__
+	print 'function', function.__name__
 
 if __name__ == '__main__':
-	print('Executed from the command line')
+	print 'Executed from the command line'
 	main()
