@@ -64,13 +64,16 @@ d_classifzOR = fxn.classif_zOR_processing(incid, pop, thanks)
 # plot values
 H3cdc = [d_H3cdc[s] for s in ps]
 H3nrevss = [d_H3nrevss[s] for s in ps]
-classifzOR = [d_classifzOR[s][0] for s in ps]
+retrozOR = [d_classifzOR[s][0] for s in ps]
+earlyzOR = [d_classifzOR[s][1] for s in ps]
+print earlyzOR
 
 # draw plots
 # figure(num=None, figsize=(8, 6), dpi=80, facecolor='w', edgecolor='k')
 
-plt.plot(H3cdc, classifzOR, marker = 'o', color = 'black', linestyle = 'None')
-for s, x, y in zip(sl, H3cdc, classifzOR):
+# retrospective vs. H3 cdc
+plt.plot(H3cdc, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
+for s, x, y in zip(sl, H3cdc, retrozOR):
 	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
 plt.ylabel('Mean Retrospective zOR', fontsize=fs)
 plt.xlabel('H3 Proportion of Subtyped Isolates (CDC)', fontsize=fs)
@@ -80,8 +83,9 @@ plt.xlim([0,1])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_H3_cdc.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
-plt.plot(H3nrevss, classifzOR, marker = 'o', color = 'black', linestyle = 'None')
-for s, x, y in zip(sl, H3nrevss, classifzOR):
+# retrospective vs. H3 nrevss
+plt.plot(H3nrevss, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
+for s, x, y in zip(sl, H3nrevss, retrozOR):
 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
 plt.ylabel('Mean Retrospective zOR', fontsize=fs)
 plt.xlabel('H3 Proportion of Subtyped Isolates (NREVSS)', fontsize=fs)
@@ -91,4 +95,26 @@ plt.xlim([0,1])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
+# early warning vs. H3 cdc
+plt.plot(H3cdc, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
+for s, x, y in zip(sl, H3cdc, earlyzOR):
+	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+plt.ylabel('Mean Early Warning zOR', fontsize=fs)
+plt.xlabel('H3 Proportion of Subtyped Isolates (CDC)', fontsize=fs)
+plt.xticks(fontsize=fssml)
+plt.yticks(fontsize=fssml)
+plt.xlim([0,1])
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_H3_cdc_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.close()
+
+plt.plot(H3nrevss, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
+for s, x, y in zip(sl, H3nrevss, earlyzOR):
+	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
+plt.ylabel('Mean Early Warning zOR', fontsize=fs)
+plt.xlabel('H3 Proportion of Subtyped Isolates (NREVSS)', fontsize=fs)
+plt.xticks(fontsize=fssml)
+plt.yticks(fontsize=fssml)
+plt.xlim([0,1])
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_H3_nrevss_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.close()
 
