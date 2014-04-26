@@ -38,6 +38,21 @@ gp_colors = ['black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkvio
 gp_weeklabels = range(40,54) # week number labels for plots vs. time
 gp_weeklabels.extend(range(1,40))
 
+
+##############################################
+def benchmark_import (csv_cdcseverity):
+	''' Import CDC_Source/Import_Data/cdc_severity_index.csv data, which includes z-normalized contributors to CDC severity index. These data include: percent of positive flu lab tests, proportion of mortality due to P&I, pediatric deaths, proportion of ILI, 5-17 years hospitalization rate, and 18-49 years hospitalization rate. All data sources are not available for every season. Return dictionary with season to benchmark index value.
+	dict_benchmark[seasonnum] = CDC benchmark index value
+	'''
+	season, index = [],[]
+	for row in csv_cdcseverity:
+		season.append(int(row[0]))
+		index.append(float(row[7]))
+	# dict_benchmark[seasonnum] = CDC severity index value
+	dict_benchmark = dict(zip(season, index))
+	
+	return dict_benchmark
+
 ##############################################
 def classif_zOR_processing(csv_incidence, csv_population, csv_Thanksgiving):
 	''' Calculate retrospective and early warning zOR classification values for each season, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. The retrospective period is designated relative to the peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving.
