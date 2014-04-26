@@ -4,7 +4,7 @@
 ###Python template
 ###Author: Elizabeth Lee
 ###Date: 4/26/14
-###Function: mean zOR retrospective classification vs. % H3 isolates of all subtyped isolates that season
+###Function: Incidence per 100,000 vs. week number for flu weeks (wks 40-20). Incidence is per 100,000 for the US population in the second calendar year of the flu season.
 
 ###Import data: SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 

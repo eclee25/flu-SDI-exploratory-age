@@ -176,7 +176,7 @@ def week_OR_processing(csv_incidence, csv_population):
 	for s, ak in product(seasons, age_keys):
 		dict_pop[(s, ak)] = float(sum([dict_pop_age[(s, at)] for at in age_texts if at in dict_ages[ak]]))
 	
-	# generate incidence per 10,000 in US population and OR at the weekly level
+	# generate incidence per 100,000 in US population and OR at the weekly level
 	dict_incid, dict_OR = {}, {}
 	for wk in dict_wk:
 		s = dict_wk[wk]
