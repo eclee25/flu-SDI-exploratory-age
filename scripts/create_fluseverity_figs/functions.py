@@ -44,6 +44,8 @@ def benchmark_import (csv_cdcseverity):
 	''' Import CDC_Source/Import_Data/cdc_severity_index.csv data, which includes z-normalized contributors to CDC severity index. These data include: percent of positive flu lab tests, proportion of mortality due to P&I, pediatric deaths, proportion of ILI, 5-17 years hospitalization rate, and 18-49 years hospitalization rate. All data sources are not available for every season. Return dictionary with season to benchmark index value.
 	dict_benchmark[seasonnum] = CDC benchmark index value
 	'''
+	main(benchmark_import)
+	
 	season, index = [],[]
 	for row in csv_cdcseverity:
 		season.append(int(row[0]))
