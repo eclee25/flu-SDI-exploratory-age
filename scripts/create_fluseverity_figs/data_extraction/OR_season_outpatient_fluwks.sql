@@ -5,7 +5,7 @@ Function: Grab ILI by age group by season for flu season weeks only
 
 Save in SQL_export/
 
-Command Line: mysql -u elizabeth -pbansa11ab OR_season_outpatient_fluwks.sql
+Command Line: mysql -u elizabeth -pbansa11ab sdi OR_season_outpatient_fluwks.sql
 Data: flu table: SDI
 */
 
