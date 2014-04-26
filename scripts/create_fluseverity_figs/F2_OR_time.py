@@ -4,11 +4,11 @@
 ###Python template
 ###Author: Elizabeth Lee
 ###Date: 4/26/14
-###Function: OR of incidence in children to incidence in adults vs. week number. Incidence in children and adults is normalized by the size of the 
+###Function: OR of incidence in children to incidence in adults vs. week number. Incidence in children and adults is normalized by the size of the child and adult populations in the second calendar year of the flu season.
 
 ###Import data: SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 
-###Command Line: python F2_incid_time.py
+###Command Line: python F2_OR_time.py
 ##############################################
 
 ### notes ###
