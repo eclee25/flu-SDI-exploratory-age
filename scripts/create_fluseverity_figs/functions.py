@@ -20,16 +20,23 @@ import numpy as np
 
 ##############################################
 # global parameters - methods
-gp_normweeks = 7 # baseline normalization period
+gp_normweeks = 7 # number of weeks in baseline normalization period
+gp_fluweeks = 34 # number of weeks in flu season (weeks 40-20)
 gp_retro_duration = 2 # duration of retrospective period in weeks
 gp_begin_retro_week = 3 # number of weeks before the peak incidence week that the retrospective period should begin (that season only)
 gp_early_duration = 2 # duration of the early warning period in weeks
 gp_begin_early_week = 2 # number of weeks after the week with Thanksgiving that the early warning period should begin (that season only)
 gp_plotting_seasons = xrange(2,10) # season numbers for which data will be plotted (eg. Season 2 = 2001-02)
 
+
+
 ##############################################
 # global parameters - plotting
 gp_seasonlabels = ['01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09']
+gp_colors_1_10 = ['grey', 'black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkviolet', 'hotpink']
+gp_colors = ['black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkviolet']
+gp_weeklabels = range(40,54) # week number labels for plots vs. time
+gp_weeklabels.extend(range(1,40))
 
 ##############################################
 def classif_zOR_processing(csv_incidence, csv_population, csv_Thanksgiving):
@@ -128,7 +135,7 @@ def Thanksgiving_import(csv_Thanksgiving):
 
 ##############################################
 def week_OR_processing(csv_incidence, csv_population):
-	''' Import SQL_export/OR_allweeks_outpatient.csv data (or other OR_allweeks...csv data), which includes season number, week, age group, and ILI incid. Import SQL_export/totalpop_age.csv data, which includes calendar year, age group, and US population. Return dictionary with week to season number, week to ILI cases per 10,000 in total US population, and dictionary with week to OR. OR attack rates for children and adults will be calculated based on popstat variable of the population in the second calendar year of the flu season (eg. 2001-02 season is based on 2002 population).
+	''' Import SQL_export/OR_allweeks_outpatient.csv data (or other OR_allweeks...csv data), which includes season number, week, age group, and ILI incid. Import SQL_export/totalpop_age.csv data, which includes calendar year, age group, and US population. Return dictionary with week to season number, week to ILI cases per 100,000 in total US population, and dictionary with week to OR. OR attack rates for children and adults will be calculated based on popstat variable of the population in the second calendar year of the flu season (eg. 2001-02 season is based on 2002 population).
 	dict_wk[week] = seasonnum
 	dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season
 	dict_OR[week] = OR
@@ -173,8 +180,8 @@ def week_OR_processing(csv_incidence, csv_population):
 	dict_incid, dict_OR = {}, {}
 	for wk in dict_wk:
 		s = dict_wk[wk]
-		# dict_incid[week] = ILI incidence per 10,000 in US pop in second calendar year of flu season
-		tot_incid = sum([dict_ILI_week[(wk, age)] for age in age_keys])/sum([dict_pop[(s, age)] for age in age_keys]) * 10000
+		# dict_incid[week] = ILI incidence per 100,000 in US pop in second calendar year of flu season
+		tot_incid = sum([dict_ILI_week[(wk, age)] for age in age_keys])/sum([dict_pop[(s, age)] for age in age_keys]) * 100000
 		dict_incid[wk] = tot_incid
 		# dict_OR[week] = OR
 		child_attack = dict_ILI_week[(wk, 'C')]/dict_pop[(s, 'C')]

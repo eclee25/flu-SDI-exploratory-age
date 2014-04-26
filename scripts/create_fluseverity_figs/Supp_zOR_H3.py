@@ -6,7 +6,7 @@
 ###Date: 4/24/14
 ###Function: mean zOR retrospective classification vs. % H3 isolates of all subtyped isolates that season
 
-###Import data: SQL_export/OR_allweeks_outpatient.csv, SQL_export/subtype5.csv, SQL_export/totalpop.csv
+###Import data: SQL_export/OR_allweeks_outpatient.csv, SQL_export/subtype5.csv, SQL_export/totalpop.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv, My_Bansal_Lab/Clean_Data_for_Import/NREVSS_Isolates_Season.csv
 
 ###Command Line: python Supp_zOR_H3.py
 ##############################################
