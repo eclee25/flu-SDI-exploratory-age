@@ -57,6 +57,54 @@ def benchmark_import (csv_cdcseverity):
 	return dict_benchmark
 
 ##############################################
+def cdc_import_CFR_CHR (csv_allcdc):
+	''' Import CDC_Source/Import_Data/all_cdc_source_data.csv, which includes weekly CDC source data from multiple surveillance systems from October 1997 to December 2013. Export season-level case fatality proxy and flu hospitalization rate using P&I deaths, lab-confirmed hospitalization rates per 100,000, and ILI cases as numerators, numerators, and denominators, respectively. Return dictionaries with season to hospitalization rate across entire season (lab-confirmed flu), season to . Note: These are not the same as case-hospitalization or case-fatality rates.
+	dict_CHR[seasonnum] = cumulative lab-confirmed case-hospitalization rate over the period from week 40 to week 17 during flu season
+	
+	'''
+	main(cdc_import_CFR_CHR)
+	
+	dict_deaths_ILI_counts, dict_CHR = {}, {}
+	for row in csv_allcdc:
+		year, week, season = int(row[1][2:]), int(row[2]), str(row[12])
+		PI_deaths, allcoz_deaths = row[19], row[13]
+		ILI, allpatients = row[17], row[18]
+		CHR = str(row[26])
+		
+		if season == 'NA':
+			# season variable is noted only for seasons in SDI dataset along the sequence such that the 2001-02 flu season is season 2, etc.
+			season = 0
+		if int(season) in gp_plotting_seasons:
+			# dict_deaths_ILI_counts[(seasonnum, weeknum)] = (P&I deaths, all deaths, ILI cases, total patients)
+			dict_deaths_ILI_counts[(int(season), week)] = (PI_deaths, allcoz_deaths, ILI, allpatients)
+		
+		# grab cumulative hospitalization rate at week 17 in each plotting season
+		if year in gp_plotting_seasons and week == 17:
+			# for seasons prior to 2003-04, CHR should be float('nan')
+			if CHR == 'NA':
+				CHR = float('nan')
+			# dict_CHR[seasonnum] = cumulative lab-confirmed case-hospitalization rate per 100,000 individuals in population over the period from week 40 to week 17 during flu season
+			dict_CHR[year] = float(CHR)
+		
+	# subset dict_deaths_ILI_counts for weeks that will contribute to each season's P&I mortality and ILI proportion rates (weeks 40 to 20)
+	dict_deaths_ILI_counts_fluwks = dict([(k, dict_deaths_ILI_counts[k]) for k in dict_deaths_ILI_counts if k[1]>20 and k[1]<40])
+	
+	# sum PI_deaths, allcoz_deaths, ILI, allpatients for each season 
+	dict_deaths, dict_ILI, dict_CFR = {}, {}, {}
+	for s in gp_plotting_seasons:
+		
+		# dict_deaths[seasonnum] = (P&I deaths from wks 40 to 20, all cause deaths from wks to 40 to 20)
+		dict_deaths[s] = (sum([float(dict_deaths_ILI_counts_fluwks[k][0]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]), sum([int(dict_deaths_ILI_counts_fluwks[k][1]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]))
+		
+		# dict_ILI[seasonnum] = (ILI cases from wks 40 to 20, all patients from wks 40 to 20)
+		dict_ILI[s] = (sum([float(dict_deaths_ILI_counts_fluwks[k][2]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]), sum([int(dict_deaths_ILI_counts_fluwks[k][2]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]))
+		
+		# dict_CFR[seasonnum] = P&I deaths of all flu season deaths in 122 cities/outpatient ILI cases of all flu season patient visits to outpatient offices in ILINet
+		dict_CFR[s] = (dict_deaths[s][0]/dict_deaths[s][1])/(dict_ILI[s][0]/dict_ILI[s][1])
+	
+	return dict_CHR, dict_CFR
+
+##############################################
 def classif_zOR_processing(csv_incidence, csv_population, csv_Thanksgiving):
 	''' Calculate retrospective and early warning zOR classification values for each season, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. The retrospective period is designated relative to the peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving.
 	Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normweeks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_plotting_dicts and Thanksgiving_import functions are nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR.
