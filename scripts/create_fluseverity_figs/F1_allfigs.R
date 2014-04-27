@@ -5,7 +5,7 @@
 ### 10-year time series panels: SDI ILI % of total visits (outpatient only) & ILINet ILI % of total visits, positive lab test percentages, hospital rate for children, hospital rate for adults, pediatric deaths, P&I mortality
 ## Filenames: SQL_export/F1.csv, CDC_Source/Import_Data/all_cdc_source_data.csv
 ## Data Source: 'season', 'wk', 'yr', 'wknum', 'ILI', 'anydiag', 'pop'
-## Notes: cF1.csv: 'season', 'wk', 'yr', 'wknum', 'outpatient & office ILI', 'outpatient & office anydiag', 'pop'
+## Notes: F1.csv: 'season', 'wk', 'yr', 'wknum', 'outpatient & office ILI', 'outpatient & office anydiag', 'pop'
 ## 
 ## useful commands:
 ## install.packages("pkg", dependencies=TRUE, lib="/usr/local/lib/R/site-library") # in sudo R
