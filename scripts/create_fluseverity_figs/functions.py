@@ -237,7 +237,7 @@ def week_OR_processing(csv_incidence, csv_population):
 	
 	# dict_pop[(season, agegroup code)] = population size of agegroup
 	seasons = list(set([k[0] for k in dict_pop_age]))
-	age_texts = list(set([k[1] for k in dict_pop_age]))
+	age_texts = list(set([k[1] for k in dict_pop_age])) # age bins
 	dict_pop = {}
 	for s, ak in product(seasons, age_keys):
 		dict_pop[(s, ak)] = float(sum([dict_pop_age[(s, at)] for at in age_texts if at in dict_ages[ak]]))
@@ -258,8 +258,68 @@ def week_OR_processing(csv_incidence, csv_population):
 	return dict_wk, dict_incid, dict_OR
 
 ##############################################
+def week_OR_processing_region(csv_incidence_region, csv_population_region):
+	''' Import R_export/OR_zip3_week_outpatient_cl.csv data, which includes season number, week, zip3, age group, and ILI incid. Import R_export/popstat_zip3_season_cl.csv data, which includes calendar year, uqsza, popstat, season, age group, state, lat, long, and HHS region. Return dictionaries with week to season number, zip3 to state and hhs region number, (week, hhs region) to total ILI incidence per popstat in 2nd calendar year of flu season, and (week, hhs region) to OR. OR attack rates for children and adults will be calculated based on popstat variable of the population in the second calendar year of the flu season within that region (eg. 2001-02 season is based on 2002 population). 
+	dict_wk[week] = seasonnum
+	dict_zip3_reg[zip3] = (state, hhsreg)
+	dict_incid_reg[(week, hhsreg)] = total ILI incidence per 100,000 popstat in 2nd calendar year of flu season
+	dict_OR_reg[(week, hhsreg)] = OR
+	'''
+	main(week_OR_processing_region)
+	
+	## import population data ##
+	dict_pop_age, dict_zip3_reg = {}, {}
+	for row in csv_population_region:
+		season, zip3, age, pop = int(row[3]), str(row[0]), str(row[4]), int(row[2])
+		state, hhs = str(row[5]), int(row[8])
+		# dict_pop_zip3_age[(seasonnum, zip3, agegroup)] = population size in second calendar year of flu season
+		dict_pop_zip3_age[(season, zip3, age)] = pop
+		# dict_zip3_reg[zip3] = (state, hhs region number)
+		dict_zip3_reg[zip3] = (state, hhs)
+	
+	seasons = list(set([k[0] for k in dict_pop_zip3_age]))
+	regions = list(set([dict_zip3_reg[z][1] for z in dict_zip3_reg]))
+	age_keys = list(set([k[1] for k in dict_pop_zip3_age]))
+	dict_pop_age = {}
+	for s, h, ak in product(seasons, regions, age_keys):
+		# dict_pop_age[(seasonnum, hhs, agegroup code)] = population size in second calendar year of flu season
+		dict_pop_age[(s, h, ak)] = float(sum([dict_pop_zip3_age[(s, z, ak)] for z in dict_zip3_reg if dict_zip3_reg[z][1] == h]))
+	
+	## import ILI data ##
+	dict_ILI_week, dict_wk = {}, {}
+	for row in csv_incidence_region: 
+		week, season = row[1], int(row[0])
+		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		zip3, age, ili = str(row[2]), str(row[3]), int(row[4])
+		hhs = dict_zip3_reg[zip3][1]
+		# dict_wk[week] = seasonnum
+		dict_wk[wk] = season
+		# dict_ILI_week[(week, hhs region number, agegroup code)] = ILI cases 
+		if zip(wk, hhs, age) in dict_ILI_week:
+			new_value = dict_ILI_week[(wk, hhs, age)] + ili
+			dict_ILI_week[(wk, hhs, age)] = new_value
+		else:
+			dict_ILI_week[(wk, hhs, age)] = ili
+	
+	# generate OR by region at the weekly level
+	dict_incid_reg, dict_OR_reg = {}, {}
+	for wk, r in product(dict_wk, regions):
+		s = dict_wk[wk]
+		# dict_incid_reg[(week, region)] = total ILI incidence per 100,000 per popstat in second calendar year of the flu season
+		tot_incid = sum([dict_ILI_week[(wk, r, age)] for age in age_keys])/sum([dict_pop_age[(s, r, age)] for age in age_keys]) * 100000
+		dict_incid_reg[(wk, r)] = tot_incid
+		# dict_OR_reg[(week, region)] = OR
+		child_attack = dict_ILI_week[(wk, r, 'C')]/dict_pop[(s, r, 'C')]
+		adult_attack = dict_ILI_week[(wk, r, 'A')]/dict_pop[(s, r, 'A')]
+		OR = (child_attack/(1-child_attack))/(adult_attack/(1-adult_attack))
+		dict_OR_reg[(wk, r)] = float(OR)
+	
+	return dict_wk, dict_zip3_reg, dict_incid_reg, dict_OR_reg
+
+
+##############################################
 def week_plotting_dicts(csv_incidence, csv_population):
-	'''Return dictionaries for season to incidence, OR, and zOR by week as a list, adding 53rd week data as the average of week 52 and week 1 if necessary. Dictionary keys are created only for seasons in gp: plotting_seasons, where 'gp' is a global parameter defined within functions.py.
+	'''Return dictionaries for season to incidence, OR, and zOR by week as a list, adding 53rd week data as the average of week 52 and week 1 if necessary. Dictionary keys are created only for seasons in gp: plotting_seasons, where 'gp' is a global parameter defined within functions.py. 
 	dict_wk[week] = seasonnum
 	dict_incid53ls[seasonnum] = [ILI wk 40, ILI wk 41,...]
 	dict_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...]
@@ -292,7 +352,7 @@ def week_plotting_dicts(csv_incidence, csv_population):
 
 ##############################################
 def week_zOR_processing(csv_incidence, csv_population):
-	''' Calculate zOR by week based on normweeks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. The function 'week_OR_processing' is nested within this function. Return dictionary of week to season number, week to OR, and week to zOR.
+	''' Calculate zOR by week based on normweeks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. The function 'week_OR_processing' is nested within this function. Return dictionaries of week to season number, week to OR, and week to zOR.
 	dict_wk[week] = seasonnum
 	dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season
 	dict_OR[week] = OR
@@ -312,6 +372,31 @@ def week_zOR_processing(csv_incidence, csv_population):
 			dict_zOR[w] = z
 	
 	return dict_wk, dict_incid, dict_OR, dict_zOR
+
+##############################################
+def week_zOR_processing_region(csv_incidence_region, csv_population_region):
+	''' Calculate zOR for each region by week based on normweeks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. Each region is z-normalized by the first normweeks weeks of OR data for that region. The function 'week_OR_processing_region' is nested within this function. Return dictionaries of week to season number, zip3 to state and region, (week, region) to incidence, (week, region) to OR, and (week, region) to zOR.
+	dict_wk[week] = seasonnum
+	dict_zip3_reg[zip3] = (state, hhsreg)
+	dict_incid_reg[(week, hhsreg)] = total ILI incidence per 100,000 popstat in 2nd calendar year of flu season
+	dict_OR_reg[(week, hhsreg)] = OR
+	'''
+	main(week_zOR_processing_region)
+	# dict_wk[week] = seasonnum, dict_zip3_reg[zip3] = (state, hhsreg), dict_incid_reg[(week, hhsreg)] = total ILI incidence per 100,000 popstat in 2nd calendar year of flu season, dict_OR_reg[(week, hhsreg)] = OR
+	dict_wk, dict_incid_reg, dict_OR_reg = week_OR_processing_region(csv_incidence_region, csv_population_region)
+	
+	regions = list(set([dict_zip3_reg[z][1] for z in dict_zip3_reg])) # should regions be a global parameter?
+	
+	dict_zOR_reg = {}
+	for s, r in product(gp_plotting_seasons, regions):
+		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
+		season_mean = np.mean([dict_OR_reg[(wk, r)] for wk in weekdummy[:gp_normweeks]])
+		season_sd = np.std([dict_OR_reg[(wk, r)] for wk in weekdummy[:gp_normweeks]])
+		list_dictdummy = [(dict_OR_reg[(wk, r)]-season_mean)/season_sd for wk in weekdummy]
+		for w, zOR in zip(weekdummy, list_dictdummy):
+			dict_zOR[(w, r)] = zOR
+	
+	return dict_wk, dict_zip3_reg, dict_incid_reg, dict_OR_reg, dict_zOR_reg
 
 ##############################################
 ##############################################
