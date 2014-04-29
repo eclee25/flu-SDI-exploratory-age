@@ -18,6 +18,7 @@
 ### packages/modules ###
 import csv
 import matplotlib.pyplot as plt
+import numpy as np
 
 ## local modules ##
 import functions as fxn
@@ -54,6 +55,9 @@ d_classifzOR = fxn.classif_zOR_processing(incid, pop, thanks)
 benchmark = [d_benchmark[s] for s in ps]
 retrozOR = [d_classifzOR[s][0] for s in ps]
 earlyzOR = [d_classifzOR[s][1] for s in ps]
+
+print 'retro corr coef', np.corrcoef(benchmark, retrozOR)
+print 'early corr coef', np.corrcoef(benchmark, earlyzOR)
 
 # draw plots
 # mean retro zOR vs. benchmark index

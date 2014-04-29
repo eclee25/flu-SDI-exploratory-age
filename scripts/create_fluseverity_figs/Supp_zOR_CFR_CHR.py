@@ -26,6 +26,7 @@
 ### packages/modules ###
 import csv
 import matplotlib.pyplot as plt
+import numpy as np
 
 ## local modules ##
 import functions as fxn
@@ -67,8 +68,8 @@ d_CHR, d_CFR = fxn.cdc_import_CFR_CHR(cdc)
 retrozOR = [d_classifzOR[s][0] for s in ps]
 CHR = [d_CHR[s] for s in ps]
 CFR = [d_CFR[s] for s in ps]
-print retrozOR
-print CHR
+print 'retrozOR_hosprate', np.corrcoef(retrozOR, CHR)
+print 'retrozOR_mortrisk', np.corrcoef(retrozOR, CFR)
 
 # draw plots
 # mean retrospective zOR vs. cumulative lab-confirmed hospitalization rate per 100,000 in population
