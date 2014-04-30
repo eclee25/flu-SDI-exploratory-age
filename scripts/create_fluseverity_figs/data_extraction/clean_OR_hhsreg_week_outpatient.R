@@ -1,12 +1,13 @@
 
 ## Name: Elizabeth Lee
-## Date: 2/1/14
+## Date: 4/29/14
 ## Function: Clean SDI data so OR can be calculated by HHS regions for each week
 ### Create two datasets: 1) popstat by season, zip3, agegroup, 2) child and adult ILI cases by week, zip3, agegroup
 
-## Filenames: /home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata/Coord3digits.csv, /home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/OR_zip3_week_outpatient.csv, /home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/popstat_zip3_season.csv
+## Filenames: /home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code/cleanedmapdata/Coord3digits.csv, /home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/OR_zip3_week_outpatient.csv, /home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/allpopstat_zip3_season.csv
 ## Data Source: 
-## Notes: OR_zip3_week_outpatient.csv and popstat_zip3_season.csv were both exported using OR_zip3_week.sql
+## Notes: OR_zip3_week_outpatient.csv and allpopstat_zip3_season.csv were both exported using OR_zip3_week_outpatient.sql
+### allpopstat_zip3_season.csv includes child, adult, and other populations; popstat_zip3_season.csv includes only child and adult populations
 ## 
 ## useful commands:
 ## install.packages("pkg", dependencies=TRUE, lib="/usr/local/lib/R/site-library") # in sudo R
@@ -46,7 +47,7 @@ setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/mapping_code')
 states <- read.csv('Coord3digits.csv', colClasses = 'character')
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/')
 OR <- read.csv('OR_zip3_week_outpatient.csv', colClasses = 'character', header = FALSE)
-pop <- read.csv('popstat_zip3_season.csv', colClasses = 'character', header = FALSE)
+pop <- read.csv('allpopstat_zip3_season.csv', colClasses = 'character', header = FALSE) # includes C, A, and O
 
 # bulk cleaning
 names(pop) <- c('season', 'zip3', 'age', 'popstat')
@@ -57,9 +58,11 @@ OR$wk2 <- as.Date(OR$wk, format = '%Y-%m-%d')
 
 
 ####################################################
-## pop data cleaning ## 4/29/14: exact same as clean_OR_hhsreg_week.R
+## pop data cleaning ## 4/29/14: changed from clean_OR_hhsreg_week.R to clean all age groups
 # clean pop data such that there is a popstat for each zip3 for children and adults
 pop$agegroup <- 'E'
+pop[pop$age == '<2 YEARS',]$agegroup <- 'O'
+pop[pop$age == '2-4 YEARS',]$agegroup <- 'O'
 pop[pop$age == '5-9 YEARS',]$agegroup <- 'C'
 pop[pop$age == '10-14 YEARS',]$agegroup <- 'C'
 pop[pop$age == '15-19 YEARS',]$agegroup <- 'C'
@@ -67,13 +70,17 @@ pop[pop$age == '20-29 YEARS',]$agegroup <- 'A'
 pop[pop$age == '30-39 YEARS',]$agegroup <- 'A'
 pop[pop$age == '40-49 YEARS',]$agegroup <- 'A'
 pop[pop$age == '50-59 YEARS',]$agegroup <- 'A'
+pop[pop$age == '60-69 YEARS',]$agegroup <- 'O'
+pop[pop$age == '70-79 YEARS',]$agegroup <- 'O'
+pop[pop$age == '80+ YEARS',]$agegroup <- 'O'
 
-# how many zip3s have all 7 ages for every season? 886-254 = 632
+
+# how many zip3s have all 12 ages for every season? 
 numages <- aggregate(season~zip3, data = pop, length) # 886 zip3s total
-dim(numages[numages$season < 70,]) # 254 zip3s do not have all 7 ages in pop
+dim(numages[numages$season < 120,]) # 379 zip3s do not have all 12 ages in pop
 # impose a strict requirement on popstat data availability - include only data where popstat was available for every age group for every season (one could imagine an alternative requirement where data had to be available for every age group for at least one season, and popstat for one age group was applied to multiple season. That OR calculation would be less accurate, however.)
 # list of zip3s to remove from pop dataset (and ILI dataset for that matter)
-zip3rm <- numages[numages$season < 70,]$zip3 
+zip3rm <- numages[numages$season < 120,]$zip3 
 # rm zip3s that do not have all 7 age groups
 pop2 <- pop[!(pop$zip3 %in% zip3rm),]
 
@@ -131,9 +138,9 @@ pop_agg3 <- merge(pop_agg2, states5, by = 'zip3')
 
 # there are 40 more rows in the merged dataset than in the original pop_agg2 file
 # remove duplicates
-pop_agg3[duplicated(pop_agg3$uqsza),] # zip3s 063 (500-550) and 967 (12200-12250)
-pop_agg3[500:550,] #063 is in CT and NY
-pop_agg3[12200:12250,] # 967 is in HI and American Samoa (AS)
+pop_agg3[duplicated(pop_agg3$uqsza),] # zip3s 063 (600:660) and 967 (14640-14700)
+pop_agg3[600:660,] #063 is in CT and NY
+pop_agg3[14640:14700,] # 967 is in HI and American Samoa (AS)
 # how many other zip3s are Armed services areas? none
 pop_agg3[pop_agg3$state == 'AS',] 
 # rm AS entries because they are duplicates
@@ -157,7 +164,7 @@ pop_agg5[which(pop_agg5$state == 'AK' | pop_agg5$state == 'ID' | pop_agg5$state 
 
 # write data to file: uqsza, popstat, season, zip3, agegroup, state, lat, long, hhsregion
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
-write.csv(pop_agg5, 'popstat_zip3_season_cl.csv', row.names = FALSE) # 2/3/14, 14:41
+write.csv(pop_agg5, 'allpopstat_zip3_season_cl.csv', row.names = FALSE) # 4/29/14, 20:04
 
 
 
@@ -169,9 +176,9 @@ unique(OR$zip3)[!(unique(OR$zip3) %in% unique(pop$zip3))]
 # examined a sample of these zip3s in mysql database -- they have 0 for popstat but there were some ILI cases
 OR2 <- OR[(OR$zip3 %in% pop$zip3),]
 
-# rm zip3s that did not have all 7 age groups for every season in pop dataset (denominator for OR calculation would be wrong)
+# rm zip3s that did not have all 12 age groups for every season in pop dataset (denominator for OR calculation or incidence calculation would be wrong )
 OR3 <- OR2[!(OR2$zip3 %in% zip3rm),]
-# check that the 632 zip3s are the same in OR3 and pop2
+# check that the 507 zip3s are the same in OR3 and pop2
 sum(unique(pop2$zip3) %in% unique(OR3$zip3))
 
 # make season variable 2 characters long
@@ -184,7 +191,7 @@ OR4 <- rbind(OR3a, OR3b)
 
 # write data to file: season, wk-characterformat, zip3, agegroup, ILI, wk-dateformat
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
-write.csv(OR4, 'OR_zip3_week_outpatient_cl.csv', row.names = FALSE) # 4/29/14 18:07
+write.csv(OR4, 'OR_zip3_week_outpatient_cl.csv', row.names = FALSE) # 4/29/14 20:08
 
 
 

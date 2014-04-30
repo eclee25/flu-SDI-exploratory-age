@@ -12,7 +12,7 @@ SELECT season.SEASON_NUM, flu.WEEK, flu.patient_zip3, child.MARKER, sum(flu.ILI_
 from flu RIGHT JOIN season ON (flu.WEEK = season.WEEK) RIGHT JOIN child ON (child.AGEGROUP = flu.AGEGROUP)
 WHERE (flu.SERVICE_PLACE = "OFFICE/OP CLINICS" or flu.SERVICE_PLACE = "OUTPATIENT FACILITY") and flu.patient_zip3 <> 'TOT'
 GROUP BY season.SEASON_NUM, flu.WEEK, flu.patient_zip3, child.MARKER
-INTO OUTFILE '/tmp/OR_zip3_week_outpatient2.csv'
+INTO OUTFILE '/tmp/OR_zip3_week_outpatient.csv'
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
@@ -21,9 +21,9 @@ LINES TERMINATED BY '\n'
 
 SELECT season.SEASON_NUM, flu.patient_zip3, flu.AGEGROUP, flu.popstat
 from flu RIGHT JOIN season ON (flu.WEEK = season.WEEK) RIGHT JOIN child ON (child.AGEGROUP = flu.AGEGROUP)
-WHERE flu.SERVICE_PLACE = "TOTAL" and flu.popstat <> 0 and child.MARKER <> 'O' and flu.patient_zip3 <> 'TOT'
+WHERE flu.SERVICE_PLACE = "TOTAL" and flu.popstat <> 0 and flu.patient_zip3 <> 'TOT' and flu.AGEGROUP <> "TOTAL"
 GROUP BY season.SEASON_NUM, flu.patient_zip3, flu.AGEGROUP
-INTO OUTFILE '/tmp/popstat_zip3_season.csv'
+INTO OUTFILE '/tmp/allpopstat_zip3_season.csv'
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
