@@ -27,7 +27,10 @@ gp_begin_retro_week = 3 # number of weeks before the peak incidence week that th
 gp_early_duration = 2 # duration of the early warning period in weeks
 gp_begin_early_week = 2 # number of weeks after the week with Thanksgiving that the early warning period should begin (that season only)
 gp_plotting_seasons = xrange(2,10) # season numbers for which data will be plotted (eg. Season 2 = 2001-02)
-
+gp_plotting_regions = xrange(1, 11) # region numbers
+gp_mild =[3, 6, 7, 9] # seasons 3, 6, 7, 9
+gp_mod = [2, 5] # seasons 2, 5
+gp_sev = [4, 8] # seasons 4, 8, 10 (pandemic)
 
 
 ##############################################
@@ -38,6 +41,8 @@ gp_colors = ['black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkvio
 gp_regions = ['Boston (R1)', 'New York (R2)', 'Philadelphia (R3)', 'Atlanta (R4)', 'Chicago (R5)', 'Dallas (R6)', 'Kansas City (R7)', 'Denver (R8)', 'San Francisco (R9)', 'Seattle (R10)']
 gp_weeklabels = range(40,54) # week number labels for plots vs. time
 gp_weeklabels.extend(range(1,40))
+gp_severitylabels = ['Mild', 'Moderate', 'Severe']
+gp_severitycolors = ['y', 'b', 'r']
 
 
 ##############################################
@@ -105,10 +110,40 @@ def cdc_import_CFR_CHR (csv_allcdc):
 	return dict_CHR, dict_CFR
 
 ##############################################
+def classif_zOR_index(csv_incidence, csv_population, csv_Thanksgiving):
+	''' Find the retrospective and early warning period start weeks by season at the national level. The retrospective period is designated relative to the peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving. This function returns a dictionary that can be used by classif_zOR_region_processing to set the classification periods for each region to that which was defined at the national level.
+	The week_plotting_dicts and Thanksgiving_import functions are nested within this function. Return dictionary for season to (index of first retro period week, index of first early warning period week).
+	dict_classifindex[seasonnum] = (index of first retro period week, index of first early warning period week)
+	'''
+	main(classif_zOR_index)
+	# dict_wk[week] = seasonnum, dict_incid53ls[seasonnum] = [ILI wk 40, ILI wk 41,...], dict_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...], dict_zOR53ls[seasonnum] = [zOR wk 40, zOR wk 41, ...]
+	dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls = week_plotting_dicts(csv_incidence, csv_population)
+	
+	dict_classifindex = {}
+	
+	# import Thanksgiving data
+	dict_Thanksgiving = Thanksgiving_import(csv_Thanksgiving)
+	
+	for s in gp_plotting_seasons:
+		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
+		
+		# peak-based retrospective classification
+		peak_index = dict_incid53ls[s].index(max(dict_incid53ls[s]))
+		begin_retro = peak_index - gp_begin_retro_week
+		
+		# Thanksgiving-based early warning classification
+		Thx_index = weekdummy.index(dict_Thanksgiving[s])
+		begin_early = Thx_index + gp_begin_early_week
+		
+		# dict_classifindex[seasonnum] = (index of first retro period week, index of first early warning period week)
+		dict_classifindex[s] = (begin_retro, begin_early)
+		
+	return dict_classifindex
+	
+##############################################
 def classif_zOR_processing(csv_incidence, csv_population, csv_Thanksgiving):
 	''' Calculate retrospective and early warning zOR classification values for each season, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. The retrospective period is designated relative to the peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving.
 	Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normweeks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_plotting_dicts and Thanksgiving_import functions are nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR.
-	dict_wk[week] = seasonnum
 	dict_classifzOR[seasonnum] = (mean retrospective zOR, mean early warning zOR)
 	'''
 	main(classif_zOR_processing)
@@ -141,6 +176,39 @@ def classif_zOR_processing(csv_incidence, csv_population, csv_Thanksgiving):
 		dict_classifzOR[s] = (mean_retro_zOR, mean_early_zOR)
 		
 	return dict_classifzOR
+
+##############################################
+def classif_zOR_region_processing(csv_incidence, csv_population, csv_Thanksgiving, csv_incidence_region, csv_population_region):
+	''' Calculate retrospective and early warning zOR classification values for each season and region combination, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. The retrospective period is designated relative to the national peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving.
+	Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normweeks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_plotting_dicts_region, classif_zOR_index, and Thanksgiving_import functions are nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR.
+	dict_classifzOR_reg[(seasonnum, region)] = (mean retrospective zOR, mean early warning zOR)
+	'''
+	main(classif_zOR_region_processing)
+	# dict_wk[week] = seasonnum, dict_incid53ls_reg[(seasonnum, region)] = [ILI wk 40, ILI wk 41,...], dict_OR53ls_reg[(seasonnum, region)] = [OR wk 40, OR wk 41, ...], dict_zOR53ls_reg[(seasonnum, region)] = [zOR wk 40, zOR wk 41, ...]
+	dict_wk, dict_incid53ls_reg, dict_OR53ls_reg, dict_zOR53ls_reg = week_plotting_dicts_region(csv_incidence_region, csv_population_region)
+	# dict_classifindex[seasonnum] = (index of first retro period week, index of first early warning period week)
+	dict_classifindex = classif_zOR_index(csv_incidence, csv_population, csv_Thanksgiving)
+	
+	dict_classifzOR_reg = {}
+	
+	for s, r in product(gp_plotting_seasons, gp_plotting_regions):
+		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
+		begin_retro, begin_early = dict_classifindex[s]
+		
+		# peak-based retrospective classification
+		# list of week indices in retrospective period
+		retro_indices = xrange(begin_retro, begin_retro+gp_retro_duration)
+		mean_retro_zOR = np.mean([dict_zOR53ls_reg[(s, r)][i] for i in retro_indices])
+		
+		# Thanksgiving-based early warning classification
+		# list of week indices in early warning period
+		early_indices = xrange(begin_early, begin_early+gp_early_duration)
+		mean_early_zOR = np.mean([dict_zOR53ls_reg[(s, r)][i] for i in early_indices])
+	
+		# dict_classifzOR_reg[(seasonnum, region)] = (mean retrospective zOR, mean early warning zOR)
+		dict_classifzOR_reg[(s, r)] = (mean_retro_zOR, mean_early_zOR)
+		
+	return dict_classifzOR_reg
 
 ##############################################
 def season_H3perc_CDC (csvreadfile):
@@ -268,7 +336,7 @@ def week_OR_processing_region(csv_incidence_region, csv_population_region):
 	main(week_OR_processing_region)
 	
 	## import population data ##
-	dict_pop_age, dict_zip3_reg = {}, {}
+	dict_pop_zip3_age, dict_zip3_reg = {}, {}
 	for row in csv_population_region:
 		season, zip3, age, pop = int(row[3]), str(row[0]), str(row[4]), int(row[2])
 		state, hhs = str(row[5]), int(row[8])
@@ -277,11 +345,10 @@ def week_OR_processing_region(csv_incidence_region, csv_population_region):
 		# dict_zip3_reg[zip3] = (state, hhs region number)
 		dict_zip3_reg[zip3] = (state, hhs)
 	
-	seasons = list(set([k[0] for k in dict_pop_zip3_age]))
-	regions = list(set([dict_zip3_reg[z][1] for z in dict_zip3_reg]))
-	age_keys = list(set([k[1] for k in dict_pop_zip3_age]))
+	age_keys = list(set([k[2] for k in dict_pop_zip3_age]))
+	
 	dict_pop_age = {}
-	for s, h, ak in product(seasons, regions, age_keys):
+	for s, h, ak in product(gp_plotting_seasons, gp_plotting_regions, age_keys):
 		# dict_pop_age[(seasonnum, hhs, agegroup code)] = population size in second calendar year of flu season
 		dict_pop_age[(s, h, ak)] = float(sum([dict_pop_zip3_age[(s, z, ak)] for z in dict_zip3_reg if dict_zip3_reg[z][1] == h]))
 	
@@ -291,30 +358,33 @@ def week_OR_processing_region(csv_incidence_region, csv_population_region):
 		week, season = row[1], int(row[0])
 		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
 		zip3, age, ili = str(row[2]), str(row[3]), int(row[4])
-		hhs = dict_zip3_reg[zip3][1]
+		hhs = int(dict_zip3_reg[zip3][1])
 		# dict_wk[week] = seasonnum
 		dict_wk[wk] = season
 		# dict_ILI_week[(week, hhs region number, agegroup code)] = ILI cases 
-		if zip(wk, hhs, age) in dict_ILI_week:
+		if (wk, hhs, age) in dict_ILI_week:
 			new_value = dict_ILI_week[(wk, hhs, age)] + ili
 			dict_ILI_week[(wk, hhs, age)] = new_value
 		else:
 			dict_ILI_week[(wk, hhs, age)] = ili
 	
+	# subset dict_wk so that it includes only weeks with plotting seasons
+	dict_wk_sub = dict((k, dict_wk[k]) for k in dict_wk if dict_wk[k] in gp_plotting_seasons) 
+	
 	# generate OR by region at the weekly level
 	dict_incid_reg, dict_OR_reg = {}, {}
-	for wk, r in product(dict_wk, regions):
-		s = dict_wk[wk]
+	for wk, r in product(dict_wk_sub, gp_plotting_regions):
+		s = dict_wk_sub[wk]
 		# dict_incid_reg[(week, region)] = total ILI incidence per 100,000 per popstat in second calendar year of the flu season
 		tot_incid = sum([dict_ILI_week[(wk, r, age)] for age in age_keys])/sum([dict_pop_age[(s, r, age)] for age in age_keys]) * 100000
 		dict_incid_reg[(wk, r)] = tot_incid
 		# dict_OR_reg[(week, region)] = OR
-		child_attack = dict_ILI_week[(wk, r, 'C')]/dict_pop[(s, r, 'C')]
-		adult_attack = dict_ILI_week[(wk, r, 'A')]/dict_pop[(s, r, 'A')]
+		child_attack = dict_ILI_week[(wk, r, 'C')]/dict_pop_age[(s, r, 'C')]
+		adult_attack = dict_ILI_week[(wk, r, 'A')]/dict_pop_age[(s, r, 'A')]
 		OR = (child_attack/(1-child_attack))/(adult_attack/(1-adult_attack))
 		dict_OR_reg[(wk, r)] = float(OR)
 	
-	return dict_wk, dict_zip3_reg, dict_incid_reg, dict_OR_reg
+	return dict_wk_sub, dict_zip3_reg, dict_incid_reg, dict_OR_reg
 
 
 ##############################################
@@ -351,6 +421,39 @@ def week_plotting_dicts(csv_incidence, csv_population):
 	return dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls
 
 ##############################################
+def week_plotting_dicts_region(csv_incidence_region, csv_population_region):
+	'''Return dictionaries for (season, region) to incidence, OR, and zOR by week as a list, adding 53rd week data as the average of week 52 and week 1 if necessary. Dictionary keys are created only for seasons in gp: plotting_seasons, where 'gp' is a global parameter defined within functions.py. 
+	dict_wk[week] = seasonnum
+	dict_incid53ls_reg[(seasonnum, region)] = [ILI wk 40, ILI wk 41,...]
+	dict_OR53ls_reg[(seasonnum, region)] = [OR wk 40, OR wk 41, ...]
+	dict_zOR53ls_reg[(seasonnum, region)] = [zOR wk 40, zOR wk 41, ...]
+	'''
+	main(week_plotting_dicts_region)
+	# dict_wk[week] = seasonnum, dict_zip3_reg[zip3] = (state, hhsreg), dict_incid_reg[(week, hhsreg)] = total ILI incidence per 100,000 popstat in 2nd calendar year of flu season, dict_OR_reg[(week, hhsreg)] = OR, dict_zOR_reg[(week, hhsreg)] = zOR
+	dict_wk, dict_zip3_reg, dict_incid_reg, dict_OR_reg, dict_zOR_reg = week_zOR_processing_region(csv_incidence_region, csv_population_region)
+
+	dict_incid53ls_reg, dict_OR53ls_reg, dict_zOR53ls_reg = defaultdict(list), defaultdict(list), defaultdict(list)
+	for s, r in product(gp_plotting_seasons, gp_plotting_regions):
+		incid53dummy = [dict_incid_reg[(wk, r)] for wk in sorted(dict_wk) if dict_wk[wk] == s]
+		OR53dummy = [dict_OR_reg[(wk, r)] for wk in sorted(dict_wk) if dict_wk[wk] == s]
+		zOR53dummy = [dict_zOR_reg[(wk, r)] for wk in sorted(dict_wk) if dict_wk[wk] == s]
+		if len(incid53dummy) == 52:
+			a53incid = (incid53dummy[12]+incid53dummy[13])/2.
+			a53OR = (OR53dummy[12]+OR53dummy[13])/2.
+			a53zOR = (zOR53dummy[12]+zOR53dummy[13])/2.
+			incid53dummy.insert(13, a53incid)
+			OR53dummy.insert(13, a53OR)
+			zOR53dummy.insert(13, a53zOR)
+		# dict_incid53ls_reg[(seasonnum, region)] = [ILI wk 40, ILI wk 41,...]
+		# dict_OR53ls_reg[(seasonnum, region)] = [OR wk 40, OR wk 41, ...
+		# dict_zOR53ls_reg[(seasonnum, region)] = [zOR wk 40, zOR wk 41, ...]
+		dict_incid53ls_reg[(s, r)] = incid53dummy
+		dict_OR53ls_reg[(s, r)] = OR53dummy
+		dict_zOR53ls_reg[(s, r)] = zOR53dummy
+	
+	return dict_wk, dict_incid53ls_reg, dict_OR53ls_reg, dict_zOR53ls_reg
+
+##############################################
 def week_zOR_processing(csv_incidence, csv_population):
 	''' Calculate zOR by week based on normweeks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. The function 'week_OR_processing' is nested within this function. Return dictionaries of week to season number, week to OR, and week to zOR.
 	dict_wk[week] = seasonnum
@@ -380,21 +483,20 @@ def week_zOR_processing_region(csv_incidence_region, csv_population_region):
 	dict_zip3_reg[zip3] = (state, hhsreg)
 	dict_incid_reg[(week, hhsreg)] = total ILI incidence per 100,000 popstat in 2nd calendar year of flu season
 	dict_OR_reg[(week, hhsreg)] = OR
+	dict_zOR_reg[(week, hhsreg)] = zOR
 	'''
 	main(week_zOR_processing_region)
 	# dict_wk[week] = seasonnum, dict_zip3_reg[zip3] = (state, hhsreg), dict_incid_reg[(week, hhsreg)] = total ILI incidence per 100,000 popstat in 2nd calendar year of flu season, dict_OR_reg[(week, hhsreg)] = OR
-	dict_wk, dict_incid_reg, dict_OR_reg = week_OR_processing_region(csv_incidence_region, csv_population_region)
-	
-	regions = list(set([dict_zip3_reg[z][1] for z in dict_zip3_reg])) # should regions be a global parameter?
+	dict_wk, dict_zip3_reg, dict_incid_reg, dict_OR_reg = week_OR_processing_region(csv_incidence_region, csv_population_region)
 	
 	dict_zOR_reg = {}
-	for s, r in product(gp_plotting_seasons, regions):
+	for s, r in product(gp_plotting_seasons, gp_plotting_regions):
 		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
 		season_mean = np.mean([dict_OR_reg[(wk, r)] for wk in weekdummy[:gp_normweeks]])
 		season_sd = np.std([dict_OR_reg[(wk, r)] for wk in weekdummy[:gp_normweeks]])
 		list_dictdummy = [(dict_OR_reg[(wk, r)]-season_mean)/season_sd for wk in weekdummy]
 		for w, zOR in zip(weekdummy, list_dictdummy):
-			dict_zOR[(w, r)] = zOR
+			dict_zOR_reg[(w, r)] = zOR
 	
 	return dict_wk, dict_zip3_reg, dict_incid_reg, dict_OR_reg, dict_zOR_reg
 
