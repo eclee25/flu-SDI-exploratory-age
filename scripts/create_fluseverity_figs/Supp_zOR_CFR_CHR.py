@@ -61,15 +61,21 @@ inpatientSDI=csv.reader(inpatientSDIin, delimiter=',')
 # import data
 # d_classifzOR[seasonnum] =  (mean retrospective zOR, mean early warning zOR)
 # d_CHR[seasonnum] = cumulative lab-confirmed case-hospitalization rate per 100,000 in population over the period from week 40 to week 17 during flu season
+# d_CFR[seasonnum] = P&I deaths of all flu season deaths in 122 cities/outpatient ILI cases of all flu season patient visits to outpatient offices in ILINet
+# d_deaths[seasonnum] = (P&I deaths from wks 40 to 20, all cause deaths from wks to 40 to 20)
+# d_ILI[seasonnum] = (ILI cases from wks 40 to 20, all patients from wks 40 to 20)
 d_classifzOR = fxn.classif_zOR_processing(incid, pop, thanks)
-d_CHR, d_CFR = fxn.cdc_import_CFR_CHR(cdc)
+d_CHR, d_CFR, d_deaths, d_ILI = fxn.cdc_import_CFR_CHR(cdc)
 
 # plot values
 retrozOR = [d_classifzOR[s][0] for s in ps]
 CHR = [d_CHR[s] for s in ps]
 CFR = [d_CFR[s] for s in ps]
+dI_ratio = [d_deaths[s][0]/d_ILI[s][0] for s in ps]
 print 'retrozOR_hosprate', np.corrcoef(retrozOR, CHR)
 print 'retrozOR_mortrisk', np.corrcoef(retrozOR, CFR)
+print 'retrozOR_dIratio', np.corrcoef(retrozOR, dI_ratio)
+
 
 # draw plots
 # mean retrospective zOR vs. cumulative lab-confirmed hospitalization rate per 100,000 in population
@@ -95,7 +101,16 @@ plt.yticks(fontsize=fssml)
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_CFR_CHR/zOR_ILIMortalityRisk.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
-
+# mean retrospective zOR vs. ratio of P&I deaths to ILI cases (two different data sources)
+plt.plot(dI_ratio, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
+for s, x, y in zip(sl, dI_ratio, retrozOR):
+	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+plt.ylabel('Mean Retrospective zOR', fontsize=fs)
+plt.xlabel('P&I Deaths to ILI', fontsize=fs)
+plt.xticks(fontsize=fssml)
+plt.yticks(fontsize=fssml)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_CFR_CHR/zOR_DeathILIRatio.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.close()
 
 
 

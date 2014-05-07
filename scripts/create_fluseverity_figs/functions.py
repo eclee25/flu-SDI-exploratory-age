@@ -107,7 +107,7 @@ def cdc_import_CFR_CHR (csv_allcdc):
 		# dict_CFR[seasonnum] = P&I deaths of all flu season deaths in 122 cities/outpatient ILI cases of all flu season patient visits to outpatient offices in ILINet
 		dict_CFR[s] = (dict_deaths[s][0]/dict_deaths[s][1])/(dict_ILI[s][0]/dict_ILI[s][1])
 	
-	return dict_CHR, dict_CFR
+	return dict_CHR, dict_CFR, dict_deaths, dict_ILI
 
 ##############################################
 def classif_zOR_index(csv_incidence, csv_population, csv_Thanksgiving):
