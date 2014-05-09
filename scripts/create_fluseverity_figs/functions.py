@@ -251,6 +251,26 @@ def season_H3perc_NREVSS (csvreadfile):
 	return dict_H3
 
 ##############################################
+def Thanksgiving_H3perc_NREVSS (csvreadfile):
+	''' Import My_Bansal_Lab/Clean_Data_for_Import/NREVSS_Isolates_Thanksgiving.csv data, which includes information on seasons (eg. 2004 is 2003-04 season), total specimens tested, A/H1 samples, A/unable to subtype, A/H3 samples, A/2009H1N1 samples, B samples, H3N2v samples. Return a dictionary with season and proportion of H3 isolates of all subtyped flu isolates collected that season. The original source of isolate information is the CDC Flu Season Summaries, WHO NREVSS surveillance system (not the CDC system).
+	dict_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
+	'''
+	main(Thanksgiving_H3perc_NREVSS)
+	
+	dict_dummy = {}
+	for row in csvreadfile:
+		a_H1, a_H3, a_09, B, H3N2v = int(row[2]), float(row[4]), int(row[5]), int(row[6]), int(row[7])
+		TOTi = a_H1 + a_H3 + a_09 + B + H3N2v 
+		season = int(row[0][2:]) # season number
+		# include only seasons in gp_plotting_seasons in returned dictionary
+		dict_dummy[season] = a_H3/TOTi
+
+	# dict_H3[seasonnum] = proportion H3 isolates of all isolates collected that season
+	dict_H3 = dict((s, dict_dummy[s]) for s in gp_plotting_seasons)
+	
+	return dict_H3
+
+##############################################
 def Thanksgiving_import(csv_Thanksgiving):
 	''' Import Thanksgiving data from My_Bansal_Lab/ThanksgivingWeekData_cl.csv. Columns in dataset are year, week, total number of specimens, A/H1 samples, A/unable to subtype samples, A/H3 samples, A/2009H1N1 samples, A/no subtype information samples, B samples, A/H3N2v samples, percent of samples positive for flu, HHS region number, unique ID, season (the second calendar year of the flu season), date of the Sunday immediately preceding Thanksgiving. Return a dictionary with season to Sunday date of Thanksgiving week. These dates are used to determine which weeks fall under the early warning classification period.
 	dict_Thanksgiving[seasonnum] = date of the Sunday immediately preceding Thanksgiving
