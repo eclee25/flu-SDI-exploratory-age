@@ -3,9 +3,9 @@
 ##############################################
 ###Python template
 ###Author: Elizabeth Lee
-###Date: 4/29/14
+###Date: 5/11/14
 ###Function: Draw mean retro zOR vs. region, all seasons together and stratified by mild, moderate, and severe
-### Use nation-level peak-based retrospective classification
+### Use region-level peak-based retrospective classification
 
 ###Import data: R_export/OR_zip3_week_outpatient_cl.csv, R_export/allpopstat_zip3_season_cl.csv
 #### These data were cleaned with data_extraction/clean_OR_hhsreg_week_outpatient.R and exported with OR_zip3_week.sql
@@ -59,10 +59,10 @@ thanks=csv.reader(thanksin, delimiter=',')
 
 ### program ###
 
-# nation-level peak-based retrospective classification
+# region-level peak-based retrospective classification
 # import data
 # d_classifzOR_reg[(seasonnum, region)] = (mean retrospective zOR, mean early warning zOR)
-d_classifzOR_reg = fxn.classif_zOR_region_processing(incid, pop, thanks, regincid, regpop, 'nation')
+d_classifzOR_reg = fxn.classif_zOR_region_processing(incid, pop, thanks, regincid, regpop, 'region')
 
 # average retro zOR for all seasons
 retrozOR_by_region = [[d_classifzOR_reg[(s, r)] for s in ps] for r in reg]
@@ -72,7 +72,7 @@ plt.xlim([0.5, 10.5])
 plt.ylim([-10, 15])
 plt.xticks(xrange(1, 11), reg_lab, rotation = 'vertical', fontsize=fssml)
 plt.subplots_adjust(bottom = 0.3)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/F4/zOR_region_national.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/F4/zOR_region_regional.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # average zOR and sd vs. region for mild, moderate & severe seasons
@@ -95,7 +95,6 @@ plt.xlim([0.5, 10.5])
 plt.xticks(reg, reg_lab, rotation = 'vertical', fontsize=fssml)
 plt.legend(loc = 'upper left')
 plt.subplots_adjust(bottom = 0.3)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/F4/zOR_region_stype_national.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/F4/zOR_region_stype_regional.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
-
 
