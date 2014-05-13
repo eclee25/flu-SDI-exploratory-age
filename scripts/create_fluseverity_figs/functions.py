@@ -226,7 +226,29 @@ def classif_zOR_region_processing(csv_incidence, csv_population, csv_Thanksgivin
 	return dict_classifzOR_reg
 
 ##############################################
-def season_H3perc_CDC (csvreadfile):
+def region_state_dictionary():
+	''' Create dictionary with HHS region number and list of states in continental US in that region. Drawing state-level choropleths in ggplot2 requires a dataset with state names and the value for the choropleth.
+	
+	dict_region_state[season] = [state1 in region, state2, in region, ...]
+	'''
+	main(region_state_dictionary)
+	
+	dict_region_state = defaultdict(list)
+	dict_region_state[1] = ["connecticut","maine","massachusetts","new hampshire","rhode island","vermont"]
+	dict_region_state[2] = ["new york","new jersey"]
+	dict_region_state[3] = ["delaware","district of columbia","maryland","pennsylvania","virginia","west virginia"]
+	dict_region_state[4] = ["alabama", "florida","georgia","kentucky","mississippi","north carolina","south carolina","tennessee"]
+	dict_region_state[5] = ["illinois","indiana","michigan","minnesota","ohio","wisconsin"]
+	dict_region_state[6] = ["arkansas","louisiana","new mexico","oklahoma","texas"]
+	dict_region_state[7] = ["iowa","kansas","missouri","nebraska"]
+	dict_region_state[8] = ["colorado","montana","north dakota","south dakota","utah","wyoming"]
+	dict_region_state[9] = ["arizona","california","nevada"]
+	dict_region_state[10] = ["idaho","oregon","washington"]
+	
+	return dict_region_state
+
+##############################################
+def season_H3perc_CDC(csvreadfile):
 	''' Import SQL_EXPORT/subtype5.csv data, which includes information on prominent subtype, subtypes of isolates that were identified, and isolates that match with the vaccine strains. Return a dictionary with season and proportion of H3 isolates of all isolates collected that season. The original source of isolate information is the CDC Flu Season Summaries, CDC surveillance system (not the WHO/NREVSS system).
 	dict_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
 	'''
@@ -245,7 +267,7 @@ def season_H3perc_CDC (csvreadfile):
 	return dict_H3
 
 ##############################################
-def season_H3perc_NREVSS (csvreadfile):
+def season_H3perc_NREVSS(csvreadfile):
 	''' Import My_Bansal_Lab/Clean_Data_for_Import/NREVSS_Isolates_Season.csv data, which includes information on year, number of samples positive for flu, A samples, B samples, subtyped A samples, A/H1 samples, A/H3 samples, B samples, A/2009H1N1 samples, total speciments tested. Return a dictionary with season and proportion of H3 isolates of all subtyped flu isolates collected that season. The original source of isolate information is the CDC Flu Season Summaries, WHO NREVSS surveillance system (not the CDC system).
 	dict_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
 	'''
@@ -266,7 +288,7 @@ def season_H3perc_NREVSS (csvreadfile):
 	return dict_H3
 
 ##############################################
-def Thanksgiving_H3perc_NREVSS (csvreadfile):
+def Thanksgiving_H3perc_NREVSS(csvreadfile):
 	''' Import My_Bansal_Lab/Clean_Data_for_Import/NREVSS_Isolates_Thanksgiving.csv data, which includes information on seasons (eg. 2004 is 2003-04 season), total specimens tested, A/H1 samples, A/unable to subtype, A/H3 samples, A/2009H1N1 samples, B samples, H3N2v samples. Return a dictionary with season and proportion of H3 isolates of all subtyped flu isolates collected that season. The original source of isolate information is the CDC Flu Season Summaries, WHO NREVSS surveillance system (not the CDC system).
 	dict_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
 	'''
