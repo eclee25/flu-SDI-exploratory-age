@@ -97,5 +97,3 @@ plt.legend(loc = 'upper left')
 plt.subplots_adjust(bottom = 0.3)
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/F4/zOR_region_stype_national.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
-
-
