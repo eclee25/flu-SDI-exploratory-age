@@ -22,6 +22,8 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+from itertools import product
+
 
 ## local modules ##
 import functions as fxn
