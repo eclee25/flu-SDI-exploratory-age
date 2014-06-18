@@ -6,7 +6,7 @@ import csv
 #datetime dateutil
 #mysql likes dates in year-month-day form
 
-i_f=open('sdi_rapidd_nolabel.csv','r')
+i_f=open('/home/elee/Documents/sdi_rapidd_nolabel.csv','r')
 o_f=open('sdi_rapidd_clean_9_12_12.csv', 'wb')
 infile=csv.reader(i_f, delimiter=',')
 outfile=csv.writer(o_f, delimiter=',')

@@ -13,7 +13,7 @@ CREATE TABLE flu (
 	ANY_DIAG_VISIT_CT INT
 );	
 	
-LOAD DATA LOCAL INFILE '/home/elee/Documents/Elizabeth_Bansal_Lab/SQL_import/sdi_rapidd_clean_091212.csv' INTO TABLE flu
+LOAD DATA LOCAL INFILE '/home/elee/Documents/sdi_rapidd_clean_9_12_12.csv' INTO TABLE flu
 FIELDS TERMINATED BY ','
 IGNORE 1 LINES
 (@dummy, PATIENT_ZIP3, AGEGROUP, SERVICE_PLACE, ILI_m, RSV_m, POPSTAT, ANY_DIAG_VISIT_CT, WEEK)
