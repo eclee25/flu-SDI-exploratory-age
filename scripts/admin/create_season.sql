@@ -10,6 +10,7 @@ Data: flu table: SDI
 */
 
 
+/*
 -- this code needs to be run in two separate parts; first data needs to be exported. once exported, a new column will be added manually that represents the season number. the expanded table will be imported into mysql as a new table called "season"
 
 -- export data 
@@ -24,6 +25,7 @@ LINES TERMINATED BY '\n'
 
 -- import new table as season. comment out export data and run as script with command 
 -- mysql --local-infile -u elizabeth -pbansa11ab <create_season.sql
+*/
 
 
 USE sdi;
