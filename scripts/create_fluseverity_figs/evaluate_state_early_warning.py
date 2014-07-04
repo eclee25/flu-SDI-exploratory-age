@@ -1,0 +1,153 @@
+#!/usr/bin/python
+
+##############################################
+###Python template
+###Author: Elizabeth Lee
+###Date: 7/2/14
+###Function: What is the distribution of state early warnings that match national classifications across the 2001-02 through 2008-09 seasons?
+
+###Import data: 
+
+###Command Line: python 
+##############################################
+
+
+### notes ###
+
+
+### packages/modules ###
+import csv
+from collections import defaultdict
+import numpy as np
+
+## local modules ##
+
+### data structures ###
+# d_nat[season] = (retrospective mean zOR, early warning mean zOR)
+d_nat = {}
+# d_st[(season, state)] = = (retrospective mean zOR, early warning mean zOR)
+d_st = {}
+# d_st_match[state] = [match S2, match S3, etc where match is represented as 1=match, 0=no match]
+d_st_match_early = defaultdict(list) # early warning for state match retro for national
+d_st_match_retro = defaultdict(list) # retro for state match retro for national
+# d_correct_by_season_[seasonnum] = (# correct states early warning, # correct states retrospective)
+d_correct_by_season = {}
+
+### parameters ###
+
+### functions ###
+def function_operator(val):
+	''' For each retrospective and early warning mean zOR, return -1 if the value is <-1, return 0 if the value is inclusive and between -1 and 1, and return 1 if the value is > 1.
+	'''
+	if val < -1:
+		rtn_val = -1
+	elif val >= -1 and val <= 1:
+		rtn_val = 0
+	elif val > 1:
+		rtn_val = 1
+	else: # zOR is float(nan)
+		rtn_val = float('nan')
+	return rtn_val
+
+def apply_severity_code(d_mns):
+	''' For a dictionary in the form dict[(season or season,region)] = (mn_retro zOR, mn_early zOR), return dict_codes[(season or season,region)] = (mn_retro code, mn_early code). 
+	'''
+	# d_codes[(season or season,region)] = (mn_retro code, mn_early code)
+	# codes: -1 = severe, 0 = moderate, 1 = mild
+	d_codes = {}
+	for key in d_mns:
+		d_codes[key] = tuple(map(function_operator, d_mns[key]))
+	return d_codes	
+
+def print_accuracy_to_file(dict_earlymatch, dict_retromatch, state_list, filename):
+	with open(filename, 'w+') as fwriter:
+		fwriter.write('state,early_retro,retro_retro\n')
+		for state in state_list:
+			er = sum(dict_earlymatch[state])
+			rr = sum(dict_retromatch[state])
+			fwriter.write("%s,%s,%s\n" % (state, er, rr))
+
+
+### import data ###
+# national level data: season, mn_retro, mn_early
+natin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_national_classifications.csv','r')
+natin.readline() # skip header
+nat=csv.reader(natin, delimiter=',')
+
+# state level data: season, state, mn_retro, mn_early
+stin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_classifications.csv','r')
+stin.readline() # skip header
+st=csv.reader(stin, delimiter=',')
+
+### program ###
+# import national level data
+for line in nat:
+	season = int(line[0])
+	mn_retro = float(line[1])
+	mn_early = float(line[2])
+	# d_nat[season] = (retrospective mean zOR, early warning mean zOR)
+	d_nat[season] = (mn_retro, mn_early)
+
+# code national level data as mild (1), moderate (0), or severe (-1)
+d_nat_codes = apply_severity_code(d_nat)
+
+###########################
+# import state level data
+for line in st:
+	season = int(line[0])
+	state = str(line[1])
+	mn_retro = float(line[2])
+	mn_early = float(line[3])
+	# d_st[(season, state)] = = (retrospective mean zOR, early warning mean zOR)
+	d_st[(season, state)] = (mn_retro, mn_early)
+
+# code state level data as mild (1), moderate (0), or severe (-1)
+d_st_codes = apply_severity_code(d_st)
+
+###########################
+# match early warning at state level to retrospective at national level
+
+seasons = [key for key in sorted(d_nat)]
+print 'seasons', seasons # should be in number order
+states = sorted(list(set([key[1] for key in d_st]))) # list unique states
+
+for st in states:
+	# national retro mean zOR
+	n_code = [d_nat_codes[s][0] for s in seasons]
+	# state early warning mean zOR
+	st_code_early = [d_st_codes[(s, st)][1] for s in seasons]
+	# state retrospective mean zOR
+	st_code_retro = [d_st_codes[(s, st)][0] for s in seasons] 
+	# d_st_match[state] = [match S2, match S3, etc where match is represented as 1=match, 0=no match]
+	d_st_match_early[st] = [1  if retro==early else 0 for retro, early in zip(n_code, st_code_early)]
+	d_st_match_retro[st] = [1  if r1==r2 else 0 for r1, r2 in zip(n_code, st_code_retro)]
+	
+	# print state accuracy for early warning & retro
+	print st, sum(d_st_match_early[st]), sum(d_st_match_retro[st])
+
+	## checks
+	# print 'nat', n_code
+	# print 'state', st_code
+	# print st, d_st_match[st]
+
+## checks
+# print [d_nat[key][0] for key in sorted(d_nat)]
+# print [d_st[(key, 'NY')][1] for key in sorted(d_nat)]
+
+###########################
+# find background accuracy rate across seasons (average number of states correct in each season)
+
+# d_correct_by_season_[seasonnum] = (# correct states early warning, # correct states retrospective)
+for i in range(len(seasons)):
+	d_correct_by_season[i+2] = (sum([d_st_match_early[st][i] for st in states]), sum([d_st_match_retro[st][i] for st in states]))
+
+bg_rate_early = np.mean([d_correct_by_season[key][0]/float(len(states)) for key in d_correct_by_season])
+bg_rate_retro = np.mean([d_correct_by_season[key][1]/float(len(states)) for key in d_correct_by_season])
+
+print 'bg rate early', bg_rate_early
+print 'bg rate retro', bg_rate_retro
+
+###########################
+# print accuracy counts per state to file
+fname = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_accuracy_counts.csv'
+print_accuracy_to_file(d_st_match_early, d_st_match_retro, states, fname)
