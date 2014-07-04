@@ -85,7 +85,7 @@ zip3rm <- numages[numages$season < 120,]$zip3
 pop2 <- pop[!(pop$zip3 %in% zip3rm),]
 
 # aggregate popstat by agegroup by zip3 by season
-pop2$uqsza <- paste(pop2$season, pop2$zip3, pop2$agegroup, sep = '')
+pop2$uqsza <- paste(pop2$season, pop2$zip3, pop2$agegroup, sep = '') # create unique identifier
 pop2a <- pop2[pop2$season == '10',]
 pop2b <- pop2[pop2$season != '10',]
 # S10 data only - pull season, zip3, agegroup from uqsza variable
@@ -95,7 +95,7 @@ pop_agga$zip3 <- substr(pop_agga$uqsza, 3, 5)
 pop_agga$agegroup <- substr(pop_agga$uqsza, 6, 6)
 # non S10 data - pull season, zip3, agegroup from uqsza variable
 pop_aggb <- aggregate(popstat ~ uqsza, data = pop2b, sum)
-pop_aggb$season <- paste('0', substr(pop_aggb$uqsza, 1, 1), sep = '')
+pop_aggb$season <- paste('0', substr(pop_aggb$uqsza, 1, 1), sep = '') # make season variable 2 characters long
 pop_aggb$zip3 <- substr(pop_aggb$uqsza, 2, 4)
 pop_aggb$agegroup <- substr(pop_aggb$uqsza, 5, 5)
 # rebind data
@@ -107,7 +107,7 @@ pop_agg2$uqsza <- paste(pop_agg$season, pop_agg$zip3, pop_agg$agegroup, sep = ''
 
 #######################
 ## clean states data ## 4/29/14: exact same as clean_OR_hhsreg_week.R
-# add leading zeros to zip3 where missing
+# add leading zeros to zip3 where missing so each value is 3 characters
 states$z3cl <- as.numeric(states$zip3)
 s1 <- states[states$z3cl < 10,]
 s2 <- states[(states$z3cl > 9 & states$z3cl < 100),]
@@ -136,7 +136,7 @@ states5 <- rbind(s4a, s4b)
 # combine pop_agg2 data with state data from coord3digits
 pop_agg3 <- merge(pop_agg2, states5, by = 'zip3')
 
-# there are 40 more rows in the merged dataset than in the original pop_agg2 file
+# there are 60 more rows in the merged dataset than in the original pop_agg2 file
 # remove duplicates
 pop_agg3[duplicated(pop_agg3$uqsza),] # zip3s 063 (600:660) and 967 (14640-14700)
 pop_agg3[600:660,] #063 is in CT and NY
@@ -161,6 +161,11 @@ pop_agg5[which(pop_agg5$state == 'IA' | pop_agg5$state == 'KS' | pop_agg5$state 
 pop_agg5[which(pop_agg5$state == 'CO' | pop_agg5$state == 'MT' | pop_agg5$state == 'ND' | pop_agg5$state == 'SD' | pop_agg5$state == 'UT' | pop_agg5$state == 'WY'),]$hhs <- 8
 pop_agg5[which(pop_agg5$state == 'AZ' | pop_agg5$state == 'CA' | pop_agg5$state == 'HI' | pop_agg5$state == 'NV' | pop_agg5$state == 'AS' | pop_agg5$state == 'MP' | pop_agg5$state == 'FM' | pop_agg5$state == 'GU' | pop_agg5$state == 'MH' | pop_agg5$state == 'PW'),]$hhs <- 9
 pop_agg5[which(pop_agg5$state == 'AK' | pop_agg5$state == 'ID' | pop_agg5$state == 'OR' | pop_agg5$state == 'WA'),]$hhs <- 10
+
+# check how many entries by state and by agegroup
+aggregate(agegroup~state, data=pop_agg5, length)
+aggregate(state~agegroup, data=pop_agg5, length) # A, C, and O == 570 (makes sense because we culled zip3s without all three agegroups)
+
 
 # write data to file: uqsza, popstat, season, zip3, agegroup, state, lat, long, hhsregion
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
@@ -188,6 +193,9 @@ OR3b <- OR3[OR3$season == 10,]
 OR3a$season <- paste('0', OR3a$season, sep='')
 OR3b$season <- as.character(OR3b$season)
 OR4 <- rbind(OR3a, OR3b)
+
+# check how many zip3s have C, A, and O ILI cases for every week (should be 1448 = 496wks*3agecategories)
+aggregate(wk ~ zip3, data=OR4, length) # only 75
 
 # write data to file: season, wk-characterformat, zip3, agegroup, ILI, wk-dateformat
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
