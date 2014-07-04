@@ -10,7 +10,7 @@
 #### These data were cleaned with data_extraction/clean_OR_hhsreg_week_outpatient.R and exported with OR_zip3_week.sql
 #### allpopstat_zip3_season_cl.csv includes child, adult, and other populations; popstat_zip3_season_cl.csv includes only child and adult populations
 
-###Command Line: python choropleth_region.py
+###Command Line: python exctract_meanzOR_by_region.py
 ##############################################
 
 
@@ -19,7 +19,6 @@
 
 ### packages/modules ###
 import csv
-import matplotlib.pyplot as plt
 import numpy as np
 
 ## local modules ##
@@ -57,12 +56,13 @@ d_classifzOR_reg = fxn.classif_zOR_region_processing(incid, pop, thanks, reginci
 for key in d_classifzOR_reg:
 	states = d_region_state[key[1]]
 	print states
+	# 6/24/14: unique values for each season-region combination, state is listed only for the choropleth plotting, which must be done at the state level
 	for st in states:
 		# d_classifzOR_state[(season, region, state)] = (retro_zOR, early_zOR)
 		d_classifzOR_state[(key[0], key[1], st)] = d_classifzOR_reg[key]
 
 # export data
-filename = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/meanzOR_by_state.csv'
+filename = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/meanzOR_by_region.csv' # renamed 6/24/14
 fwriter = open(filename, 'w+')
 fwriter.write('season,region,state,retro_zOR,early_zOR\n')
 for k, v in d_classifzOR_state.items():
