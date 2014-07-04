@@ -48,7 +48,7 @@ fssml = 16
 # import data
 # d_benchmark[seasonnum] = CDC benchmark index value
 # d_classifzOR[seasonnum] =  (mean retrospective zOR, mean early warning zOR)
-d_benchmark = fxn.benchmark_import(ix)
+d_benchmark = fxn.benchmark_import(ix, 8) # no ILINet
 d_classifzOR = fxn.classif_zOR_processing(incid, pop, thanks)
 
 # plot values

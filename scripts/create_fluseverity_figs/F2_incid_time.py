@@ -6,7 +6,7 @@
 ###Date: 4/26/14
 ###Function: Incidence per 100,000 vs. week number for flu weeks (wks 40-20). Incidence is per 100,000 for the US population in the second calendar year of the flu season.
 
-###Import data: SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
+###Import data: SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop.csv
 
 ###Command Line: python F2_incid_time.py
 ##############################################
