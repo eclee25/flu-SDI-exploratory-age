@@ -4,11 +4,11 @@
 ###Python template
 ###Author: Elizabeth Lee
 ###Date: 6/18/14
-###Function: OR of incidence in children to incidence in adults vs. week number. Incidence in children and adults is normalized by the size of the child and adult populations in the second calendar year of the flu season. ILINet data
+###Function: OR of incidence in children to incidence in adults vs. week number normalized by the first 'gp_normweeks' of the season. Incidence in children and adults is normalized by the size of the child and adult populations in the second calendar year of the flu season. ILINet data
 
 ###Import data: CDC_Source/Import_Data/all_cdc_source_data.csv, Census/Import_Data/totalpop_age_Census_98-14.csv
 
-###Command Line: python ILINet_F2_OR_time.py
+###Command Line: python ILINet_F3_zOR_time.py
 ##############################################
 
 ### notes ###
@@ -37,6 +37,7 @@ fw = fxn.gp_fluweeks
 sl = fxn.gp_ILINet_seasonlabels
 colvec = fxn.gp_ILINet_colors
 wklab = fxn.gp_weeklabels
+norm = fxn.gp_normweeks
 fs = 24
 fssml = 16
 
@@ -50,17 +51,21 @@ fig = plt.figure()
 ax = plt.subplot(111)
 
 for s, i in zip(ps, xrange(len(ps))):
-	ax.plot(xrange(fw), d_OR53ls[s][:fw], marker = 'o', color = colvec[i], label = sl[i], linewidth = 2)
+	ax.plot(xrange(fw), d_zOR53ls[s][:fw], marker = 'o', color = colvec[i], label = sl[i], linewidth = 2)
+# create dict with begin_retro and begin_early for each season? no, would draw too many overlaying gray areas
 plt.xlim([0, fw-1])
 plt.xticks(range(fw)[::5], wklab[:fw:5]) 
-plt.ylim([0, 8])
 plt.xlabel('Week Number', fontsize=fs)
-plt.ylabel('OR, child:adult', fontsize=fs)
+plt.ylabel('zOR (%s week baseline)' % (norm), fontsize=fs)
 # shrink current axis by 10%
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width*0.9, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/OR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
+# # grey bar for approximate retrospective period
+plt.fill([15, 16, 16, 15], [-20, -20, 40, 40], facecolor='grey', alpha=0.4)
+# # grey bar for approximate early warning area
+plt.fill([9, 10, 10, 9], [-20, -20, 40, 40], facecolor='grey', alpha=0.4)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 

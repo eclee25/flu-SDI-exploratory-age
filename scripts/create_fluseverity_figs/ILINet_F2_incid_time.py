@@ -50,8 +50,8 @@ d_wk, d_incid53ls, d_OR53ls, d_zOR53ls = fxn.ILINet_week_plotting_dicts(incid, p
 fig = plt.figure()
 ax = plt.subplot(111)
 
-for s in ps:
-	ax.plot(xrange(fw), d_incid53ls[s][:fw], marker = 'o', color = colvec[s+2], label = sl[s+2], linewidth = 2)
+for s, i in zip(ps, xrange(len(ps))):
+	ax.plot(xrange(fw), d_incid53ls[s][:fw], marker = 'o', color = colvec[i], label = sl[i], linewidth = 2)
 plt.xlim([0, fw-1])
 plt.xticks(range(fw)[::5], wklab[:fw:5]) 
 plt.ylim([0, 25])
