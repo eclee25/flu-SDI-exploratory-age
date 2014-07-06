@@ -45,7 +45,7 @@ incid = csv.reader(incidin, delimiter=',')
 popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/totalpop_age.csv', 'r')
 pop = csv.reader(popin, delimiter=',')
 
-# d_wk[week] = seasonnum, d_incid[wk] = (child incid per 100,000, adult incid per 100,000)
+# d_wk[week] = seasonnum, d_incid[wk] = (child incid per 100,000, adult incid per 100,000, other incid per 100,000)
 d_wk, d_incid = fxn.week_incidCA_processing(incid, pop)
 # # d_attackCA_norm[seasonnum] = (norm C attack rate, norm A attack rate)
 d_attackCA_norm = fxn.normalize_attackCA(d_wk, d_incid)

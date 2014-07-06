@@ -468,7 +468,7 @@ def ILINet_week_zOR_processing(csv_incidence, csv_population):
 def normalize_attackCA(dict_wk, dict_incid):
 	''' Import dict_wk and dict_incid. Sum values in dict_incid for children and adults to get an attack rate for each season. The flu season is defined as weeks 40 to 20. Normalize the child and adult attack rates by dividing the raw attack rate by the average child and adult attack rates and subtract 1 (percentage deviation from baseline) across all seasons. 
 		dict_wk[week] = seasonnum
-		dict_incid[week] = (child ILI cases per 10,000 in US population in second calendar year of flu season, adult incid per 10,000)
+		dict_incid[week] = (child ILI cases per 10,000 in US population in second calendar year of flu season, adult incid per 10,000, other age group ILI cases per 10,000)
 		dict_attackCA_norm[seasonnum] = (% dev from baseline child attack rate, % dev from baseline adult attack rate)
 	'''
 	main(normalize_attackCA)
@@ -499,7 +499,7 @@ def normalize_attackCA(dict_wk, dict_incid):
 def normalize_incidCA(dict_wk, dict_incid):
 	''' Import dict_wk and dict_incid and normalize dict_incid by the maximum child incidence value during a flu season.
 		dict_wk[week] = seasonnum
-		dict_incid[week] = (child ILI cases per 10,000 in US population in second calendar year of flu season, adult incid per 10,000)
+		dict_incid[week] = (child ILI cases per 10,000 in US population in second calendar year of flu season, adult incid per 10,000, other age group ILI cases per 10,000)
 		dict_incidC_norm[seasonnum] = [norm child incid wk40, norm child incid wk41, ...]
 		dict_incidA_norm[seasonnum] = [norm adult incid wk40, norm adult incid wk 41, ...]
 	'''
@@ -619,9 +619,9 @@ def Thanksgiving_import(csv_Thanksgiving):
 
 ##############################################
 def week_incidCA_processing(csv_incidence, csv_population):
-	''' Import SQL_export/OR_allweeks_outpatient.csv data (or other OR_allweeks...csv data), which includes season number, week, age group, and ILI incid. Import SQL_export/totalpop_age.csv data, which includes calendar year, age group, and US population. Return dictionary with week to season number, week to child and adult ILI cases per 100,000 in total US population. Incidence rates for children and adults will be calculated based on popstat variable of the population in the second calendar year of the flu season (eg. 2001-02 season is based on 2002 population).
+	''' Import SQL_export/OR_allweeks_outpatient.csv data (or other OR_allweeks...csv data), which includes season number, week, age group, and ILI incid. Import SQL_export/totalpop_age.csv data, which includes calendar year, age group, and US population. Return dictionary with week to season number, week to child and adult ILI cases per 100,000 in total US population. Incidence rates for children, adults, and other age groups will be calculated based on popstat variable of the population in the second calendar year of the flu season (eg. 2001-02 season is based on 2002 population).
 	dict_wk[week] = seasonnum
-	dict_incid[week] = (child ILI cases per 100,000 in US population in second calendar year of flu season, adult incid per 100,000)
+	dict_incid[week] = (child ILI cases per 100,000 in US population in second calendar year of flu season, adult incid per 100,000, other age group ILI cases per 100,000)
 	'''
 	main(week_incidCA_processing)
 	
@@ -663,10 +663,11 @@ def week_incidCA_processing(csv_incidence, csv_population):
 	dict_incid = {}
 	for wk in dict_wk:
 		s = dict_wk[wk]
-		# dict_incid[week] = (child incid per 100,000, adult incid per 100,000)
+		# dict_incid[week] = (child incid per 100,000, adult incid per 100,000, other incid per 1000,000)
 		child_incid = dict_ILI_week[(wk, 'C')]/dict_pop[(s, 'C')]*100000
 		adult_incid = dict_ILI_week[(wk, 'A')]/dict_pop[(s, 'A')]*100000
-		dict_incid[wk] = (child_incid, adult_incid)
+		other_incid = dict_ILI_week[(wk, 'O')]/dict_pop[(s, 'O')]*100000 # added 7/6/14
+		dict_incid[wk] = (child_incid, adult_incid, other_incid)
 	
 	return dict_wk, dict_incid
 
