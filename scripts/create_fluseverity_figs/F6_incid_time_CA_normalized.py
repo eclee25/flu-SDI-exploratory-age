@@ -1,10 +1,10 @@
-#!/usr/bin/python
+ #!/usr/bin/python
 
 ##############################################
 ###Python template
 ###Author: Elizabeth Lee
 ###Date: 7/4/14
-###Function: child and adult incidence over time in a severe and a mild season; normalize incidence by child peak value
+###Function: child and adult incidence per 100,000 over time in a severe and a mild season; normalize incidence by child peak value
 #### Compare the relative contributions of adult and child incidence during that season
 
 ###Import data: OR_allweeks_outpatient.csv, totalpop_age.csv
@@ -50,7 +50,7 @@ incid = csv.reader(incidin, delimiter=',')
 popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/totalpop_age.csv', 'r')
 pop = csv.reader(popin, delimiter=',')
 
-# d_wk[week] = seasonnum, d_incid[wk] = (child incid per 100,000, adult incid per 100,000)
+# d_wk[week] = seasonnum, d_incid[wk] = (child incid per 100,000, adult incid per 100,000, other incid per 100,000)
 d_wk, d_incid = fxn.week_incidCA_processing(incid, pop)
 # dict_incidC_norm[seasonnum] = [norm child incid wk40, norm child incid wk41, ...], dict_incidA_norm[seasonnum] = [norm adult incid wk40, norm adult incid wk 41, ...]
 d_incidC_norm, d_incidA_norm = fxn.normalize_attackCA(d_wk, d_incid)

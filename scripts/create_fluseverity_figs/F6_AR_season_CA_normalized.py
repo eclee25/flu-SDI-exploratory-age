@@ -4,8 +4,8 @@
 ###Python template
 ###Author: Elizabeth Lee
 ###Date: 7/4/14
-###Function: child and adult attack rates
-#### Compare children and adults to their own average baselines across all season
+###Function: Child and adult attack rates are normalized to the percent deviation in average baseline across all seasons. Percent deviation is calculated as ((raw attack rate/avg attack rate across all seasons)-1)*100. The "-1" adjusts the ratio average to 0.
+#### Compare children and adults to their own average baselines across all seasons to explore relative attack rates of each age group in mild, moderate, and severe seasons.
 
 ###Import data: OR_allweeks_outpatient.csv, totalpop_age.csv
 
