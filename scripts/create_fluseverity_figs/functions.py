@@ -52,6 +52,8 @@ gp_severitylabels = ['Mild', 'Moderate', 'Severe']
 gp_severitycolors = ['y', 'b', 'r']
 gp_line_style = ['-', ':']
 gp_barwidth = 0.35
+gp_agelabels = ['Child', 'Adult', 'Other Ages']
+gp_agecolors = ['orange', 'grey', 'green']
 
 ## ILINet data ##
 gp_ILINet_seasonlabels = ['97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14']
@@ -324,6 +326,37 @@ def classif_zOR_state_processing(csv_incidence, csv_population, csv_Thanksgiving
 	return dict_classifzOR_state
 
 ##############################################
+def contributions_CAO_to_attack(dict_wk, dict_incid):
+	''' Import dict_wk and dict_incid. Sum values in dict_incid for children, adults, and other age groups to get an attack rate for each season. The sum of the child, adult, and other attack rates is the total attack rate. Calculate the percentage contribution of each age group to the total attack rate for each season, in preparation to plot data in a stacked 100% bar chart. The flu season is defined as weeks 40 to 20. 
+		dict_wk[week] = seasonnum
+		dict_incid[week] = (child ILI cases per 100,000 in US population in second calendar year of flu season, adult incid per 100,000, other age group ILI cases per 100,000)
+		dict_perc_totAR[seasonnum] = (% contribution of child AR to total AR, % contribution of adult AR to total AR, % contribution of other ages AR to total AR)
+		dict_tot_attack[seasonnum] = total attack rate for weeks 40 to 20 by 100,000
+	'''
+	main(contributions_CAO_to_attack)
+
+	dict_incidC_season, dict_incidA_season, dict_incidO_season, dict_attackCAO, dict_tot_attack, dict_perc_totAR = defaultdict(list), defaultdict(list), defaultdict(list), {}, {}, {}
+	
+	for s in gp_plotting_seasons:
+		# list of incidence per 100,000 by week for children and adults
+		dict_incidC_season[s] = [dict_incid[week][0] for week in sorted(dict_wk) if dict_wk[week] == s]
+		dict_incidA_season[s] = [dict_incid[week][1] for week in sorted(dict_wk) if dict_wk[week] == s]
+		dict_incidO_season[s] = [dict_incid[week][2] for week in sorted(dict_wk) if dict_wk[week] == s]
+
+		# attack rates per 100,000 for children, adults, and other age groups by week, include only wks 40 to 20 (52 weeks total in each season)
+		dict_attackCAO[s] = (sum(dict_incidC_season[s][:33]), sum(dict_incidA_season[s][:33]), sum(dict_incidO_season[s][:33]))
+
+		# total attack rate per 100,000 by season for export
+		# dict_tot_attack[seasonnum] = total attack rate for weeks 40 to 20 by 100,000
+		dict_tot_attack[s] = float(sum(dict_attackCAO[s]))
+
+		# calculate percentage contribution of each age group's attack rate to total seasonal attack rate.
+		# dict_perc_totAR[seasonnum] = (% contribution of child AR to total AR, % contribution of adult AR to total AR, % contribution of other ages AR to total AR)
+		dict_perc_totAR[s] = tuple([AR/dict_tot_attack[s]*100 for AR in dict_attackCAO[s]])
+
+	return dict_perc_totAR, dict_tot_attack
+
+##############################################
 def ILINet_classif_zOR_processing(csv_incidence, csv_population, csv_Thanksgiving):
 	''' Calculate retrospective and early warning zOR classification values for each season, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. The retrospective period is designated relative to the peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving.
 	Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normweeks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_plotting_dicts and Thanksgiving_import functions are nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR. ILINet data
@@ -468,7 +501,7 @@ def ILINet_week_zOR_processing(csv_incidence, csv_population):
 def normalize_attackCA(dict_wk, dict_incid):
 	''' Import dict_wk and dict_incid. Sum values in dict_incid for children and adults to get an attack rate for each season. The flu season is defined as weeks 40 to 20. Normalize the child and adult attack rates by dividing the raw attack rate by the average child and adult attack rates and subtract 1 (percentage deviation from baseline) across all seasons. 
 		dict_wk[week] = seasonnum
-		dict_incid[week] = (child ILI cases per 10,000 in US population in second calendar year of flu season, adult incid per 10,000, other age group ILI cases per 10,000)
+		dict_incid[week] = (child ILI cases per 100,000 in US population in second calendar year of flu season, adult incid per 100,000, other age group ILI cases per 100,000)
 		dict_attackCA_norm[seasonnum] = (% dev from baseline child attack rate, % dev from baseline adult attack rate)
 	'''
 	main(normalize_attackCA)
@@ -476,11 +509,11 @@ def normalize_attackCA(dict_wk, dict_incid):
 	dict_incidC_season, dict_incidA_season, dict_attackCA, dict_attackCA_norm = defaultdict(list), defaultdict(list), {}, {}
 	
 	for s in gp_plotting_seasons:
-		# list of incidence per 10,000 by week for children and adults
+		# list of incidence per 100,000 by week for children and adults
 		dict_incidC_season[s] = [dict_incid[week][0] for week in sorted(dict_wk) if dict_wk[week] == s]
 		dict_incidA_season[s] = [dict_incid[week][1] for week in sorted(dict_wk) if dict_wk[week] == s]
 
-		# attack rates per 10,000 for children and adults by week, include only wks 40 to 20 (52 weeks total in each season)
+		# attack rates per 100,000 for children and adults by week, include only wks 40 to 20 (52 weeks total in each season)
 		dict_attackCA[s] = (sum(dict_incidC_season[s][:33]), sum(dict_incidA_season[s][:33]))
 
 	# calculate average C and A attack rates across all seasons
@@ -488,7 +521,7 @@ def normalize_attackCA(dict_wk, dict_incid):
 	avg_attackA = float(np.mean([dict_attackCA[k][1] for k in dict_attackCA]))
 	avgs = (avg_attackC, avg_attackA)
 
-	# normalize incidence curves by max peak child epidemic
+	# normalize incidence curves by average attack rate for the age group, subtract 1 to center the ratio at 0, multiply by 100 to recover the percent deviation in seasonal attack rate from baseline average of attack rates across all seasons in study
 	for s in gp_plotting_seasons:	
 		# dict_attackCA_norm[seasonnum] = (% dev from baseline C attack rate, % dev from baseline A attack rate)
 		dict_attackCA_norm[s] = (((dict_attackCA[s][0]/avgs[0])-1)*100, ((dict_attackCA[s][1]/avgs[1])-1)*100)
