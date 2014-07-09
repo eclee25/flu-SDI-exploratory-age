@@ -28,7 +28,7 @@ import functions as fxn
 
 ### data structures ###
 ### called/local plotting parameters ###
-ps = fxn.gp_plotting_seasons
+ps = fxn.pseasons
 reg = fxn.gp_plotting_regions
 reg_lab = fxn.gp_regions
 mild = fxn.gp_mild  # mild season numbers
@@ -60,9 +60,24 @@ thanks=csv.reader(thanksin, delimiter=',')
 ### program ###
 
 # region-level peak-based retrospective classification
-# import data
+
+## national-level data ##
+# dict_wk[week] = seasonnum, dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season, dict_OR[week] = OR
+d_wk, d_incid, d_OR = fxn.week_OR_processing(incid, pop)
+d_zOR = fxn.week_zOR_processing(d_wk, d_incid, d_OR)
+# d_incid53ls[seasonnum] = [ILI wk 40 per 100000, ILI wk 41 per 100000,...], d_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...], d_zOR53ls[seasonnum] = [zOR wk 40, zOR wk 41, ...]
+d_incid53ls, d_OR53ls, d_zOR53ls = fxn.week_plotting_dicts(d_wk, d_incid, d_OR, d_zOR)
+
+## regional-level data ##
+_, d_zip3_reg, d_incid_reg, d_OR_reg = fxn.week_OR_processing_region(regincid, regpop)
+# dict_zOR_reg[(week, hhsreg)] = zOR
+d_zOR_reg = fxn.week_zOR_processing_region(d_wk, d_zip3_reg, d_incid_reg, d_OR_reg)
+# dict_incid53ls_reg[(seasonnum, region)] = [ILI wk 40, ILI wk 41,...], dict_OR53ls_reg[(seasonnum, region)] = [OR wk 40, OR wk 41, ...], dict_zOR53ls_reg[(seasonnum, region)] = [zOR wk 40, zOR wk 41, ...]
+d_incid53ls_reg, d_OR53ls_reg, d_zOR53ls_reg = fxn.week_plotting_dicts_region(d_wk, d_zip3_reg, d_incid_reg, d_OR_reg, d_zOR_reg)
+# dict_classifindex[seasonnum] = (index of first retro period week, index of first early warning period week)
+d_classifindex = fxn.classif_zOR_index(d_wk, d_incid53ls, d_OR, d_zOR53ls, d_incid53ls_reg, d_OR53ls_reg, d_zOR53ls_reg, 'region', thanks)
 # d_classifzOR_reg[(seasonnum, region)] = (mean retrospective zOR, mean early warning zOR)
-d_classifzOR_reg = fxn.classif_zOR_region_processing(incid, pop, thanks, regincid, regpop, 'region')
+d_classifzOR_reg = fxn.classif_zOR_region_processing(d_classifindex, d_wk, d_incid53ls, d_OR53ls, d_zOR53ls, d_incid53ls_reg, d_OR53ls_reg, d_zOR53ls_reg)
 
 # average retro zOR for all seasons
 retrozOR_by_region = [[d_classifzOR_reg[(s, r)] for s in ps] for r in reg]

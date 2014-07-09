@@ -52,8 +52,8 @@ pop = csv.reader(popin, delimiter=',')
 
 # d_wk[week] = seasonnum, d_incid[wk] = (child incid per 100,000, adult incid per 100,000, other incid per 100,000)
 d_wk, d_incid = fxn.week_incidCA_processing(incid, pop)
-# dict_incidC_norm[seasonnum] = [norm child incid wk40, norm child incid wk41, ...], dict_incidA_norm[seasonnum] = [norm adult incid wk40, norm adult incid wk 41, ...]
-d_incidC_norm, d_incidA_norm = fxn.normalize_attackCA(d_wk, d_incid)
+# dict_incidCA_norm[seasonnum] = [norm child incid wk40, norm child incid wk41, ...], dict_incidA_norm[seasonnum] = [norm adult incid wk40, norm adult incid wk 41, ...]
+d_incidC_norm, d_incidA_norm = fxn.normalize_incidCA(d_wk, d_incid)
 
 # initialize figure
 fig = plt.figure()

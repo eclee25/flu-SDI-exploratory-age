@@ -27,10 +27,11 @@ import functions as fxn
 ### data structures ###
 
 ### called/local plotting parameters ###
-ps = fxn.gp_plotting_seasons
+ps = fxn.pseasons
 fs = 24
 fssml = 16
-# mild_s = fxn.gp_mild
+# maybe in the future, change color schemes to group mild, mod, sev seasons
+# mild_s = fxn.gp_mild 
 # mod_s = fxn.gp_mod
 # sev_s = fxn.gp_sev
 s_lab = fxn.gp_seasonlabels

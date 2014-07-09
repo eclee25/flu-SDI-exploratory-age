@@ -32,7 +32,7 @@ popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Census/Import_Data/totalpo
 pop = csv.reader(popin, delimiter=',')
 
 ### called/local plotting parameters ###
-ps = fxn.gp_ILINet_plotting_seasons
+ps = fxn.pseasons
 fw = fxn.gp_fluweeks
 sl = fxn.gp_ILINet_seasonlabels
 colvec = fxn.gp_ILINet_colors
@@ -43,8 +43,11 @@ fssml = 16
 
 ### program ###
 # import data
-# d_wk[week] = seasonnum, d_incid53ls[seasonnum] = [ILI wk 40 per 100000, ILI wk 41 per 100000,...], d_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...], d_zOR53ls[seasonnum] = [zOR wk 40, zOR wk 41, ...]
-d_wk, d_incid53ls, d_OR53ls, d_zOR53ls = fxn.ILINet_week_plotting_dicts(incid, pop)
+# dict_wk[week] = seasonnum, dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season, dict_OR[week] = OR
+d_wk, d_incid, d_OR = fxn.ILINet_week_OR_processing(incid, pop)
+d_zOR = fxn.ILINet_week_zOR_processing(d_wk, d_incid, d_OR)
+# d_incid53ls[seasonnum] = [ILI wk 40 per 100000, ILI wk 41 per 100000,...], d_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...], d_zOR53ls[seasonnum] = [zOR wk 40, zOR wk 41, ...]
+d_incid53ls, d_OR53ls, d_zOR53ls = fxn.ILINet_week_plotting_dicts(d_wk, d_incid, d_OR, d_zOR)
 
 # plot values
 fig = plt.figure()

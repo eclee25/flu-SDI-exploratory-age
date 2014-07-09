@@ -26,7 +26,7 @@ import functions as fxn
 ### data structures ###
 
 ### called/local plotting parameters ###
-ps = fxn.gp_plotting_seasons
+ps = fxn.pseasons
 fs = 24
 fssml = 16
 mild_s = fxn.gp_mild
@@ -49,8 +49,6 @@ pop = csv.reader(popin, delimiter=',')
 d_wk, d_incid = fxn.week_incidCA_processing(incid, pop)
 # # d_attackCA_norm[seasonnum] = (norm C attack rate, norm A attack rate)
 d_attackCA_norm = fxn.normalize_attackCA(d_wk, d_incid)
-
-print d_attackCA_norm
 
 # initialize figure
 fig = plt.figure()
