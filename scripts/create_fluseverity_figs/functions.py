@@ -357,14 +357,13 @@ def contributions_CAO_to_attack(dict_wk, dict_incid):
 	return dict_perc_totAR, dict_tot_attack
 
 ##############################################
-def ILINet_classif_zOR_processing(csv_incidence, csv_population, csv_Thanksgiving):
+def ILINet_classif_zOR_processing(dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls, csv_Thanksgiving):
 	''' Calculate retrospective and early warning zOR classification values for each season, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. The retrospective period is designated relative to the peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving.
 	Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normweeks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_plotting_dicts and Thanksgiving_import functions are nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR. ILINet data
 	dict_classifzOR[seasonnum] = (mean retrospective zOR, mean early warning zOR)
 	'''
 	main(ILINet_classif_zOR_processing)
 	# dict_wk[week] = seasonnum, dict_incid53ls[seasonnum] = [ILI wk 40, ILI wk 41,...], dict_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...], dict_zOR53ls[seasonnum] = [zOR wk 40, zOR wk 41, ...]
-	dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls = ILINet_week_plotting_dicts(csv_incidence, csv_population)
 	
 	dict_ILINet_classifzOR = {}
 	
@@ -442,8 +441,8 @@ def ILINet_week_OR_processing(csv_incidence, csv_population):
 	return dict_wk, dict_incid, dict_OR
 
 ##############################################
-def ILINet_week_plotting_dicts(csv_incidence, csv_population):
-	'''Return dictionaries for season to incidence, OR, and zOR by week as a list, adding 53rd week data as the average of week 52 and week 1 if necessary. Dictionary keys are created only for seasons in gp: plotting_seasons, where 'gp' is a global parameter defined within functions.py. Source files for csv_incidence and csv_population are 'CDC_Source/Import_Data/all_cdc_source_data.csv' and 'Census/Import_Data/totalpop_age_Census_98-14.csv' respectively.
+def ILINet_week_plotting_dicts(d_wk, d_incid, d_OR, d_zOR):
+	'''Return dictionaries for season to incidence, OR, and zOR by week as a list, adding 53rd week data as the average of week 52 and week 1 if necessary. Dictionary keys are created only for seasons in gp: plotting_seasons, where 'gp' is a global parameter defined within functions.py. Functions 'ILINet_week_OR_processing' and 'ILINet_week_zOR_processing' are called before this function. Source files for csv_incidence and csv_population are 'CDC_Source/Import_Data/all_cdc_source_data.csv' and 'Census/Import_Data/totalpop_age_Census_98-14.csv' respectively.
 	dict_wk[week] = seasonnum
 	dict_incid53ls[seasonnum] = [ILI wk 40, ILI wk 41,...]
 	dict_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...]
@@ -451,7 +450,6 @@ def ILINet_week_plotting_dicts(csv_incidence, csv_population):
 	'''
 	main(ILINet_week_plotting_dicts)
 	# dict_wk[week] = seasonnum; dict_incid[week] = ILI cases per 10,000 in US population, dict_OR[week] = OR; dict_zOR[week] = zOR
-	dict_wk, dict_incid, dict_OR, dict_zOR = ILINet_week_zOR_processing(csv_incidence, csv_population)
 	
 	dict_incid53ls, dict_OR53ls, dict_zOR53ls = defaultdict(list), defaultdict(list), defaultdict(list)
 	for s in gp_ILINet_plotting_seasons:
@@ -472,11 +470,11 @@ def ILINet_week_plotting_dicts(csv_incidence, csv_population):
 		dict_OR53ls[s] = OR53dummy
 		dict_zOR53ls[s] = zOR53dummy
 	
-	return dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls
+	return dict_incid53ls, dict_OR53ls, dict_zOR53ls
 
 ##############################################
-def ILINet_week_zOR_processing(csv_incidence, csv_population):
-	''' Calculate zOR by week based on normweeks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. The function 'week_OR_processing' is nested within this function. Return dictionaries of week to season number, week to OR, and week to zOR. Source files for csv_incidence and csv_population are 'CDC_Source/Import_Data/all_cdc_source_data.csv' and 'Census/Import_Data/totalpop_age_Census_98-14.csv' respectively.
+def ILINet_week_zOR_processing(dict_wk, dict_incid, dict_OR):
+	''' Calculate zOR by week based on normweeks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. The function 'ILINet_week_OR_processing' is called before this function. Return dictionaries of week to season number, week to OR, and week to zOR. Source files for csv_incidence and csv_population are 'CDC_Source/Import_Data/all_cdc_source_data.csv' and 'Census/Import_Data/totalpop_age_Census_98-14.csv' respectively.
 	dict_wk[week] = seasonnum
 	dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season
 	dict_OR[week] = OR
@@ -484,7 +482,6 @@ def ILINet_week_zOR_processing(csv_incidence, csv_population):
 	'''
 	main(ILINet_week_zOR_processing)
 	# dict_wk[week] = seasonnum; dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season, dict_OR[week] = OR
-	dict_wk, dict_incid, dict_OR = ILINet_week_OR_processing(csv_incidence, csv_population)
 	
 	dict_zOR = {}
 	for s in gp_ILINet_plotting_seasons:
@@ -495,7 +492,7 @@ def ILINet_week_zOR_processing(csv_incidence, csv_population):
 		for w, z in zip(weekdummy, list_dictdummy):
 			dict_zOR[w] = z
 	
-	return dict_wk, dict_incid, dict_OR, dict_zOR
+	return dict_zOR
 
 ##############################################
 def normalize_attackCA(dict_wk, dict_incid):
