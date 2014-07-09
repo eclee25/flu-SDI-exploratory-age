@@ -63,7 +63,7 @@ gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
 ## call parameters ##
 # set these parameters every time a plot is run
 
-pseasons = gp_ILINet_plotting_seasons
+pseasons = gp_plotting_seasons
 
 
 ##############################################
@@ -131,7 +131,7 @@ def cdc_import_CFR_CHR (csv_allcdc):
 	return dict_CHR, dict_CFR, dict_deaths, dict_ILI
 
 ##############################################
-def classif_zOR_index(dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls, dict_incid53ls_reg, dict_OR53ls_reg, dict_zOR53ls_reg, retro_level_string, csv_Thanksgiving):
+def classif_zOR_index(dict_wk, dict_incid53ls, dict_incid53ls_reg, retro_level_string, csv_Thanksgiving):
 	''' Find the retrospective and early warning period start weeks by season. The retrospective period may be designated in two manners -- relative to the national peak incidence week or regional peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving. This function returns a dictionary that can be used by classif_zOR_region_processing to set the classification periods for each region to that which was defined at the national level.
 	The week plotting dicts (national and regional) must be run before this function. The Thanksgiving_import function is nested within this function. Return dictionary for season to (index of first retro period week, index of first early warning period week).
 	dict_classifindex[seasonnum] = (index of first retro period week, index of first early warning period week)
@@ -176,7 +176,7 @@ def classif_zOR_index(dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls, dict_i
 	return dict_classifindex
 	
 ##############################################
-def classif_zOR_index_state(dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls, dict_incid53ls_state, dict_OR53ls_state, dict_zOR53ls_state, retro_level_string):
+def classif_zOR_index_state(dict_wk, dict_incid53ls, dict_incid53ls_state, retro_level_string, csv_Thanksgiving):
 	''' Find the retrospective and early warning period start weeks by season. The retrospective period may be designated in two manners -- relative to the national peak incidence week or regional peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving. This function returns a dictionary that can be used by classif_zOR_region_processing to set the classification periods for each region to that which was defined at the national level.
 	The week_plotting_dicts (national and state) function should be run before this function. The Thanksgiving_import function is nested within this function. Return dictionary for season to (index of first retro period week, index of first early warning period week).
 	dict_classifindex[seasonnum] = (index of first retro period week, index of first early warning period week)
@@ -224,7 +224,7 @@ def classif_zOR_index_state(dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls, 
 	return dict_classifindex
 
 ##############################################
-def classif_zOR_processing(dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls, csv_Thanksgiving):
+def classif_zOR_processing(dict_wk, dict_incid53ls, dict_zOR53ls, csv_Thanksgiving):
 	''' Calculate retrospective and early warning zOR classification values for each season, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. The retrospective period is designated relative to the peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving.
 	Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normweeks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_plotting_dicts function must be run before this function. The Thanksgiving_import function is nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR.
 	dict_classifzOR[seasonnum] = (mean retrospective zOR, mean early warning zOR)
@@ -260,7 +260,7 @@ def classif_zOR_processing(dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls, c
 	return dict_classifzOR
 
 ##############################################
-def classif_zOR_region_processing(dict_classifindex, dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls, dict_incid53ls_reg, dict_OR53ls_reg, dict_zOR53ls_reg):
+def classif_zOR_region_processing(dict_classifindex, dict_wk, dict_zOR53ls_reg):
 	''' Calculate retrospective and early warning zOR classification values for each season and region combination, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. The retrospective period may be designated in two manners -- relative to the national peak incidence week or regional peak incidence week in the flu season.The early warning period is designated relative to the week of Thanksgiving.
 	Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normweeks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The classif_zOR_index function must be run before this function. The Thanksgiving_import function is nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR.
 	dict_classifzOR_reg[(seasonnum, region)] = (mean retrospective zOR, mean early warning zOR)
@@ -291,7 +291,7 @@ def classif_zOR_region_processing(dict_classifindex, dict_wk, dict_incid53ls, di
 	return dict_classifzOR_reg
 
 ##############################################
-def classif_zOR_state_processing(dict_classifindex, dict_wk, dict_incid53ls, dict_OR53ls, dict_zOR53ls, dict_incid53ls_state, dict_OR53ls_state, dict_zOR53ls_state):
+def classif_zOR_state_processing(dict_classifindex, dict_wk, dict_zOR53ls_state):
 	''' Calculate retrospective and early warning zOR classification values for each season and state combination, which is the mean zOR for the duration of the retrospective and early warning periods, respectively. The retrospective period may be designated in two manners -- relative to the national peak incidence week or state peak incidence week in the flu season.The early warning period is designated relative to the week of Thanksgiving.
 	Mean retrospective period zOR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zOR is based on gp: normweeks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The week_plotting_dicts_state and classif_zOR_index_state functions must be run before this function. The Thanksgiving_import function is nested within this function. Return dictionaries for week to season, week to OR, week to zOR, season to mean retrospective and early warning zOR.
 	dict_classifzOR_state[(seasonnum, state)] = (mean retrospective zOR, mean early warning zOR)
@@ -303,7 +303,7 @@ def classif_zOR_state_processing(dict_classifindex, dict_wk, dict_incid53ls, dic
 	dict_classifzOR_state = {}
 	
 	# states in state-level analysis
-	state_keys = list(set([k[1] for k in dict_incid53ls_state]))
+	state_keys = list(set([k[1] for k in dict_zOR53ls_state]))
 
 	for s, state in product(pseasons, state_keys):
 		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
@@ -850,7 +850,7 @@ def week_plotting_dicts(dict_wk, dict_incid, dict_OR, dict_zOR):
 	return dict_incid53ls, dict_OR53ls, dict_zOR53ls
 
 ##############################################
-def week_plotting_dicts_region(dict_wk, dict_zip3_reg, dict_incid_reg, dict_OR_reg, dict_zOR_reg):
+def week_plotting_dicts_region(dict_wk, dict_incid_reg, dict_OR_reg, dict_zOR_reg):
 	'''Return dictionaries for (season, region) to incidence, OR, and zOR by week as a list, adding 53rd week data as the average of week 52 and week 1 if necessary. The week_zOR_processing_region function must be run before this one. Dictionary keys are created only for seasons in gp: plotting_seasons, where 'gp' is a global parameter defined within functions.py. 
 	dict_wk[week] = seasonnum
 	dict_incid53ls_reg[(seasonnum, region)] = [ILI wk 40, ILI wk 41,...]
@@ -882,7 +882,7 @@ def week_plotting_dicts_region(dict_wk, dict_zip3_reg, dict_incid_reg, dict_OR_r
 	return dict_incid53ls_reg, dict_OR53ls_reg, dict_zOR53ls_reg
 
 ##############################################
-def week_plotting_dicts_state(dict_wk, dict_zip3_reg, dict_incid_state, dict_OR_state, dict_zOR_state):
+def week_plotting_dicts_state(dict_wk, dict_incid_state, dict_OR_state, dict_zOR_state):
 	'''Return dictionaries for (season, state) to incidence, OR, and zOR by week as a list, adding 53rd week data as the average of week 52 and week 1 if necessary. The week_zOR_processing_state function must be run prior to this function. Dictionary keys are created only for seasons in gp: plotting_seasons, where 'gp' is a global parameter defined within functions.py. 
 	dict_wk[week] = seasonnum
 	dict_incid53ls_state[(seasonnum, state)] = [ILI wk 40, ILI wk 41,...]
@@ -892,7 +892,7 @@ def week_plotting_dicts_state(dict_wk, dict_zip3_reg, dict_incid_state, dict_OR_
 	main(week_plotting_dicts_state)
 	# dict_wk[week] = seasonnum, dict_zip3_reg[zip3] = (state, hhsreg), dict_incid_state[(week, state)] = total ILI incidence per 100,000 popstat in 2nd calendar year of flu season, dict_OR_state[(week, state)] = OR, dict_zOR_reg[(week, state)] = zOR
 
-	state_keys = list(set([dict_zip3_reg[k][0] for k in dict_zip3_reg]))
+	state_keys = list(set([k[1] for k in dict_incid_state]))
 
 	dict_incid53ls_state, dict_OR53ls_state, dict_zOR53ls_state = defaultdict(list), defaultdict(list), defaultdict(list)
 	for s, state in product(pseasons, state_keys):
@@ -916,7 +916,7 @@ def week_plotting_dicts_state(dict_wk, dict_zip3_reg, dict_incid_state, dict_OR_
 	return dict_incid53ls_state, dict_OR53ls_state, dict_zOR53ls_state
 
 ##############################################
-def week_zOR_processing(dict_wk, dict_incid, dict_OR):
+def week_zOR_processing(dict_wk, dict_OR):
 	''' Calculate zOR by week based on normweeks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. The function week_OR_processing function must be run before this function. Return dictionaries of week to season number, week to OR, and week to zOR. SDI source files for csv_incidence and csv_population are 'SQL_export/OR_allweeks_outpatient.csv' and 'SQL_export/totalpop_age.csv' respectively. ILINet source files for csv_incidence and csv_population are 'CDC_Source/Import_Data/all_cdc_source_data.csv' and 'Census/Import_Data/totalpop_age_Census_98-14.csv' respectively.
 	dict_wk[week] = seasonnum
 	dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season
@@ -938,7 +938,7 @@ def week_zOR_processing(dict_wk, dict_incid, dict_OR):
 	return dict_zOR
 
 ##############################################
-def week_zOR_processing_region(dict_wk, dict_zip3_reg, dict_incid_reg, dict_OR_reg):
+def week_zOR_processing_region(dict_wk, dict_OR_reg):
 	''' Calculate zOR for each region by week based on normweeks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. Each region is z-normalized by the first normweeks weeks of OR data for that region. The function 'week_OR_processing_region' must be run before this function. Return dictionaries of week to season number, zip3 to state and region, (week, region) to incidence, (week, region) to OR, and (week, region) to zOR.
 	dict_wk[week] = seasonnum
 	dict_zip3_reg[zip3] = (state, hhsreg)
@@ -961,7 +961,7 @@ def week_zOR_processing_region(dict_wk, dict_zip3_reg, dict_incid_reg, dict_OR_r
 	return dict_zOR_reg
 
 ##############################################
-def week_zOR_processing_state(dict_wk, dict_zip3_reg, dict_incid_state, dict_OR_state):
+def week_zOR_processing_state(dict_wk, dict_OR_state):
 	''' Calculate zOR for each state by week based on normweeks and plotting_seasons gp. 'gp' is global parameter defined at the beginning of functions.py. Each region is z-normalized by the first normweeks weeks of OR data for that state. The function 'week_OR_processing_state' must be run before this function. Return dictionaries of week to season number, zip3 to state and region, (week, state) to incidence, (week, state) to OR, and (week, state) to zOR.
 	dict_wk[week] = seasonnum
 	dict_zip3_reg[zip3] = (state, hhsreg)

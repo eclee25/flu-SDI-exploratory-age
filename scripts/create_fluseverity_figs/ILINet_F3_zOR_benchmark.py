@@ -53,11 +53,11 @@ fssml = 16
 d_benchmark = fxn.benchmark_import(ix, 8) # no ILINet
 # dict_wk[week] = seasonnum, dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season, dict_OR[week] = OR
 d_wk, d_incid, d_OR = fxn.ILINet_week_OR_processing(incid, pop)
-d_zOR = fxn.week_zOR_processing(d_wk, d_incid, d_OR)
+d_zOR = fxn.week_zOR_processing(d_wk, d_OR)
 # d_incid53ls[seasonnum] = [ILI wk 40 per 100000, ILI wk 41 per 100000,...], d_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...], d_zOR53ls[seasonnum] = [zOR wk 40, zOR wk 41, ...]
 d_incid53ls, d_OR53ls, d_zOR53ls = fxn.week_plotting_dicts(d_wk, d_incid, d_OR, d_zOR)
 # dict_classifzOR[seasonnum] = (mean retrospective zOR, mean early warning zOR)
-d_classifzOR = fxn.classif_zOR_processing(d_wk, d_incid53ls, d_OR53ls, d_zOR53ls, thanks)
+d_classifzOR = fxn.classif_zOR_processing(d_wk, d_incid53ls, d_zOR53ls, thanks)
 
 # plot values
 benchmark = [d_benchmark[s] for s in ps]

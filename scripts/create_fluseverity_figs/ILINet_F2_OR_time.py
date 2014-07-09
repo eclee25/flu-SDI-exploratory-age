@@ -44,7 +44,7 @@ fssml = 16
 # import data
 # d_wk[week] = seasonnum, d_incid53ls[seasonnum] = [ILI wk 40 per 100000, ILI wk 41 per 100000,...], d_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...], d_zOR53ls[seasonnum] = [zOR wk 40, zOR wk 41, ...]
 d_wk, d_incid, d_OR = fxn.ILINet_week_OR_processing(incid, pop)
-d_zOR = fxn.week_zOR_processing(d_wk, d_incid, d_OR)
+d_zOR = fxn.week_zOR_processing(d_wk, d_OR)
 d_incid53ls, d_OR53ls, d_zOR53ls = fxn.week_plotting_dicts(d_wk, d_incid, d_OR, d_zOR)
 
 # plot values
