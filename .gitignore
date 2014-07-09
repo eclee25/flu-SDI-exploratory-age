@@ -14,6 +14,7 @@ Py_export/
 SQL_import/
 graph_outputs/
 Reference_datasets/
+scripts/create_fluseverity_figs/checks/
 scripts/season2_explore.py
 scripts/small_attack_rate_explore.sql
 Rural_Urban/MCDC_reference.txt
