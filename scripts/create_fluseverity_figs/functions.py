@@ -63,12 +63,12 @@ gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
 ## call parameters ##
 # set these parameters every time a plot is run
 
-pseasons = gp_plotting_seasons
+pseasons = gp_ILINet_plotting_seasons
 
 
 ##############################################
 def benchmark_import (csv_cdcseverity, index_col):
-	''' Import CDC_Source/Import_Data/cdc_severity_index.csv data, which includes z-normalized contributors to CDC severity index. These data include: percent of positive flu lab tests, proportion of mortality due to P&I, pediatric deaths, proportion of ILI, 5-17 years hospitalization rate, and 18-49 years hospitalization rate. All data sources are not available for every season. Return dictionary with season to benchmark index value.
+	''' Import CDC_Source/Import_Data/cdc_severity_index.csv data, which includes z-normalized contributors to CDC severity index. These data include: percent of positive flu lab tests, proportion of mortality due to P&I, pediatric deaths, 5-17 years hospitalization rate, and 18-49 years hospitalization rate. Outpatient ILI is included in the index in the 7th column. The index in the 8th column does not include outpatient ILI. All data sources are not available for every season. Flu season includes weeks 40 to 17 (instead of the standard weeks 40 to 20) because Return dictionary with season to benchmark index value.
 	dict_benchmark[seasonnum] = CDC benchmark index value
 	'''
 	main(benchmark_import)
@@ -199,7 +199,7 @@ def classif_zOR_index_state(dict_wk, dict_incid53ls, dict_incid53ls_state, retro
 	
 	for s, state in product(pseasons, state_keys):
 		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
-		
+		ILINet_week_OR_processing
 		# nation-lvl peak-based retrospective classification
 		if retro_level_string == 'nation':
 			peak_index = dict_incid53ls[s].index(max(dict_incid53ls[s]))
@@ -500,17 +500,17 @@ def season_H3perc_CDC(csvreadfile):
 
 ##############################################
 def season_H3perc_NREVSS(csvreadfile):
-	''' Import My_Bansal_Lab/Clean_Data_for_Import/NREVSS_Isolates_Season.csv data, which includes information on year, number of samples positive for flu, A samples, B samples, subtyped A samples, A/H1 samples, A/H3 samples, B samples, A/2009H1N1 samples, total speciments tested. Return a dictionary with season and proportion of H3 isolates of all subtyped flu isolates collected that season. The original source of isolate information is the CDC Flu Season Summaries, WHO NREVSS surveillance system (not the CDC system).
+	''' Import My_Work/Clean_Data_for_Import/NREVSS_Isolates_Season_improved.csv data, which includes information on year, number of samples positive for flu, A samples, B samples, subtyped A samples, A/H1 samples, A/H3 samples, B samples, A/2009H1N1 samples, total speciments tested. Return a dictionary with season and proportion of H3 isolates of all subtyped flu isolates collected that season. The original source of isolate information is the CDC Flu Season Summaries, WHO NREVSS surveillance system (not the CDC system).
 	dict_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
 	'''
 	main(season_H3perc_NREVSS)
 	
 	dict_dummy = {}
 	for row in csvreadfile:
-		A_sub, B = int(row[4]), int(row[3])
-		TOTi = A_sub + B
-		H3i = float(row[6])
-		season = int(row[0][7:]) # season number
+		A_H1, A_H3, A_09, B, H3N2v = int(row[2]), int(row[4]), int(row[5]), int(row[6]), int(row[7])
+		TOTi = A_H1 + A_H3 + A_09 + B + H3N2v
+		H3i = float(row[4])
+		season = int(row[0]) - 2000 # season number
 		# include only seasons in pseasons in returned dictionary
 		dict_dummy[season] = H3i/TOTi
 
@@ -530,7 +530,7 @@ def Thanksgiving_H3perc_NREVSS(csvreadfile):
 	for row in csvreadfile:
 		a_H1, a_H3, a_09, B, H3N2v = int(row[2]), float(row[4]), int(row[5]), int(row[6]), int(row[7])
 		TOTi = a_H1 + a_H3 + a_09 + B + H3N2v 
-		season = int(row[0][2:]) # season number
+		season = int(row[0]) - 2000 # season number
 		# include only seasons in pseasons in returned dictionary
 		dict_dummy[season] = a_H3/TOTi
 
