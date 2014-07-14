@@ -29,8 +29,8 @@ gp_retro_duration = 2 # duration of retrospective period in weeks
 gp_begin_retro_week = 3 # number of weeks before the peak incidence week that the retrospective period should begin (that season only)
 gp_early_duration = 2 # duration of the early warning period in weeks
 gp_begin_early_week = 2 # number of weeks after the week with Thanksgiving that the early warning period should begin (that season only)
-gp_plotting_seasons = xrange(2,10) # season numbers for which data will be plotted (eg. Season 2 = 2001-02)
-gp_plotting_regions = xrange(1, 11) # region numbers
+gp_plotting_seasons = range(2,10) # season numbers for which data will be plotted (eg. Season 2 = 2001-02)
+gp_plotting_regions = range(1, 11) # region numbers
 gp_mild =[3, 6, 7, 9] # seasons 3, 6, 7, 9
 gp_mod = [2, 5] # seasons 2, 5
 gp_sev = [4, 8] # seasons 4, 8, 10 (pandemic)
@@ -54,6 +54,8 @@ gp_line_style = ['-', ':']
 gp_barwidth = 0.35
 gp_agelabels = ['Child', 'Adult', 'Other Ages']
 gp_agecolors = ['orange', 'grey', 'green']
+gp_mild_severe_colors = ['blue', 'red']
+gp_plot_titles = ['Mild Season', 'Severe Season']
 
 ## ILINet data ##
 gp_ILINet_seasonlabels = ['97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14']
@@ -63,7 +65,7 @@ gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
 ## call parameters ##
 # set these parameters every time a plot is run
 
-pseasons = gp_ILINet_plotting_seasons
+pseasons = gp_plotting_seasons
 
 
 ##############################################
@@ -582,6 +584,13 @@ def week_incidCA_processing(csv_incidence, csv_population):
 	# dict_ages[agegroup code] = [agegroup bin 1, age group bin 2,... in text]
 	dict_ages = dict(zip(age_keys, [children, adults, other]))
 	
+	# fill dict_ILI_week with 0 if ILI cases for a certain age group are missing
+	print 'missing ILI wks and ages'
+	for wk, age in product(dict_wk, age_keys):
+		if (wk, age) not  in dict_ILI_week:
+			print (wk, age)
+			dict_ILI_week[(wk, age)] = float(0)
+
 	## import population data ##
 	dict_pop_age = {}
 	for row in csv_population:
@@ -589,7 +598,7 @@ def week_incidCA_processing(csv_incidence, csv_population):
 		season = int(calendar_year[2:])
 		age = row[1]
 		# dict_pop_age[(seasonnum, age in text)] = population
-		dict_pop_age[(season, age)] = int(row[2]) 
+		dict_pop_age[(season, age.upper())] = int(row[2]) 
 	
 	# dict_pop[(season, agegroup code)] = population size of agegroup
 	seasons = list(set([k[0] for k in dict_pop_age]))
