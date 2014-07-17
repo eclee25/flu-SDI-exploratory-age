@@ -358,6 +358,37 @@ def contributions_CAO_to_attack(dict_wk, dict_incid):
 	return dict_perc_totAR, dict_tot_attack
 
 ##############################################
+def cum_incid_at_classif(dict_wk, dict_incid53ls, dict_Thanksgiving, snum):
+	''' For a given season, calculate the cumulate incidence percentage for the weeks in the retrospective and early warning periods.
+	'''
+	# main(cum_incid_at_classif)
+
+	
+	weekdummy = sorted([key for key in dict_wk if dict_wk[key] == snum])
+	
+	# total season incidence
+	tot_incid = float(sum(dict_incid53ls[snum][:gp_fluweeks]))
+
+	# peak-based retrospective classification
+	peak_index = dict_incid53ls[snum].index(max(dict_incid53ls[snum][:gp_fluweeks]))
+	print 'pk ix', peak_index
+	begin_retro = peak_index - gp_begin_retro_week
+	# list of week indices in retrospective period
+	retro_indices = xrange(begin_retro, begin_retro+gp_retro_duration)
+	cum_incid_retro = [sum(dict_incid53ls[snum][:i+1]) for i in retro_indices] # cumulative incidence up to and including index week
+	cum_perc_incid_retro = [incid/tot_incid*100 for incid in cum_incid_retro]
+	
+	# Thanksgiving-based early warning classification
+	Thx_index = weekdummy.index(dict_Thanksgiving[snum])
+	begin_early = Thx_index + gp_begin_early_week
+	# list of week indices in early warning period
+	early_indices = xrange(begin_early, begin_early+gp_early_duration)
+	cum_incid_early = [sum(dict_incid53ls[snum][:i+1]) for i in early_indices] # cumulative incidence up to and including index week
+	cum_perc_incid_early = [incid/tot_incid*100 for incid in cum_incid_early]
+		
+	return cum_perc_incid_retro, cum_perc_incid_early
+
+##############################################
 def ILINet_week_OR_processing(csv_incidence, csv_population):
 	''' Import CDC_Source/Import_Data/all_cdc_source_data.csv, which includes unique id, year, week, age group, and ILI incid. Import Census/Import_Data/totalpop_age_Census_98-14.csv, which includes season, age group code, and US population. Return dictionary with week to season number, week to ILI cases per 100,000 in total US population, and dictionary with week to OR. OR attack rates for children and adults will be calculated based on popstat variable of the population in the second calendar year of the flu season (eg. 2001-02 season is based on 2002 population). In ILINet, children are 5-24 years and adults are 25-64 years. In totalpop_age.csv, children are 5-19 years and adults are 20-59 years.
 	dict_wk[week] = seasonnum
