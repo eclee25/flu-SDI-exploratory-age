@@ -23,7 +23,7 @@ import matplotlib.cm as cm
 # global parameters - methods
 
 ## SDI data ##
-gp_normweeks = 7 # number of weeks in baseline normalization period
+gp_normweeks = 10 # number of weeks in baseline normalization period
 gp_fluweeks = 34 # number of weeks in flu season (weeks 40-20)
 gp_retro_duration = 2 # duration of retrospective period in weeks
 gp_begin_retro_week = 3 # number of weeks before the peak incidence week that the retrospective period should begin (that season only)
@@ -65,7 +65,7 @@ gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
 ## call parameters ##
 # set these parameters every time a plot is run
 
-pseasons = gp_plotting_seasons
+pseasons = gp_ILINet_plotting_seasons
 
 
 ##############################################
@@ -1010,9 +1010,8 @@ def week_zOR_processing_state(dict_wk, dict_OR_state):
 	dict_zOR_state[(week, state)] = zOR
 	'''
 	main(week_zOR_processing_state)
-	# dict_wk[week] = seasonnum, dict_zip3_reg[zip3] = (state, hhsreg), dict_incid_state[(week, hhsreg)] = total ILI incidence per 100,000 popstat in 2nd calendar year of flu season, dict_OR_state[(week, hhsreg)] = OR
 		
-	state_keys = list(set([dict_zip3_reg[k][0] for k in dict_zip3_reg]))
+	state_keys = list(set([k[1] for k in dict_OR_state]))
 
 	dict_zOR_state = {}
 	for s, state in product(pseasons, state_keys):
