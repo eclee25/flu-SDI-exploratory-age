@@ -83,6 +83,7 @@ plt.xlim([-5,10])
 plt.ylim([-20,20])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_benchmark.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
+# plt.show()
 
 # mean early warning zOR vs. benchmark index
 plt.plot(benchmark, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
@@ -98,4 +99,4 @@ plt.xlim([-5,10])
 plt.ylim([-8,8])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_benchmark_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
-
+# plt.show()

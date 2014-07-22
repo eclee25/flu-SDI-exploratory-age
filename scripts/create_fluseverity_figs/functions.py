@@ -23,7 +23,7 @@ import matplotlib.cm as cm
 # global parameters - methods
 
 ## SDI data ##
-gp_normweeks = 10 # number of weeks in baseline normalization period
+gp_normweeks = 7 # number of weeks in baseline normalization period
 gp_fluweeks = 34 # number of weeks in flu season (weeks 40-20)
 gp_retro_duration = 2 # duration of retrospective period in weeks
 gp_begin_retro_week = 3 # number of weeks before the peak incidence week that the retrospective period should begin (that season only)
@@ -971,7 +971,7 @@ def week_zOR_processing(dict_wk, dict_OR):
 		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
 		season_mean = np.mean([dict_OR[wk] for wk in weekdummy[:gp_normweeks]])
 		season_sd = np.std([dict_OR[wk] for wk in weekdummy[:gp_normweeks]])
-		list_dictdummy = [(dict_OR[wk]-season_mean)/season_sd for wk in weekdummy]
+		list_dictdummy = [(dict_OR[wk]-season_mean)/season_sd for wk in weekdummy] #/season_sd
 		for w, z in zip(weekdummy, list_dictdummy):
 			dict_zOR[w] = z
 	
