@@ -4,7 +4,7 @@
 ###Python template
 ###Author: Elizabeth Lee
 ###Date: 7/4/14
-###Function: child and adult incidence per 100,000 over time in a severe and a mild season; normalize incidence by child peak value
+###Function: child and adult incidence per 100,000 over time in mild, moderate and severe seasons; normalize incidence by child peak value
 #### Compare the relative contributions of adult and child incidence during that season
 
 ###Import data: OR_allweeks_outpatient.csv, totalpop_age.csv

@@ -49,7 +49,7 @@ gp_regions = ['Boston (R1)', 'New York (R2)', 'Philadelphia (R3)', 'Atlanta (R4)
 gp_weeklabels = range(40,54) # week number labels for plots vs. time
 gp_weeklabels.extend(range(1,40))
 gp_severitylabels = ['Mild', 'Moderate', 'Severe']
-gp_severitycolors = ['y', 'b', 'r']
+gp_severitycolors = ['b', 'y', 'r']
 gp_line_style = ['-', ':']
 gp_barwidth = 0.35
 gp_agelabels = ['Child', 'Adult', 'Other Ages']
