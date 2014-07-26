@@ -453,7 +453,7 @@ def normalize_attackCA(dict_wk, dict_incid):
 		dict_incidA_season[s] = [dict_incid[week][1] for week in sorted(dict_wk) if dict_wk[week] == s]
 
 		# attack rates per 100,000 for children and adults by week, include only wks 40 to 20 (52 weeks total in each season)
-		dict_attackCA[s] = (sum(dict_incidC_season[s][:33]), sum(dict_incidA_season[s][:33]))
+		dict_attackCA[s] = (sum(dict_incidC_season[s][:gp_fluweeks]), sum(dict_incidA_season[s][:gp_fluweeks]))
 
 	# calculate average C and A attack rates across all seasons
 	avg_attackC = float(np.mean([dict_attackCA[k][0] for k in dict_attackCA]))
@@ -482,7 +482,7 @@ def normalize_incidCA(dict_wk, dict_incid):
 	for s in set(dict_wk.values()):
 		dict_incidC_season[s] = [dict_incid[week][0] for week in sorted(dict_wk) if dict_wk[week] == s]
 		dict_incidA_season[s] = [dict_incid[week][1] for week in sorted(dict_wk) if dict_wk[week] == s]
-		maxC = max(dict_incidC_season[s]) # max peak child epidemic
+		maxC = max(dict_incidC_season[s][:gp_fluweeks]) # max peak child epidemic during wks 40 to 20
 		# normalize incidence curves by max peak child epidemic
 		dict_incidC_norm[s] = [val/maxC for val in dict_incidC_season[s]]
 		dict_incidA_norm[s] = [val/maxC for val in dict_incidA_season[s]]
