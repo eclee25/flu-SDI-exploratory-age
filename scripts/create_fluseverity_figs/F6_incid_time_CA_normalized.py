@@ -67,7 +67,6 @@ for s in mild_s:
 
 	# for seasons with 53 weeks (season 5 only)
 	if len(wkdummy) == 53:
-		chartwks = xrange(len(sorted(c_AR)))
 		
 		## incidence y-axis (one line each for child and adult AR)
 		c_AR = d_incidC_norm[s]
@@ -82,7 +81,7 @@ for s in mild_s:
 		c_AR.insert(13, avgc)
 		a_AR.insert(13, avga)
 
-		chartwks = xrange(len(c_AR))
+	chartwks = xrange(len(c_AR))
 		
 	child, = ax.plot(chartwks, c_AR, color = cols[s-2], label = s_lab[s-2], lw = lwd, ms = msz, linestyle = lnsty[0], marker = mk)
 	adult, = ax.plot(chartwks, a_AR, color = cols[s-2], lw = lwd, ms = msz, linestyle = lnsty[1], marker = mk)

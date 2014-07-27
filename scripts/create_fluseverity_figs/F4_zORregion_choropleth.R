@@ -96,7 +96,7 @@ abbr$region <- tolower(abbr$region) # convert state names to lower case because 
 orig3 <- merge(orig2, abbr, by = 'state', all=T)
 
 us_state_map <- map_data('state')
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/graph_outputs/current_14_3_26/choropleths')
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/graph_outputs/current_14_7_3/choropleths')
 
 for (seas in 2:9){
   orig_season2 <- orig3[(orig3$season == seas),]
