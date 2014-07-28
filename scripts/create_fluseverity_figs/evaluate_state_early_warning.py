@@ -30,6 +30,7 @@ d_st = {}
 # d_st_match[state] = [match S2, match S3, etc where match is represented as 1=match, 0=no match]
 d_st_match_early = defaultdict(list) # early warning for state match retro for national
 d_st_match_retro = defaultdict(list) # retro for state match retro for national
+d_st_match_st2st = defaultdict(list) # early warning for state match early warning for national
 # d_correct_by_season_[seasonnum] = (# correct states early warning, # correct states retrospective)
 d_correct_by_season = {}
 
@@ -59,13 +60,14 @@ def apply_severity_code(d_mns):
 		d_codes[key] = tuple(map(function_operator, d_mns[key]))
 	return d_codes	
 
-def print_accuracy_to_file(dict_earlymatch, dict_retromatch, state_list, filename):
+def print_accuracy_to_file(dict_earlymatch, dict_retromatch, dict_statematch, state_list, filename):
 	with open(filename, 'w+') as fwriter:
-		fwriter.write('state,early_retro,retro_retro\n')
+		fwriter.write('state,early_retro,retro_retro,early_retro_state\n')
 		for state in state_list:
 			er = sum(dict_earlymatch[state])
 			rr = sum(dict_retromatch[state])
-			fwriter.write("%s,%s,%s\n" % (state, er, rr))
+			er_state = sum(dict_statematch[state])
+			fwriter.write("%s,%s,%s,%s\n" % (state, er, rr, er_state))
 
 
 ### import data ###
@@ -104,12 +106,12 @@ for line in st:
 # code state level data as mild (1), moderate (0), or severe (-1)
 d_st_codes = apply_severity_code(d_st)
 
-###########################
-# match early warning at state level to retrospective at national level
-
 seasons = [key for key in sorted(d_nat)]
 print 'seasons', seasons # should be in number order
 states = sorted(list(set([key[1] for key in d_st]))) # list unique states
+
+###########################
+# match early warning at state level to retrospective at national level, retropsective at state level to retrospective at national level, and early warning at state level to retrospective at state level
 
 for st in states:
 	# national retro mean zOR
@@ -121,9 +123,11 @@ for st in states:
 	# d_st_match[state] = [match S2, match S3, etc where match is represented as 1=match, 0=no match]
 	d_st_match_early[st] = [1  if retro==early else 0 for retro, early in zip(n_code, st_code_early)]
 	d_st_match_retro[st] = [1  if r1==r2 else 0 for r1, r2 in zip(n_code, st_code_retro)]
+	# d_st_match_st2st[state] = [match state-early and state-retro S2, match S3, etc where match is represented as 1=match, 0=no match]
+	d_st_match_st2st[st] = [1  if retro==early else 0 for retro, early in zip(st_code_retro, st_code_early)]
 	
-	# print state accuracy for early warning & retro
-	print st, sum(d_st_match_early[st]), sum(d_st_match_retro[st])
+	# print state accuracy for early warning & retro to national, and early warning & retro at state level
+	print st, sum(d_st_match_early[st]), sum(d_st_match_retro[st]), sum(d_st_match_st2st[st])
 
 	## checks
 	# print 'nat', n_code
@@ -133,6 +137,7 @@ for st in states:
 ## checks
 # print [d_nat[key][0] for key in sorted(d_nat)]
 # print [d_st[(key, 'NY')][1] for key in sorted(d_nat)]
+
 
 ###########################
 # find background accuracy rate across seasons (average number of states correct in each season)
@@ -150,4 +155,4 @@ print 'bg rate retro', bg_rate_retro
 ###########################
 # print accuracy counts per state to file
 fname = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_accuracy_counts.csv'
-print_accuracy_to_file(d_st_match_early, d_st_match_retro, states, fname)
+print_accuracy_to_file(d_st_match_early, d_st_match_retro, d_st_match_st2st, states, fname)
