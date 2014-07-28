@@ -94,14 +94,15 @@ def cdc_import_CFR_CHR (csv_allcdc):
 	
 	dict_deaths_ILI_counts, dict_CHR = {}, {}
 	for row in csv_allcdc:
-		year, week, season = int(row[1][2:]), int(row[2]), str(row[12])
-		PI_deaths, allcoz_deaths = row[19], row[13]
-		ILI, allpatients = row[17], row[18]
+		year, week, season = str(row[1][2:]), str(row[2]), str(row[12])
+		dummyvals = [row[19], row[13], row[27], row[28]] # PI_deaths, allcoz_deaths, ILI, allpatients # 7/28/14 corrected indexing typo
+		PI_deaths, allcoz_deaths, ILI, allpatients = [float('nan') if val == 'NA' else float(val) for val in dummyvals] # 7/28/14 convert NA string to NaNs
 		CHR = str(row[26])
 		
-		if season == 'NA':
-			# season variable is noted only for seasons in SDI dataset along the sequence such that the 2001-02 flu season is season 2, etc.
-			season = 0
+		if week == 'NA':
+			continue
+		# reassign year and week as integers after skipping NAs
+		year, week = int(year), int(week)
 		if int(season) in pseasons:
 			# dict_deaths_ILI_counts[(seasonnum, weeknum)] = (P&I deaths, all deaths, ILI cases, total patients)
 			dict_deaths_ILI_counts[(int(season), week)] = (PI_deaths, allcoz_deaths, ILI, allpatients)
@@ -122,10 +123,10 @@ def cdc_import_CFR_CHR (csv_allcdc):
 	for s in pseasons:
 		
 		# dict_deaths[seasonnum] = (P&I deaths from wks 40 to 20, all cause deaths from wks to 40 to 20)
-		dict_deaths[s] = (sum([float(dict_deaths_ILI_counts_fluwks[k][0]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]), sum([int(dict_deaths_ILI_counts_fluwks[k][1]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]))
+		dict_deaths[s] = (sum([float(dict_deaths_ILI_counts_fluwks[k][0]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]), sum([float(dict_deaths_ILI_counts_fluwks[k][1]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]))
 		
 		# dict_ILI[seasonnum] = (ILI cases from wks 40 to 20, all patients from wks 40 to 20)
-		dict_ILI[s] = (sum([float(dict_deaths_ILI_counts_fluwks[k][2]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]), sum([int(dict_deaths_ILI_counts_fluwks[k][2]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]))
+		dict_ILI[s] = (sum([float(dict_deaths_ILI_counts_fluwks[k][2]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]), sum([float(dict_deaths_ILI_counts_fluwks[k][2]) for k in dict_deaths_ILI_counts_fluwks if k[0] == s]))
 		
 		# dict_CFR[seasonnum] = P&I deaths of all flu season deaths in 122 cities/outpatient ILI cases of all flu season patient visits to outpatient offices in ILINet
 		dict_CFR[s] = (dict_deaths[s][0]/dict_deaths[s][1])/(dict_ILI[s][0]/dict_ILI[s][1])

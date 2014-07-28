@@ -58,20 +58,31 @@ inpatientSDIin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQ
 inpatientSDI=csv.reader(inpatientSDIin, delimiter=',')
 
 ### program ###
-# import data
-# d_classifzOR[seasonnum] =  (mean retrospective zOR, mean early warning zOR)
+## import CDC data for chr, cfr, and deaths:ili
 # d_CHR[seasonnum] = cumulative lab-confirmed case-hospitalization rate per 100,000 in population over the period from week 40 to week 17 during flu season
 # d_CFR[seasonnum] = P&I deaths of all flu season deaths in 122 cities/outpatient ILI cases of all flu season patient visits to outpatient offices in ILINet
 # d_deaths[seasonnum] = (P&I deaths from wks 40 to 20, all cause deaths from wks to 40 to 20)
 # d_ILI[seasonnum] = (ILI cases from wks 40 to 20, all patients from wks 40 to 20)
-d_classifzOR = fxn.classif_zOR_processing(incid, pop, thanks)
 d_CHR, d_CFR, d_deaths, d_ILI = fxn.cdc_import_CFR_CHR(cdc)
+
+## import SDI data for zOR ##
+# dict_wk[week] = seasonnum, dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season, dict_OR[week] = OR
+d_wk, d_incid, d_OR = fxn.week_OR_processing(incid, pop)
+d_zOR = fxn.week_zOR_processing(d_wk, d_OR)
+# d_incid53ls[seasonnum] = [ILI wk 40 per 100000, ILI wk 41 per 100000,...], d_OR53ls[seasonnum] = [OR wk 40, OR wk 41, ...], d_zOR53ls[seasonnum] = [zOR wk 40, zOR wk 41, ...]
+d_incid53ls, d_OR53ls, d_zOR53ls = fxn.week_plotting_dicts(d_wk, d_incid, d_OR, d_zOR)
+# d_classifzOR[seasonnum] = (mean retrospective zOR, mean early warning zOR)
+d_classifzOR = fxn.classif_zOR_processing(d_wk, d_incid53ls, d_zOR53ls, thanks)
 
 # plot values
 retrozOR = [d_classifzOR[s][0] for s in ps]
 CHR = [d_CHR[s] for s in ps]
 CFR = [d_CFR[s] for s in ps]
 dI_ratio = [d_deaths[s][0]/d_ILI[s][0] for s in ps]
+print retrozOR
+print CHR
+print CFR
+print dI_ratio
 print 'retrozOR_hosprate', np.corrcoef(retrozOR, CHR)
 print 'retrozOR_mortrisk', np.corrcoef(retrozOR, CFR)
 print 'retrozOR_dIratio', np.corrcoef(retrozOR, dI_ratio)
