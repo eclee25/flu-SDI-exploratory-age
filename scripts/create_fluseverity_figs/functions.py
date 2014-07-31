@@ -157,12 +157,12 @@ def classif_zOR_index(dict_wk, dict_incid53ls, dict_incid53ls_reg, retro_level_s
 		
 		# nation-lvl peak-based retrospective classification
 		if retro_level_string == 'nation':
-			peak_index = dict_incid53ls[s].index(max(dict_incid53ls[s]))
+			peak_index = peak_flu_week_index(dict_incid53ls[s]) # 7/31/14 - max among flu weeks
 			begin_retro = peak_index - gp_begin_retro_week
 		
 		# region-lvl peak-based retrospective classif
 		elif retro_level_string == 'region':
-			peak_index = dict_incid53ls_reg[(s, r)].index(max(dict_incid53ls_reg[(s, r)]))
+			peak_index = peak_flu_week_index(dict_incid53ls_reg[(s, r)]) # 7/31/14 - max among flu weeks
 			begin_retro = peak_index - gp_begin_retro_week
 		
 		else:
@@ -205,12 +205,12 @@ def classif_zOR_index_state(dict_wk, dict_incid53ls, dict_incid53ls_state, retro
 		ILINet_week_OR_processing
 		# nation-lvl peak-based retrospective classification
 		if retro_level_string == 'nation':
-			peak_index = dict_incid53ls[s].index(max(dict_incid53ls[s]))
+			peak_index = peak_flu_week_index(dict_incid53ls[s]) # 7/31/14 - max among flu weeks
 			begin_retro = peak_index - gp_begin_retro_week
 		
 		# state-lvl peak-based retrospective classif
 		elif retro_level_string == 'state':
-			peak_index = dict_incid53ls_state[(s, state)].index(max(dict_incid53ls_state[(s, state)]))
+			peak_index = peak_flu_week_index(dict_incid53ls_state[(s, state)]) # 7/31/14 - max among flu weeks
 			begin_retro = peak_index - gp_begin_retro_week
 		
 		else:
@@ -244,7 +244,7 @@ def classif_zOR_processing(dict_wk, dict_incid53ls, dict_zOR53ls, csv_Thanksgivi
 		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
 		
 		# peak-based retrospective classification
-		peak_index = dict_incid53ls[s].index(max(dict_incid53ls[s]))
+		peak_index = peak_flu_week_index(dict_incid53ls[s]) # 7/31/14 - max among flu weeks
 		begin_retro = peak_index - gp_begin_retro_week
 		# list of week indices in retrospective period
 		retro_indices = xrange(begin_retro, begin_retro+gp_retro_duration)
@@ -371,7 +371,7 @@ def cum_incid_at_classif(dict_wk, dict_incid53ls, dict_Thanksgiving, snum):
 	tot_incid = float(sum(dict_incid53ls[snum][:gp_fluweeks]))
 
 	# peak-based retrospective classification
-	peak_index = dict_incid53ls[snum].index(max(dict_incid53ls[snum][:gp_fluweeks]))
+	peak_index = peak_flu_week_index(dict_incid53ls[s])
 	print 'pk ix', peak_index
 	begin_retro = peak_index - gp_begin_retro_week
 	# list of week indices in retrospective period
@@ -490,6 +490,15 @@ def normalize_incidCA(dict_wk, dict_incid):
 
 	return dict_incidC_norm, dict_incidA_norm
 
+##############################################
+def peak_flu_week_index(incid53ls):
+	''' Return index of peak week during the flu season when passed a list of the weekly incidence for the entire year (weeks 40 to 39). '''
+	main(peak_flu_week_index) 
+
+	peak_index = incid53ls.index(max(incid53ls[:gp_fluweeks]))
+	print incid53ls[peak_index-2:peak_index+2]
+	print peak_index
+	return peak_index
 
 ##############################################
 def region_state_dictionary():
