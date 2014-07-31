@@ -496,8 +496,6 @@ def peak_flu_week_index(incid53ls):
 	main(peak_flu_week_index) 
 
 	peak_index = incid53ls.index(max(incid53ls[:gp_fluweeks]))
-	print incid53ls[peak_index-2:peak_index+2]
-	print peak_index
 	return peak_index
 
 ##############################################
