@@ -116,7 +116,7 @@ d_zOR_reg = fxn.week_zOR_processing_region(d_wk, d_OR_reg)
 # dict_incid53ls_reg[(seasonnum, region)] = [ILI wk 40, ILI wk 41,...], dict_OR53ls_reg[(seasonnum, region)] = [OR wk 40, OR wk 41, ...], dict_zOR53ls_reg[(seasonnum, region)] = [zOR wk 40, zOR wk 41, ...]
 d_incid53ls_reg, d_OR53ls_reg, d_zOR53ls_reg = fxn.week_plotting_dicts_region(d_wk, d_incid_reg, d_OR_reg, d_zOR_reg)
 # dict_classifindex[seasonnum] = (index of first retro period week, index of first early warning period week)
-d_classifindex = fxn.classif_zOR_index(d_wk, d_incid53ls, d_incid53ls_reg, 'nation', thanks)
+d_classifindex = fxn.classif_zOR_index(d_wk, d_incid53ls, d_incid53ls_reg, 'region', thanks)
 # d_classifzOR_reg[(seasonnum, region)] = (mean retrospective zOR, mean early warning zOR)
 d_classifzOR_reg = fxn.classif_zOR_region_processing(d_classifindex, d_wk, d_zOR53ls_reg)
 
@@ -149,21 +149,20 @@ d_zOR_state = fxn.week_zOR_processing_state(d_wk, d_OR_state)
 # dict_incid53ls_state[(seasonnum, state)] = [ILI wk 40, ILI wk 41,...], dict_OR53ls_reg[(seasonnum, state)] = [OR wk 40, OR wk 41, ...], dict_zOR53ls_state[(seasonnum, state)] = [zOR wk 40, zOR wk 41, ...]
 d_incid53ls_state, d_OR53ls_state, d_zOR53ls_state = fxn.week_plotting_dicts_state(d_wk, d_incid_state, d_OR_state, d_zOR_state)
 # dict_classifindex[seasonnum] = (index of first retro period week, index of first early warning period week)
-d_classifindex = fxn.classif_zOR_index_state(d_wk, d_incid53ls, d_incid53ls_state, 'nation', thanks)
+d_classifindex = fxn.classif_zOR_index_state(d_wk, d_incid53ls, d_incid53ls_state, 'state', thanks)
 # d_classifzOR_state[(seasonnum, state)] = (mean retrospective zOR, mean early warning zOR)
 d_classifzOR_state = fxn.classif_zOR_state_processing(d_classifindex, d_wk, d_zOR53ls_state)
 
 
 ##############################################
 print d_classifzOR
-print d_ILINet_classifzOR
 print d_classifzOR_reg
 
-fn1 = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_national_classifications_%s.csv' %(nw)
-print_dict_to_file(d_classifzOR, fn1)
+# fn1 = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_national_classifications_%s.csv' %(nw)
+# print_dict_to_file(d_classifzOR, fn1)
 # fn2 = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/ILINet_national_classifications_%s.csv' %(nw)
 # print_dict_to_file(d_ILINet_classifzOR, fn2)
-fn3 = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_regional_classifications_%s.csv' %(nw)
+fn3 = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_regional_classifications_%sreg.csv' %(nw)
 print_dict_to_file2(d_classifzOR_reg, fn3)
-fn4 = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_classifications_%s.csv' %(nw)
+fn4 = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_classifications_%sst.csv' %(nw)
 print_dict_to_file3(d_classifzOR_state, fn4)

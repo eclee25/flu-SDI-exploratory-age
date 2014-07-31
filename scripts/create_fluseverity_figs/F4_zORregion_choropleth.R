@@ -60,12 +60,12 @@ setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export')
 
 #########################################
 ## plot data by HHS region ##
-orig <- read.csv('meanzOR_by_region.csv', header=TRUE, colClasses = c('numeric', 'numeric', 'character', 'numeric', 'numeric'))
+orig <- read.csv('meanzOR_by_region_reglvl.csv', header=TRUE, colClasses = c('numeric', 'numeric', 'character', 'numeric', 'numeric'))
 names(orig) <- c('season', 'HHSreg', 'region', 'retro_zOR', 'early_zOR')
 orig$mean_retro_zOR <- cut(orig$retro_zOR, breaks = c(-10, -5, -1, 0, 1, 5, 10, 30))
 
 us_state_map <- map_data('state')
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/graph_outputs/current_14_3_26/choropleths')
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/graph_outputs/current_14_7_3/choropleths')
 
 for (seas in 2:9){
   orig_season <- orig[(orig$season == seas),]
@@ -78,13 +78,13 @@ for (seas in 2:9){
     theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank()) +
     labs(x=NULL, y=NULL) +
     scale_fill_brewer("mean retro zOR", type='div', palette=7, labels=levels(orig$mean_retro_zOR), drop=FALSE)
-  ggsave(seasonmap, file=paste('RetrozOR_Season', seas, '.png', sep=''))
+  ggsave(seasonmap, file=paste('RetrozOR_Season', seas, 'reglvl.png', sep=''))
 }
 
 #########################################
-## plot data by state ##
+## plot data by state (statelevel classif) ##
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export')
-orig2 <- read.csv('SDI_state_classifications.csv', header=TRUE, colClasses = c('numeric', 'character', 'numeric', 'numeric'))
+orig2 <- read.csv('SDI_state_classifications_7st.csv', header=TRUE, colClasses = c('numeric', 'character', 'numeric', 'numeric')) # 7/31/14 state classif
 names(orig2) <- c('season', 'state', 'retro_zOR', 'early_zOR') # region is state call letter
 orig2$mean_retro_zOR <- cut(orig2$retro_zOR, breaks = c(-10, -5, -1, 0, 1, 5, 10, 30))
 
@@ -109,5 +109,5 @@ for (seas in 2:9){
     theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank()) +
     labs(x=NULL, y=NULL) +
     scale_fill_brewer("mn retro zOR", type='div', palette=7, labels=levels(orig3$mean_retro_zOR), drop=FALSE)
-  ggsave(seasonmap2, width=5, height=3, file=paste('RetrozOR_State_Season', seas, '.png', sep=''))
+  ggsave(seasonmap2, width=5, height=3, file=paste('RetrozOR_State_Season', seas, 'stlvl.png', sep=''))
 }
