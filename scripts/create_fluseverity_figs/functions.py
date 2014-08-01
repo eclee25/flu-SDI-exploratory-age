@@ -492,11 +492,23 @@ def normalize_incidCA(dict_wk, dict_incid):
 
 ##############################################
 def peak_flu_week_index(incid53ls):
-	''' Return index of peak week during the flu season when passed a list of the weekly incidence for the entire year (weeks 40 to 39). '''
-	main(peak_flu_week_index) 
-
+	''' Return index of peak week during the flu season when passed a list of the weekly incidence for the entire year (weeks 40 to 39). 
+	'''
+	main(peak_flu_week_index)
 	peak_index = incid53ls.index(max(incid53ls[:gp_fluweeks]))
 	return peak_index
+
+##############################################
+def readStateClassifFile(state_file):
+	''' Import state classification file (season, state, mn_retro, mn_early) into dict. 
+	'''
+	main(readStateClassifFile)
+	dict_state_classif = {}
+	for line in state_file:
+		season, state = int(line[0]), str(line[1])
+		mean_retro_zOR, mean_early_zOR = float(line[2]), float(line[3])
+		dict_state_classif[(season, state)] = (mean_retro_zOR, mean_early_zOR)
+	return dict_state_classif
 
 ##############################################
 def region_state_dictionary():

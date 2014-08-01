@@ -45,13 +45,6 @@ fs = 24
 fssml = 12
 
 ### functions ###
-def readStateClassifFile(state_file):
-	dict_state_classif = {}
-	for line in state_file:
-		season, state = int(line[0]), str(line[1])
-		mean_retro_zOR, mean_early_zOR = float(line[2]), float(line[3])
-		dict_state_classif[(season, state)] = (mean_retro_zOR, mean_early_zOR)
-	return dict_state_classif
 
 def grabStateToRegion(state_reg_file):
 	dict_state_region = {}
@@ -76,7 +69,7 @@ st_reg = csv.reader(st_regin, delimiter=',')
 
 ## read state zOR data ##
 # d_st_classif[(season, state abbr)] = (mean retro zOR, mean early zOR)
-d_st_classif = readStateClassifFile(st_zOR)
+d_st_classif = fxn.readStateClassifFile(st_zOR)
 # grab list of unique states in dataset
 states = list(set([key[1] for key in d_st_classif]))
 
