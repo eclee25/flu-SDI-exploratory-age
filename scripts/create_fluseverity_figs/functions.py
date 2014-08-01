@@ -371,7 +371,7 @@ def cum_incid_at_classif(dict_wk, dict_incid53ls, dict_Thanksgiving, snum):
 	tot_incid = float(sum(dict_incid53ls[snum][:gp_fluweeks]))
 
 	# peak-based retrospective classification
-	peak_index = peak_flu_week_index(dict_incid53ls[s])
+	peak_index = peak_flu_week_index(dict_incid53ls[snum])
 	print 'pk ix', peak_index
 	begin_retro = peak_index - gp_begin_retro_week
 	# list of week indices in retrospective period
