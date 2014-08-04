@@ -534,6 +534,18 @@ def proportion_ILI_anydiag(csv_SDI):
 	return dict_ILI_anydiag
 
 ##############################################
+def readNationalClassifFile(national_file):
+	''' Import national classification file (season, mn_retro, mn_early) into dict.
+	'''
+	main(readNationalClassifFile)
+	dict_national_classif = {}
+	for line in national_file:
+		season = int(line[0])
+		mean_retro_zOR, mean_early_zOR = float(line[1]), float(line[2])
+		dict_national_classif[season] = (mean_retro_zOR, mean_early_zOR)
+	return dict_national_classif
+
+##############################################
 def readStateClassifFile(state_file):
 	''' Import state classification file (season, state, mn_retro, mn_early) into dict. 
 	'''
