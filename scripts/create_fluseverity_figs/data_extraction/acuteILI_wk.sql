@@ -21,7 +21,17 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 ;
 
-
+/* 8/4/14 - added for reference to F1.csv fields. Data used for Supp_zOR_CFR_CHR.py plot (zOR vs. inpatient/outpatient ILI)
+*/
+SELECT season.SEASON_NUM, flu.WEEK, year(flu.WEEK), week(flu.WEEK), sum(flu.ILI_m), sum(ANY_DIAG_VISIT_CT), flu.popstat
+from flu right join season on (flu.week = season.week)
+where (flu.SERVICE_PLACE = "OFFICE/OP CLINICS" or flu.SERVICE_PLACE = "OUTPATIENT FACILITY") and flu.PATIENT_ZIP3 = "TOT" and flu.AGEGROUP = "TOTAL"
+group by season.SEASON_NUM, flu.WEEK
+INTO OUTFILE '/tmp/F1.csv'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+;
 
 
 
