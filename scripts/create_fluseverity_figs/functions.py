@@ -511,6 +511,29 @@ def peak_flu_week_index(incid53ls):
 	return peak_index
 
 ##############################################
+def proportion_ILI_anydiag(csv_SDI):
+	''' Import data of the format: season, week, year, week number, ILI cases, any diagnosis cases, total population size (SQL_export/F1.csv, SQL_export/Supp_acuteILI_wk.csv). Return dictionary dict_ILI_anydiag[season] = ILI cases/any diagnosis cases.
+	'''
+	# dict_ILI_anydiag[season] = ILI cases/any diagnosis cases
+	dict_ILI_anydiag = {}
+	dict_wk, dict_prop_dummy = {}, {}
+	for row in csv_SDI:
+		season, week = int(row[0]), row[1]
+		ILI, anydiag = float(row[4]), int(row[5])
+		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		dict_wk[wk] = season
+		dict_prop_dummy[wk] = (ILI, anydiag)
+	# list of unique season numbers
+	seasons = list(set([dict_wk[wk] for wk in dict_wk]))
+	# generate dict of ILI proportion of all cases at season level for flu weeks only
+	for s in seasons:
+		dummyweeks = sorted([wk for wk in dict_wk if dict_wk[wk] == s])[:gp_fluweeks]
+		prop = sum([dict_prop_dummy[wk][0] for wk in dummyweeks])/sum([dict_prop_dummy[wk][1] for wk in dummyweeks])
+		dict_ILI_anydiag[s] = prop
+
+	return dict_ILI_anydiag
+
+##############################################
 def readStateClassifFile(state_file):
 	''' Import state classification file (season, state, mn_retro, mn_early) into dict. 
 	'''

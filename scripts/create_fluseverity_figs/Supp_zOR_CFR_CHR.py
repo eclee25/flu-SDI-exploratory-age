@@ -57,6 +57,7 @@ outpatientSDI=csv.reader(outpatientSDIin, delimiter=',')
 inpatientSDIin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/Supp_acuteILI_wk.csv','r')
 inpatientSDI=csv.reader(inpatientSDIin, delimiter=',')
 
+
 ### program ###
 ## import CDC data for chr, cfr, and deaths:ili
 # d_CHR[seasonnum] = cumulative lab-confirmed case-hospitalization rate per 100,000 in population over the period from week 40 to week 17 during flu season
@@ -64,6 +65,11 @@ inpatientSDI=csv.reader(inpatientSDIin, delimiter=',')
 # d_deaths[seasonnum] = (P&I deaths from wks 40 to 20, all cause deaths from wks to 40 to 20)
 # d_ILI[seasonnum] = (ILI cases from wks 40 to 20, all patients from wks 40 to 20)
 d_CHR, d_CFR, d_deaths, d_ILI = fxn.cdc_import_CFR_CHR(cdc)
+
+# import ILI proportion of outpatient cases
+d_ILI_anydiag_outp = fxn.proportion_ILI_anydiag(outpatientSDI)
+# import ILI proportion of inpatient cases
+d_ILI_anydiag_inp = fxn.proportion_ILI_anydiag(inpatientSDI)
 
 ## import SDI data for zOR ##
 # dict_wk[week] = seasonnum, dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season, dict_OR[week] = OR
@@ -76,17 +82,18 @@ d_classifzOR = fxn.classif_zOR_processing(d_wk, d_incid53ls, d_zOR53ls, thanks)
 
 # plot values
 retrozOR = [d_classifzOR[s][0] for s in ps]
-CHR = [d_CHR[s] for s in ps]
-CFR = [d_CFR[s] for s in ps]
-dI_ratio = [d_deaths[s][0]/d_ILI[s][0] for s in ps]
-print retrozOR
+CHR = [d_CHR[s] for s in ps] # missing data for s2 & 3
+CFR = [d_CFR[s] for s in ps] # missing data for s2
+dI_ratio = [d_deaths[s][0]/d_ILI[s][0] for s in ps] # missing data for s2
+inp_outp = [d_ILI_anydiag_inp[s]/d_ILI_anydiag_outp[s] for s in ps]
 print CHR
 print CFR
 print dI_ratio
+print retrozOR
 print 'retrozOR_hosprate', np.corrcoef(retrozOR, CHR)
 print 'retrozOR_mortrisk', np.corrcoef(retrozOR, CFR)
 print 'retrozOR_dIratio', np.corrcoef(retrozOR, dI_ratio)
-
+print 'retrozOR_inpoutp', np.corrcoef(retrozOR, inp_outp)
 
 # draw plots
 # mean retrospective zOR vs. cumulative lab-confirmed hospitalization rate per 100,000 in population
@@ -123,8 +130,16 @@ plt.yticks(fontsize=fssml)
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_CFR_CHR/zOR_DeathILIRatio.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
-
-
+# mean retrospective zOR vs. ratio of proportion of ILI cases in inpatient and outpatient facilities
+plt.plot(inp_outp, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
+for s, x, y in zip(sl, inp_outp, retrozOR):
+	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+plt.ylabel('Mean Retrospective zOR', fontsize=fs)
+plt.xlabel('Inpatient to Outpatient ILI Proportion of All Cases', fontsize=fs)
+plt.xticks(fontsize=fssml)
+plt.yticks(fontsize=fssml)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_CFR_CHR/zOR_InpatientOutpatient.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.close()
 
 
 
