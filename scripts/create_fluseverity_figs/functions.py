@@ -18,6 +18,7 @@ from datetime import date, datetime
 from itertools import product
 import numpy as np
 import matplotlib.cm as cm
+import bisect
 
 ##############################################
 # global parameters - methods
@@ -388,6 +389,17 @@ def cum_incid_at_classif(dict_wk, dict_incid53ls, dict_Thanksgiving, snum):
 	cum_perc_incid_early = [incid/tot_incid*100 for incid in cum_incid_early]
 		
 	return cum_perc_incid_retro, cum_perc_incid_early
+
+##############################################
+def epidemic_duration(incid53ls, min_cum_perc, max_cum_perc):
+	''' Return the number of weeks in an epidemic, given a list of the incidence curve for a complete season and the definition of epidemic duration. Epidemic duration is defined by the cumulative percentage of incidence during the flu epidemic.
+	'''	
+	tot_incid = float(sum(incid53ls[:gp_fluweeks]))
+	cum_incid_perc = list(np.cumsum(incid53ls[:gp_fluweeks])/tot_incid*100)
+	epi_index_min = bisect.bisect(cum_incid_perc, min_cum_perc)
+	epi_index_max = bisect.bisect(cum_incid_perc, max_cum_perc)
+	epidemic_dur = epi_index_max-epi_index_min+1
+	return epidemic_dur
 
 ##############################################
 def ILINet_week_OR_processing(csv_incidence, csv_population):
