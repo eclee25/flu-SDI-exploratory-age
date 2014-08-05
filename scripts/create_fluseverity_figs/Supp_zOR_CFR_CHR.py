@@ -10,6 +10,7 @@
 ### proportion of P&I deaths of all-cause mortality vs. ILI cases of all visits (CDC data)
 ### proportion of P&I deaths of all-cause mortality vs. lab-confirmed hospitalization rates per 100,000 in US population (CDC data)
 ### Acute ILI vs non-acute ILI visits (SDI data)
+### Acute ILI (inpatient) attack rate
 
 ###Import data: 
 #### CDC_Source/Import_Data/all_cdc_source_data.csv: "uqid", "yr", "wk", "num_samples", "perc_pos", "a_H1", "a_unsub" , "a_H3", "a_2009H1N1", "a_nosub", "b", "a_H3N2", "season", "allcoz_all", "allcoz_65.", "allcoz_45.64", "allcoz_25.44", "allcoz_1.24",  "allcoz_.1", "pi_only", "ped_deaths", "hosp_0.4", "hosp_18.49", "hosp_50.64", "hosp_5.17", "hosp_65.", "hosp_tot", "ilitot",   "patients", "providers", "perc_wt_ili", "perc_unwt_ili", "ili_0.4", "ili_5.24", "ili_25.64", "ili_25.49", "ili_50.64", "ili_65."  
@@ -56,7 +57,9 @@ outpatientSDIin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/S
 outpatientSDI=csv.reader(outpatientSDIin, delimiter=',')
 inpatientSDIin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/Supp_acuteILI_wk.csv','r')
 inpatientSDI=csv.reader(inpatientSDIin, delimiter=',')
-
+# calculate acute ILI (inpatient) attack rate
+inpatientin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/Supp_acuteILI_wk.csv','r')
+inpatient=csv.reader(inpatientin, delimiter=',')
 
 ### program ###
 ## import CDC data for chr, cfr, and deaths:ili
@@ -66,10 +69,14 @@ inpatientSDI=csv.reader(inpatientSDIin, delimiter=',')
 # d_ILI[seasonnum] = (ILI cases from wks 40 to 20, all patients from wks 40 to 20)
 d_CHR, d_CFR, d_deaths, d_ILI = fxn.cdc_import_CFR_CHR(cdc)
 
-# import ILI proportion of outpatient cases
+## import ILI proportion of outpatient and inpatient cases
+# d_ILI_anydiag_outp/inp[seasonnum] = ILI outp or inp cases/ outp or inp any diagnosis cases
 d_ILI_anydiag_outp = fxn.proportion_ILI_anydiag(outpatientSDI)
-# import ILI proportion of inpatient cases
 d_ILI_anydiag_inp = fxn.proportion_ILI_anydiag(inpatientSDI)
+
+## import season level attack rate for inpatient ILI cases
+# d_inpatientAR[seasonnum] = ILI AR in inpatient facilities per 100,000 population
+d_inpatientAR = fxn.ILI_AR(inpatient)
 
 ## import SDI data for zOR ##
 # dict_wk[week] = seasonnum, dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season, dict_OR[week] = OR
@@ -86,6 +93,7 @@ CHR = [d_CHR[s] for s in ps] # missing data for s2 & 3
 CFR = [d_CFR[s] for s in ps] # missing data for s2
 dI_ratio = [d_deaths[s][0]/d_ILI[s][0] for s in ps] # missing data for s2
 inp_outp = [d_ILI_anydiag_inp[s]/d_ILI_anydiag_outp[s] for s in ps]
+inpAR = [d_inpatientAR[s] for s in ps]
 print CHR
 print CFR
 print dI_ratio
@@ -94,6 +102,7 @@ print 'retrozOR_hosprate', np.corrcoef(retrozOR, CHR)
 print 'retrozOR_mortrisk', np.corrcoef(retrozOR, CFR)
 print 'retrozOR_dIratio', np.corrcoef(retrozOR, dI_ratio)
 print 'retrozOR_inpoutp', np.corrcoef(retrozOR, inp_outp)
+print 'retrozOR_inpatientAR', np.corrcoef(retrozOR, inpAR)
 
 # draw plots
 # mean retrospective zOR vs. cumulative lab-confirmed hospitalization rate per 100,000 in population
@@ -141,7 +150,17 @@ plt.yticks(fontsize=fssml)
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_CFR_CHR/zOR_InpatientOutpatient.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
-
+# mean retrospective zOR vs. inpatient ILI attack rate per 100,000 population
+plt.plot(inpAR, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
+for s, x, y in zip(sl, inpAR, retrozOR):
+	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+plt.ylabel('Mean Retrospective zOR', fontsize=fs)
+plt.xlabel('Inpatient ILI Attack Rate per 100,000', fontsize=fs)
+plt.xticks(fontsize=fssml)
+plt.yticks(fontsize=fssml)
+plt.xlim([0,140])
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_CFR_CHR/zOR_InpatientAR.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.close()
 
 
 

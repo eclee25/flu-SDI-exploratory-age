@@ -45,7 +45,8 @@ gp_ILINet_plotting_seasons = range(-2, 10) + range(11,15) # remove 2009-10 data
 ## SDI data ##
 gp_seasonlabels = ['01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09']
 gp_colors_1_10 = ['grey', 'black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkviolet', 'hotpink']
-gp_colors = ['black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkviolet']
+# gp_colors = ['black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkviolet']
+gp_colors = ["#e41a1c", "#4daf4a", "#377eb8", "#ff7f00", "#984ea3", "#ffff33", "#a65628", "#f781bf"]
 gp_regions = ['Boston (R1)', 'New York (R2)', 'Philadelphia (R3)', 'Atlanta (R4)', 'Chicago (R5)', 'Dallas (R6)', 'Kansas City (R7)', 'Denver (R8)', 'San Francisco (R9)', 'Seattle (R10)']
 gp_weeklabels = range(40,54) # week number labels for plots vs. time
 gp_weeklabels.extend(range(1,40))
@@ -400,6 +401,29 @@ def epidemic_duration(incid53ls, min_cum_perc, max_cum_perc):
 	epi_index_max = bisect.bisect(cum_incid_perc, max_cum_perc)
 	epidemic_dur = epi_index_max-epi_index_min+1
 	return epidemic_dur
+
+##############################################
+def ILI_AR(csv_SDI):
+	''' Import data of the format: season, week, year, week number, ILI cases, any diagnosis cases, total population size (SQL_export/F1.csv, SQL_export/Supp_acuteILI_wk.csv). Return dictionary dict_facilitytypeAR[season] = ILI cases/total population * 100,000.
+	'''
+	# dict_facilitytypeAR[season] = ILI cases/total population in second year of flu season * 100,000
+	dict_facilitytypeAR = {}
+	dict_wk, dict_ILI_dummy = {}, {}
+	for row in csv_SDI:
+		season, week = int(row[0]), row[1]
+		ILI, pop = float(row[4]), int(row[6]) # pop is the same for every entry that takes place in the same year
+		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		dict_wk[wk] = season
+		dict_ILI_dummy[wk] = (ILI, pop)
+	# list of unique season numbers
+	seasons = list(set([dict_wk[wk] for wk in dict_wk]))
+	# generate dict of attack rate per 100,000 for flu season (gp_fluweeks long)
+	for s in seasons:
+		dummyweeks = sorted([wk for wk in dict_wk if dict_wk[wk] == s])[:gp_fluweeks]
+		AR = sum([dict_ILI_dummy[wk][0] for wk in dummyweeks])/dict_ILI_dummy[dummyweeks[-1]][1] * 100000
+		dict_facilitytypeAR[s] = AR
+
+	return dict_facilitytypeAR
 
 ##############################################
 def ILINet_week_OR_processing(csv_incidence, csv_population):

@@ -56,9 +56,9 @@ plt.ylim([0, 60])
 plt.xlabel('Week Number', fontsize=fs)
 plt.ylabel('Incidence per 100,000', fontsize=fs)
 plt.legend(loc='upper left')
-# plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/F2/incid_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
-# plt.close()
-plt.show()
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/F2/incid_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.close()
+# plt.show()
 
 # 7/28/14: does 'week' variable in SDI refer to week before or after referenced date? Thanksgiving week does not correpond with correct week number for dip in incidence plot
 print [d_incid[wk] for wk in sorted(d_wk) if d_wk[wk]==2]
