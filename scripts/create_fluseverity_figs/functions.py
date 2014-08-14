@@ -39,6 +39,11 @@ gp_sev = [4, 8] # seasons 4, 8, 10 (pandemic)
 ## ILINet data ## 
 gp_ILINet_plotting_seasons = range(-2, 10) + range(11,15) # remove 2009-10 data
 
+## pandemic analyses only ## 
+gp_pandemic_plotting_seasons = range(9,11) # 2008-09 and 2009-10 data only
+gp_pandemicbaseline = ['between pandemic waves', 'last season baseline', 'after pandemic']
+
+
 ##############################################
 # global parameters - plotting
 
@@ -67,7 +72,7 @@ gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
 ## call parameters ##
 # set these parameters every time a plot is run
 
-pseasons = gp_plotting_seasons
+pseasons = gp_pandemic_plotting_seasons
 
 
 ##############################################
@@ -440,7 +445,7 @@ def ILINet_week_OR_processing(csv_incidence, csv_population):
 	for row in csv_incidence: 
 		row_cl = [float('nan') if val == 'NA' else val for val in row]
 		week = str(row_cl[0])+'0' # additional 0 represents Sunday
-		wktime = datetime.strptime(week, '%Y%U%w') # format = 4-dig year, 2-dig week beginning on Sunday, digit representing day of week
+		wktime = datetime.strptime(week, '%Y%U%w') # format = 4-dig year, 2-dig week beginning on Monday (8/10/14), digit representing day of week; data are from one week later than week number listed on plots (for both ILINet and SDI data).
 		wk = datetime.date(wktime) # remove the time from the datetime format
 		dict_ILI_week[(wk, 'C')] = float(row_cl[33])
 		dict_ILI_week[(wk, 'A')] = float(row_cl[34])
@@ -1063,6 +1068,40 @@ def week_zOR_processing(dict_wk, dict_OR):
 		season_mean = np.mean([dict_OR[wk] for wk in weekdummy[:gp_normweeks]])
 		season_sd = np.std([dict_OR[wk] for wk in weekdummy[:gp_normweeks]])
 		list_dictdummy = [(dict_OR[wk]-season_mean)/season_sd for wk in weekdummy] #/season_sd
+		for w, z in zip(weekdummy, list_dictdummy):
+			dict_zOR[w] = z
+	
+	return dict_zOR
+
+##############################################
+def week_zOR_processing_pandemic(dict_wk, dict_OR, baseline_text):
+	''' Calculate zOR by week with choice of different baselines: 'between pandemic waves', 'last season BL', or 'after pandemic'. The function week_OR_processing function must be run before this function. Return dictionaries of week to season number, week to OR, and week to zOR. SDI source files for csv_incidence and csv_population are 'SQL_export/OR_allweeks_outpatient.csv' and 'SQL_export/totalpop_age.csv' respectively. ILINet source files for csv_incidence and csv_population are 'CDC_Source/Import_Data/all_cdc_source_data.csv' and 'Census/Import_Data/totalpop_age_Census_98-14.csv' respectively.
+	dict_wk[week] = seasonnum
+	dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season
+	dict_OR[week] = OR
+	dict_zOR[week] = zOR with pandemic baseline
+	'''
+	main(week_zOR_processing_pandemic)
+	# dict_wk[week] = seasonnum; dict_incid[week] = ILI cases per 10,000 in US population in second calendar year of flu season, dict_OR[week] = OR
+	
+	dict_zOR = {}
+	for s in pseasons:
+		weekdummy = sorted([key for key in dict_wk if dict_wk[key] == s])
+		# weeks from prior season
+		weekdummypre = sorted([key for key in dict_wk if dict_wk[key] == s-1])
+		if baseline_text == 'between pandemic waves':
+			# week indexes of 2008-09 season that occurred between pandemic waves (weeks 26-32, indexes 39:45)
+			season_mean = np.mean([dict_OR[wk] for wk in weekdummypre[39:46]])
+			season_sd = np.std([dict_OR[wk] for wk in weekdummypre[39:46]])
+			list_dictdummy = [(dict_OR[wk]-season_mean)/season_sd for wk in weekdummy] #/season_sd
+		elif baseline_text == 'last season baseline':
+			season_mean = np.mean([dict_OR[wk] for wk in weekdummypre[:gp_normweeks]])
+			season_sd = np.std([dict_OR[wk] for wk in weekdummypre[:gp_normweeks]])
+			list_dictdummy = [(dict_OR[wk]-season_mean)/season_sd for wk in weekdummy] #/season_sd
+		elif baseline_text == 'after pandemic':
+			season_mean = np.mean([dict_OR[wk] for wk in weekdummy[8:]])
+			season_sd = np.std([dict_OR[wk] for wk in weekdummy[8:]])
+			list_dictdummy = [(dict_OR[wk]-season_mean)/season_sd for wk in weekdummy] #/season_sd
 		for w, z in zip(weekdummy, list_dictdummy):
 			dict_zOR[w] = z
 	
