@@ -67,7 +67,7 @@ cdc_lm$perc_pos <- as.numeric(cdc_lm$perc_pos)
 cdc_lm$a_H1 <- as.numeric(cdc_lm$a_H1)
 cdc_lm$a_H3sum <- as.numeric(cdc_lm$a_H3) + as.numeric(cdc_lm$a_H3N2)
 cdc_lm$a_2009H1N1 <- as.numeric(cdc_lm$a_2009H1N1)
-cdc_lb$b <- as.numeric(cdc_lm$b)
+cdc_lm$b <- as.numeric(cdc_lm$b)
 cdc_lm$hosp_18.49 <- as.numeric(cdc_lm$hosp_18.49)
 cdc_lm$hosp_5.17 <- as.numeric(cdc_lm$hosp_5.17)
 cdc_lm$hosp_tot <- as.numeric(cdc_lm$hosp_tot)
@@ -109,12 +109,13 @@ w = 580
 h = 580
 ps = 14
 margin = c(1, 4, 1, 4) + 0.1 # bottom, left, top, right
+lastmargin = c(4, 4, 0, 4)
 omargin = c(1, 1, 1, 1)
 sz = 2
 sz2 = 1.2
 un = "px"
-wkticks = seq(1, 550, by = 50)
-wklabs = substr(sdi2$wk[wkticks], 1, 7)
+wkticks = seq(1, 550, by = 52)
+wklabs = paste('Dec', substr(sdi2$wk[wkticks], 3, 4), sep='')
 
 
 ##########################################
@@ -129,7 +130,7 @@ plot(sdi2$ILI_diag_perc, type = 'l', xlab = '', ylab = '', ylim = c(0, 5), col =
 axis(2, at = seq(0, 5, by=1), labels=seq(0, 5, by=1))
 mtext(2, text = 'ILI % of all visits', line = 2, cex = sz2)
 lines(cdc_lm$perc_unwt_ili, type = 'l', col = 'black', lwd = 2)
-legend('topleft', c('ILINet', 'outpatient claims'), lwd = 2, col = c('black', 'blue'))
+legend('topleft', c('ILINet (outpatient only)', 'med. claims (all visit types)'), lwd = 2, col = c('black', 'blue'))
 
 # perc_pos panel
 par(mar=margin)
@@ -149,15 +150,15 @@ legend('topleft', c('% pos tests', 'A/H1 samples', 'A/H3', 'B', '2009 H1N1'), co
 par(mar=margin)
 plot(cdc_lm$hosp_tot_diff, type = 'l', xlab = '', ylab = '', axes = F, lwd = 2, ylim = c(0, 4), cex.lab = sz)
 axis(2, at = seq(0, 4, by=1), labels=seq(0, 4, by=1))
-mtext(2, text = 'hosp. by 100,000', line = 2, cex = sz2)
+mtext(2, text = 'hosp. per 100K', line = 2, cex = sz2)
 lines(cdc_lm$hosp_5.17_diff, type = 'l', col = 'red', lwd = 2)
 lines(cdc_lm$hosp_18.49_diff, type = 'l', col = 'blue', lwd = 2)
 legend('topleft', c('Total Pop', '5-17 Years', '18-49 Years'), col = c('black', 'red', 'blue'), lwd = 2)
 
 # death panel
-par(mar=c(6, 4, 0, 4))
+par(mar=lastmargin) 
 plot(cdc_lm$pi_only, type = 'l', xlab = '', ylab = '', axes = F, lwd = 2, ylim = c(400, 1400), cex.lab = sz)
-axis(2, at = seq(400, 1400, by = 250), labels = seq(400, 1400, by = 250))
+axis(2, at = seq(400, 1400, by = 500), labels = seq(400, 1400, by = 500))
 mtext(2, text = 'P&I deaths', line = 2, cex = sz2)
 axis(1, at = wkticks, labels = wklabs, las = 2, cex = sz)
 par(new=T)
