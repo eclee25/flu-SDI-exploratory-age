@@ -107,6 +107,10 @@ dum3 <- merge(dum, ili_seas, by='season')
 dum2 <- merge(dum3, natclimate, by='season')
 nat <- data.frame(season=dum2$season, ix_noILI=dum2$ix_noILI, H3_prop=dum2$a_H3_prop, ili_t=dum2$prop_0.4, ili_c=dum2$prop_5.24, ili_a=dum2$prop_25.64, ili_e=dum2$prop_65., precip=dum2$mn_pcp, temp=dum2$mn_tavg, ili_tot=dum2$prop_tot, OR_ca=dum2$OR_ca, OR_ce=dum2$OR_ce, OR_ct=dum2$OR_ct)
 
+# 8/16/13 write to file
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
+write.csv(nat,'regression_data.csv', row.names=FALSE)
+
 ###################################
 ## is the benchmark normally distributed? ##
 qqnorm(nat$ix_noILI, ylab='benchmark index'); qqline(nat$ix_noILI, col=2)
@@ -141,6 +145,7 @@ calculateAkaikeWts <- function(AICtable){
   return (AICtable)
 }
 
+## reg offset (all) ##
 Mnat1 <- lm(ix_noILI ~ H3_prop + OR_ca + OR_ce + OR_ct + precip + temp + ili_a + ili_c + ili_t + ili_e, data=nat, offset = ili_tot)
 summary(Mnat1)
 step1 <- stepAIC(Mnat1, direction='both')
@@ -152,7 +157,21 @@ Mnat1_stepchanges <- c('none', '+OR_ce', '+ili_c', '+OR_ca', '+ili_t', '+ili_e',
 Mnat1_AIC <- c(19.526, 20.319, 20.711, 20.728, 21.132, 21.276, 21.494, 21.520, 24.389, 24.771, 26.992)
 Mnat1_AICtab <- data.frame(steps = Mnat1_stepchanges, AIC = Mnat1_AIC)
 Mnat1_AICtab_wts <- calculateAkaikeWts(Mnat1_AICtab)
-  
+
+## log offset (all) ##
+Mnat1l <- lm(ix_noILI ~ H3_prop + OR_ca + OR_ce + OR_ct + precip + temp + ili_a + ili_c + ili_t + ili_e, data=nat, offset = log(ili_tot))
+summary(Mnat1l)
+step1l <- stepAIC(Mnat1l, direction='both')
+step1l$anova
+Mnat1lf <- lm(ix_noILI ~ H3_prop + temp + ili_a, data=nat, offset = log(ili_tot))
+summary(Mnat1lf)
+# data frame for age-specific ILI and OR AIC results
+Mnat1l_stepchanges <- c('none', '+OR_ce', '+ili_c', '+OR_ca', '+ili_e', '+ili_t', '+OR_ct', '+precip', '-temp', '-ili_a', '-H3_prop')
+Mnat1l_AIC <- c(19.299, 20.321, 20.710, 20.772, 21.000, 21.072, 21.266, 21.297, 23.840, 23.878, 26.543)
+Mnat1l_AICtab <- data.frame(steps = Mnat1l_stepchanges, AIC = Mnat1l_AIC)
+Mnat1l_AICtab_wts <- calculateAkaikeWts(Mnat1l_AICtab)
+
+## reg offset (ORs) ##
 Mnat2 <- lm(ix_noILI ~ H3_prop + OR_ca + OR_ce + OR_ct + precip + temp, data=nat, offset = ili_tot)
 summary(Mnat2)
 step2 <- stepAIC(Mnat2, direction='both')
@@ -165,20 +184,72 @@ Mnat2_AIC <- c(24.285, 24.771, 24.871, 25.673, 26.235, 34.199, 34.439)
 Mnat2_AICtab <- data.frame(steps = Mnat2_stepchanges, AIC = Mnat2_AIC)
 Mnat2_AICtab_wts <- calculateAkaikeWts(Mnat2_AICtab)
 
+## log offset (ORs) ##
+Mnat2l <- lm(ix_noILI ~ H3_prop + OR_ca + OR_ce + OR_ct + precip + temp, data=nat, offset = log(ili_tot))
+summary(Mnat2l)
+step2l <- stepAIC(Mnat2l, direction='both')
+step2l$anova
+Mnat2lf <- lm(ix_noILI ~ H3_prop + OR_ca + temp, data=nat, offset = log(ili_tot))
+summary(Mnat2lf)
+# data frame for OR AIC results
+Mnat2l_stepchanges <- c('none', '-OR_ca', '+OR_ce', '+OR_ct', '+precip', '-H3_prop', '-temp')
+Mnat2l_AIC <- c(23.404, 23.878, 24.104, 24.813, 25.383, 33.196, 33.232)
+Mnat2l_AICtab <- data.frame(steps = Mnat2l_stepchanges, AIC = Mnat2l_AIC)
+Mnat2l_AICtab_wts <- calculateAkaikeWts(Mnat2l_AICtab)
+
+## no offset (ORs) ##
+Mnat2n <- lm(ix_noILI ~ H3_prop + precip + temp + OR_ca + OR_ce + OR_ct, data=nat)
+summary(Mnat2n)
+step2n <- stepAIC(Mnat2n, direction='both')
+step2n$anova
+Mnat2nf <- lm(ix_noILI ~ H3_prop + temp + OR_ca, data=nat)
+summary(Mnat2nf)
+Mnat2n_stepchanges <- c('none', '-OR_ca', '+OR_ce', '+OR_ct', '+precip', '-H3_prop', '-temp')
+Mnat2n_AIC <- c(24.306, 24.792, 24.889, 25.693, 26.255, 34.221, 34.465)
+Mnat2n_AICtab <- data.frame(steps = Mnat2n_stepchanges, AIC = Mnat2n_AIC)
+Mnat2n_AICtab_wts <- calculateAkaikeWts(Mnat2n_AICtab)
+
+## reg offset (ILIs) ##
 Mnat3 <- lm(ix_noILI ~ H3_prop + precip + temp +  ili_a + ili_c + ili_t + ili_e, data=nat, offset = ili_tot)
 summary(Mnat3)
 step3 <- stepAIC(Mnat3, direction='both')
 step3$anova
 Mnat3f <- lm(ix_noILI ~ H3_prop + temp + ili_a, data=nat, offset = ili_tot)
 summary(Mnat3f)
-# dataframe for age-specific ILI AIC results
+# dataframe for age-specific ILI AIC results (non log ili_tot offset)
 Mnat3_stepchanges <- c('none', '+ili_c', '+ili_t', '+ili_e', '+precip', '-temp', '-ili_a', '-H3_prop')
 Mnat3_AIC <- c(19.526, 20.711, 21.132, 21.276, 21.520, 24.389, 24.771, 26.992)
 Mnat3_AICtab <- data.frame(steps = Mnat3_stepchanges, AIC = Mnat3_AIC)
 Mnat3_AICtab_wts <- calculateAkaikeWts(Mnat3_AICtab)
 
+## log offset (ILIs) ##
+Mnat3l <- lm(ix_noILI ~ H3_prop + precip + temp +  ili_a + ili_c + ili_t + ili_e, data=nat, offset = log(ili_tot))
+summary(Mnat3l)
+step3l <- stepAIC(Mnat3l, direction='both')
+step3l$anova
+Mnat3lf <- lm(ix_noILI ~ H3_prop + temp + ili_a, data=nat, offset = log(ili_tot))
+summary(Mnat3lf)
+# dataframe for age-specific ILI AIC results (log ili_tot offset)
+Mnat3l_stepchanges <- c('none', '+ili_c', '+ili_e', '+ili_t', '+precip', '-temp', '-ili_a', '-H3_prop')
+Mnat3l_AIC <- c(19.299, 20.710, 21.000, 21.072, 21.297, 23.840, 23.878, 26.543)
+Mnat3l_AICtab <- data.frame(steps = Mnat3l_stepchanges, AIC = Mnat3l_AIC)
+Mnat3l_AICtab_wts <- calculateAkaikeWts(Mnat3l_AICtab)
+
+## no offset (ILIs) ##
+Mnat3n <- lm(ix_noILI ~ H3_prop + precip + temp +  ili_a + ili_c + ili_t + ili_e, data=nat)
+summary(Mnat3n)
+step3n <- stepAIC(Mnat3n, direction='both')
+step3n$anova
+Mnat3nf <- lm(ix_noILI ~ H3_prop+ temp + ili_a, data=nat)
+summary(Mnat3nf)
+Mnat3n_stepchanges <- c('none', '+ili_c', '+ili_t', '+ili_e', '+precip', '-temp', '-ili_a', '-H3_prop')
+Mnat3n_AIC <- c(19.533, 20.711, 21.135, 21.284, 21.527, 24.401, 24.792, 27.003)
+Mnat3n_AICtab <- data.frame(steps = Mnat3n_stepchanges, AIC = Mnat3n_AIC)
+Mnat3n_AICtab_wts <- calculateAkaikeWts(Mnat3n_AICtab)
 
 
+plot(nat$ili_a, nat$ix_noILI)
+cor(nat$ili_tot, nat$ix_noILI)
 ##################################################################################
 ## region level analysis, 2001-9 ## 
 ###################################
@@ -254,26 +325,12 @@ reg <- data.frame(uqidSR=dumr2$uqidSR, season=dumr2$season.x, region=dumr2$regio
 
 ###################################
 ## region level linear models ## 
-Mreg <- lm(retrozOR ~ region + H3_prop + ili_t + ili_c + ili_a + ili_e + precip + temp, data=reg) # H3_prop then ili_a most explanatory
-summary(Mreg)
-Mreg2 <- lm(retrozOR ~ H3_prop, data=reg) # H3_prop most explanatory
-summary(Mreg2)
-Mreg3 <- lm(retrozOR ~ ili_a, data=reg) # ili_a significant
-summary(Mreg3)
-Mreg4 <- lm(retrozOR ~ ili_t, data=reg) 
-summary(Mreg4)
-Mreg5 <- lm(retrozOR ~ ili_c, data=reg) 
-summary(Mreg5)
-Mreg6 <- lm(retrozOR ~ ili_e, data=reg) 
-summary(Mreg6)
-Mreg7 <- lm(retrozOR ~ precip, data=reg) 
-summary(Mreg7)
-Mreg8 <- lm(retrozOR ~ temp, data=reg) 
-summary(Mreg8)
-Mreg9 <- lm(retrozOR ~ H3_prop + ili_a, data=reg) # H3_prop reduces ili_a explanatory power
-summary(Mreg9)
-Mreg10 <- lm(retrozOR ~ H3_prop + ili_a + ili_c, data=reg) # ili_a becomes significant with H3_prop when ili_c is added
-summary(Mreg10)
+Mreg1 <- lm(retrozOR ~ region + H3_prop + ili_t + ili_c + ili_a + ili_e + precip + temp, data=reg) # H3_prop then ili_a most explanatory
+summary(Mreg1)
+step1r<- stepAIC(Mreg1, direction='both')
+step1r$anova
+Mreg1rf <- lm(ix_noILI ~ H3_prop + ili_c + ili_a, data=nat)
+summary(Mreg1rf)
 
 ## explore H3_prop covariate
 Mreg2 <- lm(retrozOR ~ H3_prop, data=reg) # H3_prop most explanatory
