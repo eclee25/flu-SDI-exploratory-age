@@ -74,6 +74,22 @@ gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
 
 pseasons = gp_plotting_seasons
 
+##############################################
+def benchmark_factors_import(csvreadfile):
+	''' Import CDC_Source/Import_Data/cdc_severity_data_cleaned.csv, which includes the raw data used to create the benchmark index that pairs with the SDI severity index.
+	dict_benchfactors[season] = (percent positive isolates, proportion of total mortality due to P&I, number of pediatric deaths, child hospitalization rate, adult hospitalization rate)
+	'''
+	main(benchmark_factors_import)
+
+	dict_benchfactors = {}
+	for row in csvreadfile:
+		row2 = [float('nan') if item == 'NA' else item for item in row]
+		season = int(row2[0])
+		perc_pos, pi_mort, ped = float(row2[1]), float(row2[2]), float(row2[3])
+		c_hos, a_hos = float(row2[5]), float(row2[6])
+		dict_benchfactors[season] = (perc_pos, pi_mort, ped, c_hos, a_hos)
+
+	return dict_benchfactors
 
 ##############################################
 def benchmark_import (csv_cdcseverity, index_col):
