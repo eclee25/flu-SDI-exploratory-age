@@ -31,8 +31,6 @@ ps = fxn.pseasons
 sl = fxn.gp_seasonlabels
 fs = 24
 fssml = 16
-fw = fxn.gp_fluweeks
-wklab = fxn.gp_weeklabels
 
 ### functions ###
 
