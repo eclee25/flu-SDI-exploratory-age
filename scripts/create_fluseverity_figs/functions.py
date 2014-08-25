@@ -649,6 +649,23 @@ def season_H3perc_NREVSS(csvreadfile):
 	return dict_H3
 
 ##############################################
+def season_vaxmatch(csvreadfile):
+	''' Import SQL_EXPORT/subtype5.csv data, which includes information on prominent subtype, subtypes of isolates that were identified, and isolates that match with the vaccine strains. Return a dictionary with season and proportion of isolates that match the trivalent vaccine of total isolates subtyped. The original source of isolate information is the CDC Flu Season Summaries, CDC surveillance system.
+	dict_vaxmatch[seasonnum] = proportion of isolates matching the vaccine strain out of the total number of isolates subtyped.
+	'''
+	main(season_vaxmatch)
+	
+	dict_vaxmatch = {}
+	for row in csvreadfile:
+		# total isolates, matched isolates
+		TOTi, TOTm = float(row[7]), float(row[11])
+		season = int(row[0]) # season number
+	
+		dict_vaxmatch[season] = TOTm/TOTi
+
+	return dict_vaxmatch
+
+##############################################
 def Thanksgiving_H3perc_NREVSS(csvreadfile):
 	''' Import My_Bansal_Lab/Clean_Data_for_Import/NREVSS_Isolates_Thanksgiving.csv data, which includes information on seasons (eg. 2004 is 2003-04 season), total specimens tested, A/H1 samples, A/unable to subtype, A/H3 samples, A/2009H1N1 samples, B samples, H3N2v samples. Return a dictionary with season and proportion of H3 isolates of all subtyped flu isolates collected that season. The original source of isolate information is the CDC Flu Season Summaries, WHO NREVSS surveillance system (not the CDC system).
 	dict_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
