@@ -74,6 +74,39 @@ gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
 
 pseasons = gp_plotting_seasons
 
+
+##############################################
+def anydiag_baseline_comparison(csvreadfile):
+	''' Number of any diagnosis visits across all
+	ages, service places, and zip3s for fall baseline (weeks 40-46) and summer baseline (weeks 33-39 in previous 'season').
+	dict_anydiag[season] = (# anydiag fall BL, # anydiag summer BL)
+	'''
+	main(anydiag_baseline_comparison)
+
+	dict_wk = {}
+	dict_dummyany = {}
+	# import data
+	for row in csvreadfile:
+		season, weeknum = int(row[0]), int(row[3])
+		anydiag = float(row[4])
+		week = row[1]
+		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		dict_wk[(wk, weeknum)] = season
+		dict_dummyany[(wk, weeknum)] = anydiag
+
+	dict_anydiag = {}
+	for season in pseasons:
+		# keys for wks 40-46 of season
+		fallBL_weeks = [key for key in dict_wk if dict_wk[key] == season and key[1] > 39]
+		# keys for wks 33-39 of season-1
+		summerBL_weeks = [key for key in dict_wk if dict_wk[key] == season-1 and key[1] < 40]
+		# total number of diagnoses # divide by #weeks?
+		fallBL = sum([dict_dummyany[key] for key in fallBL_weeks])#/float(len(fallBL_weeks))
+		summerBL = sum([dict_dummyany[key] for key in summerBL_weeks])#/float(len(summerBL_weeks))
+		dict_anydiag[season] = (fallBL, summerBL)
+
+	return dict_anydiag
+
 ##############################################
 def benchmark_factors_import(csvreadfile):
 	''' Import CDC_Source/Import_Data/cdc_severity_data_cleaned.csv, which includes the raw data used to create the benchmark index that pairs with the SDI severity index.
