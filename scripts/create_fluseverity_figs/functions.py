@@ -47,6 +47,12 @@ gp_pandemicbaseline = ['between pandemic waves', 'last season baseline', 'after 
 ##############################################
 # global parameters - plotting
 
+## generic label formatting ##
+gp_sigma_r = r'Retrospective Severity, $\bar \sigma_r$'
+gp_sigma_w = r'Early Warning Severity, $\bar \sigma_w$'
+gp_sigmat = r'Child-Adult Disease Burden, $\sigma(t)$'
+gp_benchmark = r'Benchmark, $\beta$'
+
 ## SDI data ##
 gp_seasonlabels = ['01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09']
 gp_colors_1_10 = ['grey', 'black', 'red', 'orange', 'gold', 'green', 'blue', 'cyan', 'darkviolet', 'hotpink']

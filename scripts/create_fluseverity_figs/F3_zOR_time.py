@@ -48,18 +48,21 @@ d_zOR = fxn.week_zOR_processing(d_wk, d_OR)
 d_incid53ls, d_OR53ls, d_zOR53ls = fxn.week_plotting_dicts(d_wk, d_incid, d_OR, d_zOR)
 
 # plot values
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
 for s in ps:
-	plt.plot(xrange(fw), d_zOR53ls[s][:fw], marker = 'o', color = colvec[s-2], label = sl[s-2], linewidth = 2)
+	ax.plot(xrange(fw), d_zOR53ls[s][:fw], marker = 'o', color = colvec[s-2], label = sl[s-2], linewidth = 2)
 # grey bars for potential early warning period?
 # grey bars for potential range of retrospective period?
 # create dict with begin_retro and begin_early for each season?
-plt.xlim([0, fw-1])
-plt.xticks(range(fw)[::5], wklab[:fw:5]) 
-plt.xlabel('Week Number', fontsize=fs)
-plt.ylabel('zOR (%s week baseline)' % (norm), fontsize=fs)
-plt.legend(loc='upper left')
+ax.set_xlim([0, fw-1])
+ax.legend(loc='upper left')
+ax.set_xticks(range(fw)[::5], wklab[:fw:5]) 
+ax.set_xlabel('Week Number', fontsize=fs)
+ax.set_ylabel(fxn.gp_sigmat, fontsize=fs)
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/F3/zOR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
+# plt.show()
 
 # ## BIGGERSTAFF PRESENTATION PLOT ##
 # # plot values
