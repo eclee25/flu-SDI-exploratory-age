@@ -81,7 +81,7 @@ gp_txt_early_coords = [(-5.5, 7), (4.5, -7)] # mild, severe
 ## call parameters ##
 # set these parameters every time a plot is run
 
-pseasons = gp_ILINet_plotting_seasons
+pseasons = gp_plotting_seasons
 
 
 ##############################################

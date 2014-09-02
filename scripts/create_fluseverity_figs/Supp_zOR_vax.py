@@ -60,28 +60,34 @@ vaxmatch = [d_vaxmatch[s]*100 for s in ps]
 vaxeffic = [d_vaxeffic[s] for s in ps]
 
 # mean retro zOR vs vaccine match
-plt.plot(vaxmatch, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
+fig1 = plt.figure()
+ax1 = fig1.add_subplot(1,1,1)
+ax1.plot(vaxmatch, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
 for s, x, y in zip(sl, vaxmatch, retrozOR):
-	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Mean Retrospective zOR', fontsize=fs) 
-plt.xlabel('Trivalent Vaccine Match (%)', fontsize=fs)
-plt.xlim([0,100])
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
+	ax1.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+ax1.set_ylabel(fxn.gp_sigma_r, fontsize=fs) 
+ax1.set_xlabel('Trivalent Vaccine Match (%)', fontsize=fs)
+ax1.set_xlim([0,100])
+ax1.set_ylim([-10,20])
+ax1.tick_params(axis='both', labelsize=fssml)
+ax1.invert_yaxis()
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_vax/zOR_vaxmatch.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
 
 # mean retro zOR vs vaccine efficacy
-plt.plot(vaxeffic, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
+fig2 = plt.figure()
+ax2 = fig2.add_subplot(1,1,1)
+ax2.plot(vaxeffic, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
 for s, x, y in zip(sl, vaxeffic, retrozOR):
-	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Mean Retrospective zOR', fontsize=fs) 
-plt.xlabel('TIV/LAIV Weighted Vaccine Efficacy (%)', fontsize=fs)
-plt.xlim([0,100])
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
+	ax2.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+ax2.set_ylabel(fxn.gp_sigma_r, fontsize=fs) 
+ax2.set_xlabel('TIV/LAIV Weighted Vaccine Efficacy (%)', fontsize=fs)
+ax2.set_xlim([0,100])
+ax2.set_ylim([-10,20])
+ax2.tick_params(axis='both', labelsize=fssml)
+ax2.invert_yaxis()
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/zOR_vax/zOR_vaxeffic.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()

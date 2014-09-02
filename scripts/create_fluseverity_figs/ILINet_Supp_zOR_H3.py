@@ -90,28 +90,31 @@ benchmark = [d_benchmark[s] for s in ps]
 # cumulative H3 isolates for entire season
 
 # retrospective vs. H3 nrevss
-plt.plot(H3nrevss, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
+fig1 = plt.figure()
+ax1 = fig1.add_subplot(1,1,1)
+ax1.plot(H3nrevss, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
 for s, x, y in zip(sl, H3nrevss, retrozOR):
-	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Mean Retrospective zOR', fontsize=fs)
-plt.xlabel('H3 Proportion (NREVSS, Season)', fontsize=fs)
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
-plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+	ax1.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
+ax1.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
+ax1.set_xlabel('H3 Proportion (NREVSS)', fontsize=fs)
+ax1.tick_params(axis='both', labelsize=fssml)
+ax1.set_xlim([0,1])
+ax1.set_ylim([-20,20])
+ax1.invert_yaxis()
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_H3/zOR_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # Benchmark index vs. H3 nrevss
 plt.plot(H3nrevss, benchmark, marker = 'o', color = 'black', linestyle = 'None')
 for s, x, y in zip(sl, H3nrevss, benchmark):
 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Benchmark Index', fontsize=fs)
+plt.ylabel(fxn.gp_benchmark, fontsize=fs)
 plt.xlabel('H3 Proportion (NREVSS, Season)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
 plt.ylim([-5,5])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/benchmark_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_H3/benchmark_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 ###################################################
@@ -125,44 +128,44 @@ plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/H3cum_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_H3/H3cum_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # retrospective vs. H3 Thanksgiving
 plt.plot(H3Thanks, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
 for s, x, y in zip(sl, H3Thanks, retrozOR):
 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Mean Retrospective zOR', fontsize=fs)
+plt.ylabel(fxn.gp_sigma_r, fontsize=fs)
 plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_H3/zOR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # early warning vs. H3 Thanksgiving
 plt.plot(H3Thanks, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
 for s, x, y in zip(sl, H3Thanks, earlyzOR):
 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Mean Early Warning zOR', fontsize=fs)
+plt.ylabel(fxn.gp_sigma_w, fontsize=fs)
 plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/earlyzOR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_H3/earlyzOR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # Benchmark index vs. H3 Thanksgiving
 plt.plot(H3Thanks, benchmark, marker = 'o', color = 'black', linestyle = 'None')
 for s, x, y in zip(sl, H3Thanks, benchmark):
 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Benchmark Index', fontsize=fs)
+plt.ylabel(fxn.gp_benchmark, fontsize=fs)
 plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
 plt.ylim([-5,5])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/benchmark_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_H3/benchmark_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 ###################################################
@@ -171,11 +174,11 @@ plt.close()
 plt.plot(H3nrevss, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
 for s, x, y in zip(sl, H3nrevss, earlyzOR):
 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Mean Early Warning zOR', fontsize=fs)
+plt.ylabel(fxn.gp_sigma_w, fontsize=fs)
 plt.xlabel('H3 Proportion (NREVSS, Season)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_H3_nrevss_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_H3/zOR_H3_nrevss_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
