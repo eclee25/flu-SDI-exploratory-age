@@ -51,6 +51,9 @@ ps = fxn.pseasons
 sl = fxn.gp_ILINet_seasonlabels
 fs = 24
 fssml = 16
+# coordinates for mild and severe text
+mildretro_txtcoords, sevretro_txtcoords = fxn.gp_txt_retro_coords 
+mildearly_txtcoords, sevearly_txtcoords = fxn.gp_txt_early_coords
 
 ### program ###
 # import data
@@ -70,9 +73,6 @@ benchmark1 = [d_benchmark1[s] for s in ps]
 benchmark2 = [d_benchmark2[s] for s in ps]
 retrozOR = [d_classifzOR[s][0] for s in ps]
 earlyzOR = [d_classifzOR[s][1] for s in ps]
-print min(benchmark1), max(benchmark1)
-print min(benchmark2), max(benchmark2)
-
 
 print 'retro corr coef, norm 1', np.corrcoef(benchmark1, retrozOR)
 print 'early corr coef, norm 1', np.corrcoef(benchmark1, earlyzOR)
@@ -80,67 +80,93 @@ print 'retro corr coef, norm 2', np.corrcoef(benchmark2, retrozOR)
 print 'early corr coef, norm 2', np.corrcoef(benchmark2, earlyzOR)
 
 # normalization scheme 1: plots
+# pre and post-pandemic normalization scheme
 # mean retro zOR vs. benchmark index
-plt.plot(benchmark1, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
-plt.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
-plt.hlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+fig1 = plt.figure()
+ax1 = fig1.add_subplot(1,1,1)
+ax1.plot(benchmark1, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
+ax1.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+ax1.hlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+ax1.fill([-6, -1, -1, -6], [1, 1, 20, 20], facecolor='blue', alpha=0.4)
+ax1.fill([-1, 1, 1, -1], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
+ax1.fill([1, 10, 10, 1], [-1, -1, -20, -20], facecolor='red', alpha=0.4)
+ax1.annotate('Mild', xy=mildretro_txtcoords, fontsize=fssml)
+ax1.annotate('Severe', xy=sevretro_txtcoords, fontsize=fssml)
 for s, x, y in zip(sl, benchmark1, retrozOR):
-	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Mean Retrospective zOR', fontsize=fs)
-plt.xlabel('Benchmark Index', fontsize=fs)
-plt.title('Pre and Post-pandemic normalization scheme', fontsize=fs)
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
-plt.xlim([-6,10])
-plt.ylim([-20,20])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_benchmark_norm1.png', transparent=False, bbox_inches='tight', pad_inches=0)
+	ax1.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+ax1.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
+ax1.set_xlabel(fxn.gp_benchmark, fontsize=fs)
+ax1.tick_params(axis='both',labelsize=fssml)
+ax1.set_xlim([-6,10])
+ax1.set_ylim([-20,20])
+ax1.invert_yaxis()
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/all_ILINet/zOR_benchmark_norm1.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # mean early warning zOR vs. benchmark index
-plt.plot(benchmark1, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
-plt.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
-plt.hlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+fig2 = plt.figure()
+ax2 = fig2.add_subplot(1,1,1)
+ax2.plot(benchmark1, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
+ax2.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+ax2.hlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+ax2.fill([-6, -1, -1, -6], [1, 1, 20, 20], facecolor='blue', alpha=0.4)
+ax2.fill([-1, 1, 1, -1], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
+ax2.fill([1, 10, 10, 1], [-1, -1, -20, -20], facecolor='red', alpha=0.4)
+ax2.annotate('Mild', xy=mildearly_txtcoords, fontsize=fssml)
+ax2.annotate('Severe', xy=sevearly_txtcoords, fontsize=fssml)
 for s, x, y in zip(sl, benchmark1, earlyzOR):
-	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Mean Early Warning zOR', fontsize=fs)
-plt.xlabel('Benchmark Index', fontsize=fs)
-plt.title('Pre and Post-pandemic norm scheme', fontsize=fs)
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
-plt.xlim([-6,10])
-plt.ylim([-8,8])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_benchmark_early_norm1.png', transparent=False, bbox_inches='tight', pad_inches=0)
+	ax2.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+ax2.set_ylabel(fxn.gp_sigma_w, fontsize=fs) 
+ax2.set_xlabel(fxn.gp_benchmark, fontsize=fs)
+ax2.tick_params(axis='both', labelsize=fssml)
+ax2.set_xlim([-6,6])
+ax2.set_ylim([-8,8])
+ax2.invert_yaxis()
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/all_ILINet/zOR_benchmark_early_norm1.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # normalization scheme 2: plots
+# 97-03, 03-09, 10-14 norm scheme
 # mean retro zOR vs. benchmark index
-plt.plot(benchmark2, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
-plt.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
-plt.hlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+fig3 = plt.figure()
+ax3 = fig3.add_subplot(1,1,1)
+ax3.plot(benchmark2, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
+ax3.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+ax3.hlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+ax3.fill([-6, -1, -1, -6], [1, 1, 20, 20], facecolor='blue', alpha=0.4)
+ax3.fill([-1, 1, 1, -1], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
+ax3.fill([1, 10, 10, 1], [-1, -1, -20, -20], facecolor='red', alpha=0.4)
+ax3.annotate('Mild', xy=mildretro_txtcoords, fontsize=fssml)
+ax3.annotate('Severe', xy=sevretro_txtcoords, fontsize=fssml)
 for s, x, y in zip(sl, benchmark2, retrozOR):
-	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Mean Retrospective zOR', fontsize=fs)
-plt.xlabel('Benchmark Index', fontsize=fs)
-plt.title('97-03, 03-09, 10-14 norm scheme', fontsize=fs)
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
-plt.xlim([-6,10])
-plt.ylim([-20,20])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_benchmark_norm2.png', transparent=False, bbox_inches='tight', pad_inches=0)
+	ax3.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+ax3.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
+ax3.set_xlabel(fxn.gp_benchmark, fontsize=fs)
+ax3.tick_params(axis='both',labelsize=fssml)
+ax3.set_xlim([-6,10])
+ax3.set_ylim([-20,20])
+ax3.invert_yaxis()
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/all_ILINet/zOR_benchmark_norm2.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # mean early warning zOR vs. benchmark index
-plt.plot(benchmark2, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
-plt.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
-plt.hlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+fig4 = plt.figure()
+ax4 = fig4.add_subplot(1,1,1)
+ax4.plot(benchmark2, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
+ax4.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+ax4.hlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+ax4.fill([-6, -1, -1, -6], [1, 1, 20, 20], facecolor='blue', alpha=0.4)
+ax4.fill([-1, 1, 1, -1], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
+ax4.fill([1, 10, 10, 1], [-1, -1, -20, -20], facecolor='red', alpha=0.4)
+ax4.annotate('Mild', xy=mildearly_txtcoords, fontsize=fssml)
+ax4.annotate('Severe', xy=sevearly_txtcoords, fontsize=fssml)
 for s, x, y in zip(sl, benchmark2, earlyzOR):
-	plt.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('Mean Early Warning zOR', fontsize=fs)
-plt.xlabel('Benchmark Index', fontsize=fs)
-plt.title('97-03, 03-09, 10-14 normalization scheme', fontsize=fs)
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
-plt.xlim([-6,10])
-plt.ylim([-8,8])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_benchmark_early_norm2.png', transparent=False, bbox_inches='tight', pad_inches=0)
+	ax4.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+ax4.set_ylabel(fxn.gp_sigma_w, fontsize=fs) 
+ax4.set_xlabel(fxn.gp_benchmark, fontsize=fs)
+ax4.tick_params(axis='both', labelsize=fssml)
+ax4.set_xlim([-6,6])
+ax4.set_ylim([-8,8])
+ax4.invert_yaxis()
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/all_ILINet/zOR_benchmark_early_norm2.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()

@@ -52,6 +52,7 @@ gp_sigma_r = r'Retrospective Severity, $\bar \sigma_r$'
 gp_sigma_w = r'Early Warning Severity, $\bar \sigma_w$'
 gp_sigmat = r'Child-Adult Disease Burden, $\sigma(t)$'
 gp_benchmark = r'Benchmark, $\beta$'
+gp_attackrate = r'Seasonal Attack Rate (per 100,000)'
 
 ## SDI data ##
 gp_seasonlabels = ['01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09']
@@ -73,12 +74,14 @@ gp_plot_titles = ['Mild Season', 'Severe Season']
 ## ILINet data ##
 gp_ILINet_seasonlabels = ['97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14']
 gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
+gp_txt_retro_coords = [(-5.5, 19), (8, -18)] # mild, severe
+gp_txt_early_coords = [(-5.5, 7), (4.5, -7)] # mild, severe
 
 ##############################################
 ## call parameters ##
 # set these parameters every time a plot is run
 
-pseasons = gp_plotting_seasons
+pseasons = gp_ILINet_plotting_seasons
 
 
 ##############################################
