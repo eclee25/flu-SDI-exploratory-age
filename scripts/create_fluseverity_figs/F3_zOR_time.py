@@ -52,12 +52,9 @@ fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
 for s in ps:
 	ax.plot(xrange(fw), d_zOR53ls[s][:fw], marker = 'o', color = colvec[s-2], label = sl[s-2], linewidth = 2)
-# grey bars for potential early warning period?
-# grey bars for potential range of retrospective period?
-# create dict with begin_retro and begin_early for each season?
-ax.set_xlim([0, fw-1])
 ax.legend(loc='upper left')
 ax.set_xticks(range(fw)[::5], wklab[:fw:5]) 
+ax.set_xlim([0, fw-1])
 ax.set_xlabel('Week Number', fontsize=fs)
 ax.set_ylabel(fxn.gp_sigmat, fontsize=fs)
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/F3/zOR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)

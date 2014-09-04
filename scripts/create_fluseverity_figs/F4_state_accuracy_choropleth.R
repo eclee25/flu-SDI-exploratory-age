@@ -53,8 +53,6 @@ require(ggplot2)
 # nine <- c("arizona","california","nevada")
 # ten <- c("idaho","oregon","washington")
 
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export')
-
 
 #########################################
 ## plot data by state ##
@@ -70,7 +68,7 @@ abbr$region <- tolower(abbr$region) # convert state names to lower case because 
 orig3 <- merge(orig2, abbr, by = 'state', all=T)
 
 us_state_map <- map_data('state')
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/graph_outputs/current_14_7_3/choropleths')
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/F4')
 
 choropleth2 <- merge(us_state_map, orig3, by='region', all=T)
 choropleth2 <- choropleth2[order(choropleth2$order),]
@@ -82,9 +80,10 @@ map_est_rnat <- ggplot(choropleth2, aes(long, lat, group=group)) +
   theme_minimal(base_size = 9, base_family = "") +
   theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank()) +
     labs(x=NULL, y=NULL) +
-  scale_fill_brewer("# matches", type='seq', palette=2, labels=levels(orig3$earlyst_retronat), drop=FALSE)  + 
-  ggtitle('early warning (state) and retrospective (national)')
+  scale_fill_brewer("matches", type='seq', palette=2, labels=levels(orig3$earlyst_retronat), drop=FALSE)  
 ggsave(map_est_rnat, width=5, height=3, file='earlySt_retroNat_matchCt_stlvl.png')
+# + 
+#   ggtitle('early warning (state) and retrospective (national)')
 
 # retrospective state match retrospective national
 map_rst_rnat <- ggplot(choropleth2, aes(long, lat, group=group)) +
@@ -93,9 +92,10 @@ map_rst_rnat <- ggplot(choropleth2, aes(long, lat, group=group)) +
   theme_minimal(base_size = 9, base_family = "") +
   theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank()) +
   labs(x=NULL, y=NULL) +
-  scale_fill_brewer("# matches", type='seq', palette=11, labels=levels(orig3$retrost_retronat), drop=FALSE) + 
-  ggtitle('retrospective (state) and retrospective (national)')
+  scale_fill_brewer("matches", type='seq', palette=11, labels=levels(orig3$retrost_retronat), drop=FALSE) 
 ggsave(map_rst_rnat, width=5, height=3, file='retroSt_retroNat_matchCt_stlvl.png')
+# + 
+#   ggtitle('retrospective (state) and retrospective (national)')
 
 # early warning state match retrospective state
 map_est_rst <- ggplot(choropleth2, aes(long, lat, group=group)) +
@@ -104,7 +104,8 @@ map_est_rst <- ggplot(choropleth2, aes(long, lat, group=group)) +
   theme_minimal(base_size = 9, base_family = "") +
   theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank()) +
   labs(x=NULL, y=NULL) +
-  scale_fill_brewer("# matches", type='seq', palette=3, labels=levels(orig3$earlyst_retrost), drop=FALSE) + 
-  ggtitle('early warning (state) and retrospective (state)')
+  scale_fill_brewer("matches", type='seq', palette=3, labels=levels(orig3$earlyst_retrost), drop=FALSE) 
 ggsave(map_est_rst, width=5, height=3, file='earlySt_retroSt_matchCt_stlvl.png')
+# + 
+#   ggtitle('early warning (state) and retrospective (state)')
 

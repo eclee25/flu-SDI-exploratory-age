@@ -77,8 +77,8 @@ for (seas in 2:9){
     theme_minimal(base_size = 16, base_family = "") +
     theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank()) +
     labs(x=NULL, y=NULL) +
-    scale_fill_brewer("mean retro zOR", type='div', palette=7, labels=levels(orig$mean_retro_zOR), drop=FALSE)
-  ggsave(seasonmap, file=paste('RetrozOR_Season', seas, 'reglvl.png', sep=''))
+    scale_fill_brewer(expression(paste('severity, ', sigma[r])), type='div', palette=7, labels=levels(orig$mean_retro_zOR), drop=FALSE)
+  ggsave(seasonmap, width=5, height=3, file=paste('RetrozOR_Season', seas, 'reglvl.png', sep=''))
 }
 
 #########################################
@@ -108,6 +108,6 @@ for (seas in 2:9){
     theme_minimal(base_size = 16, base_family = "") +
     theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank()) +
     labs(x=NULL, y=NULL) +
-    scale_fill_brewer("mn retro zOR", type='div', palette=7, labels=levels(orig3$mean_retro_zOR), drop=FALSE)
+    scale_fill_brewer(expression(paste('severity, ', sigma[r])), type='div', palette=7, labels=levels(orig3$mean_retro_zOR), drop=FALSE)
   ggsave(seasonmap2, width=5, height=3, file=paste('RetrozOR_State_Season', seas, 'stlvl.png', sep=''))
 }

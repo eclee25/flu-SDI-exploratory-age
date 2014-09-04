@@ -59,16 +59,16 @@ for s, i in zip(ps, xrange(len(ps))):
 plt.xlim([0, fw-1])
 plt.xticks(range(fw)[::5], wklab[:fw:5]) 
 plt.xlabel('Week Number', fontsize=fs)
-plt.ylabel('zOR (%s week baseline)' % (norm), fontsize=fs)
+plt.ylabel(fxn.gp_sigmat, fontsize=fs)
 # shrink current axis by 10%
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width*0.9, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-# # grey bar for approximate retrospective period
-plt.fill([15, 16, 16, 15], [-20, -20, 40, 40], facecolor='grey', alpha=0.4)
-# # grey bar for approximate early warning area
-plt.fill([9, 10, 10, 9], [-20, -20, 40, 40], facecolor='grey', alpha=0.4)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/zOR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
+# # # grey bar for approximate retrospective period
+# plt.fill([15, 16, 16, 15], [-20, -20, 40, 40], facecolor='grey', alpha=0.4)
+# # # grey bar for approximate early warning area
+# plt.fill([9, 10, 10, 9], [-20, -20, 40, 40], facecolor='grey', alpha=0.4)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/ILINet/all_ILINet/zOR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 

@@ -48,9 +48,9 @@ d_incid53ls, d_OR53ls, d_zOR53ls = fxn.week_plotting_dicts(d_wk, d_incid, d_OR, 
 
 # plot values
 for s in ps:
-	plt.plot(xrange(fw), d_OR53ls[s][:fw], marker = 'o', color = colvec[s-2], label = sl[s-2], linewidth = 2)
-plt.xlim([0, fw-1])
-plt.xticks(range(fw)[::5], wklab[:fw:5]) 
+	plt.plot(xrange(len(wklab)), d_OR53ls[s], marker = 'o', color = colvec[s-2], label = sl[s-2], linewidth = 2)
+plt.xlim([0, len(wklab)-1])
+plt.xticks(range(len(wklab))[::5], wklab[::5]) 
 plt.ylim([0, 12])
 plt.xlabel('Week Number', fontsize=fs)
 plt.ylabel('OR, child:adult', fontsize=fs)
