@@ -43,6 +43,8 @@ d_reg_col = {}
 d_st_devls = defaultdict(list)
 # d_st_devls_mask[state abbr] = [dev retro S1, dev retro S2, ...], where NaNs are masked
 d_st_devls_mask = defaultdict(list)
+# d_st_median2[state abbr] = median of deviation in mean retro zOR across all seasons for a given state, where NaN is removed from median calculation
+d_st_median2 = {}
 
 ### called/local plotting parameters ###
 ps = fxn.pseasons
@@ -121,6 +123,7 @@ d_st_deviation = relative_to_national(d_st_classif, d_nat_classif)
 # d_st_distr[state abbr] = [mean retro zOR S1, mean retrozOR S2, ...]
 # d_st_median[state abbr] = median of mean retro zOR across seasons (masked NaNs)
 # d_st_devls[state abbr] = [dev retro S1, dev retro S2, ...]
+# d_st_median2[state abbr] = median of deviation in mean retro zOR across seasons (masked NaNs)
 for st in states:
 	d_st_distr[st] = [d_st_classif[key][0] for key in sorted(d_st_classif) if key[1] == st]
 	dummymask = np.ma.array(d_st_distr[st], mask = np.isnan(d_st_distr[st]))
@@ -130,21 +133,32 @@ for st in states:
 	d_st_devls[st] = [d_st_deviation[key][0] for key in sorted(d_st_deviation) if key[1] == st]
 	dummymask2 = np.ma.array(d_st_devls[st], mask = np.isnan(d_st_devls[st]))
 	d_st_devls_mask[st] = dummymask2
+	dummymedian2 = np.ma.median(dummymask2) # medians based on deviation in retrozOR
+	d_st_median2[st] = dummymedian2
 
+## sort mean retrospective zOR medians ##
 # remove states with only masked medians from the dictionary
 d_st_median_sub = dict((k, d_st_median[k]) for k in d_st_median if d_st_median[k])
-
 # sort states by median of mean retro zOR across all seasons
 sort_median_dict = sorted(d_st_median_sub.iteritems(), key=operator.itemgetter(1))
 # grab list of sorted states for plotting
 sorted_states = [item[0] for item in sort_median_dict]
 # grab list of colors in order of sorted states -- each region is its own color
 sorted_colors = [d_reg_col[d_st_reg[st]] for st in sorted_states]
-
 # grab only unmasked values for zOR boxplot
 retrozOR_by_state = [[val for val in d_st_distr_mask[state].T if val] for state in sorted_states]
+
+## sort deviation in mean retrospective zOR medians ##
+# remove states with only masked medians from the dictionary
+d_st_median_sub2 = dict((k, d_st_median2[k]) for k in d_st_median2 if d_st_median2[k])
+# sort states by median of deviation in mean retro zOR across all seasons
+sort_median_dict2 = sorted(d_st_median_sub2.iteritems(), key=operator.itemgetter(1))
+# grab list of sorted states for plotting
+sorted_states2 = [item[0] for item in sort_median_dict2]
+# grab list of colors in order of sorted states -- each region is its own color
+sorted_colors2 = [d_reg_col[d_st_reg[st]] for st in sorted_states2]
 # grab only unmasked values for deviation boxplot
-retroDev_by_state = [[val for val in d_st_devls_mask[state].T if val] for state in sorted_states]
+retroDev_by_state = [[val for val in d_st_devls_mask[state].T if val] for state in sorted_states2]
 
 print d_st_distr_mask['WY']
 print d_st_devls_mask['WY']
@@ -154,7 +168,7 @@ print [d_nat_classif[s][0] for s in ps]
 bxp = plt.boxplot(retrozOR_by_state, patch_artist=True) 
 for patch, color in zip(bxp['boxes'], sorted_colors):
 	patch.set_facecolor(color)
-plt.ylabel('Mean Retrospective zOR', fontsize=fs)
+plt.ylabel(fxn.gp_sigma_r, fontsize=fs)
 plt.xlim([0.5, 47.5])
 plt.ylim([-4, 10])
 plt.xticks(xrange(1, len(sorted_states)+1), sorted_states, rotation = 'vertical', fontsize=fssml)
@@ -167,12 +181,12 @@ plt.close()
 # severest states: (greatest average deviation below 0, rank order severest) DC, ID, MS, NJ, CT, WV, VA, AL
 # mildest states: (greatest average deviation above 0, rank order mildest) WA, OR, CA, VT
 bxp2 = plt.boxplot(retroDev_by_state, patch_artist=True) 
-for patch, color in zip(bxp2['boxes'], sorted_colors):
+for patch, color in zip(bxp2['boxes'], sorted_colors2):
 	patch.set_facecolor(color)
 plt.axhline(y=0, color='k')
-plt.ylabel(r'Deviation from National $\bar{\sigma_{R}}$', fontsize=fs)
+plt.ylabel(r'Deviation from National $\bar{\sigma_{r}}$', fontsize=fs)
 plt.xlim([0.5, 47.5])
-plt.xticks(xrange(1, len(sorted_states)+1), sorted_states, rotation = 'vertical', fontsize=fssml)
+plt.xticks(xrange(1, len(sorted_states2)+1), sorted_states2, rotation = 'vertical', fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.ylim([-3.5,3.5])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/F4/zOR_state_state_deviation.png', transparent=False, bbox_inches='tight', pad_inches=0)
