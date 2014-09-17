@@ -160,6 +160,14 @@ sorted_colors2 = [d_reg_col[d_st_reg[st]] for st in sorted_states2]
 # grab only unmasked values for deviation boxplot
 retroDev_by_state = [[val for val in d_st_devls_mask[state].T if val] for state in sorted_states2]
 
+## 9/17/14 colors by state identity ##
+# GU-SRD14 presentation #
+severe_states = ['VA', 'NC', 'SC', 'WY']
+mild_states = ['OR', 'CA']
+# highlight relatively mild/severe state finding
+sorted_colors3 = ['r' if st in severe_states else ('b' if st in mild_states else '0.85') for st in sorted_states2] 
+
+
 print d_st_distr_mask['WY']
 print d_st_devls_mask['WY']
 print [d_nat_classif[s][0] for s in ps]
@@ -193,3 +201,6 @@ plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fl
 plt.close()
 # plt.show()
 
+# for sorted_colors3 plot
+# plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Presentations/GU-SRD_2014_9_18/Figures/zOR_state_state_deviation.png', transparent=False, bbox_inches='tight', pad_inches=0)
+# plt.close()
