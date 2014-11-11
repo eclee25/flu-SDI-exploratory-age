@@ -65,14 +65,14 @@ ax1.fill([-6, -1, -1, -6], [-1, -1, -20, -20], facecolor='blue', alpha=0.4)
 ax1.fill([-1, 1, 1, -1], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
 ax1.fill([1, 10, 10, 1], [1, 1, 30, 30], facecolor='red', alpha=0.4)
 ax1.annotate('Mild', xy=(-5.5,-8), fontsize=fssml)
-ax1.annotate('Severe', xy=(8,25), fontsize=fssml)
+ax1.annotate('Severe', xy=(8,18), fontsize=fssml)
 for s, x, y in zip(sl, benchmark, retrozOR):
 	ax1.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
 ax1.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax1.set_xlabel(fxn.gp_benchmark, fontsize=fs)
 ax1.tick_params(axis='both',labelsize=fssml)
 ax1.set_xlim([-6,10])
-ax1.set_ylim([-10,30])
+ax1.set_ylim([-10,20])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_zRR_benchmark.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
@@ -101,5 +101,5 @@ plt.close()
 
 # reported: initial, norm2, norm1
 print 'retro corr coef', np.corrcoef(benchmark, retrozOR) 
-# 0.701, 0.366, 0.399
+# 0.431, 0.183, 0.192
 print 'early corr coef', np.corrcoef(benchmark, earlyzOR) # 0.072, 0.059, 0.070

@@ -89,5 +89,5 @@ plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fl
 plt.close()
 # plt.show()
 
-print 'vaxmatch corr coef', np.corrcoef(vaxmatch, retrozOR) # -0.788
+print 'vaxmatch corr coef', np.corrcoef(vaxmatch, retrozOR) # -0.823
 print 'vaxeffic corr coef', np.corrcoef(vaxeffic, retrozOR) # nan

@@ -28,7 +28,7 @@ import csv
 # global parameters - methods
 
 ## SDI data ##
-gp_normweeks = 10 # number of weeks in baseline normalization period
+gp_normweeks = 7 # number of weeks in baseline normalization period
 gp_fluweeks = 34 # number of weeks in flu season (weeks 40-20)
 gp_retro_duration = 2 # duration of retrospective period in weeks
 gp_begin_retro_week = 3 # number of weeks before the peak incidence week that the retrospective period should begin (that season only)
@@ -373,7 +373,12 @@ def identify_retro_early_weeks(dict_wk, dict_incid53ls):
 		weekdummy = sorted([wk for wk in dict_wk if dict_wk[wk] == s])
 		# identify retrospective week indices
 		peak_index = peak_flu_week_index(dict_incid53ls[s])
-		begin_retro = peak_index - gp_begin_retro_week
+		# 11/7: if the season peaks before week 2
+		if peak_index <= 15:
+			begin_retro = 16 # fixed at week 3
+			print s, 'peaks <= week 2'
+		else:
+			begin_retro = peak_index - gp_begin_retro_week
 		end_retro = begin_retro + gp_retro_duration
 
 		# identify early warning week indices
@@ -1162,17 +1167,25 @@ def create_dict_careseek_spatial(spatial_level):
 	# dict_careseek_spatial[(spatial, age)] = proportion ILI care-seeking
 	dict_careseek_spatial = {} 
 	# grab values from global dict dict_careseek_census
+	# 11/7/14 age-specific state estimates
 	if spatial_level == 'state':
 		dict_state_census = {}
 		for row in csvfile:
 			stateAbbr, census = str(row[1]), str(row[7])
 			dict_state_census[stateAbbr] = census
-		# assign ILI care-seeking proportion of state-age combination to same as census-age
-		for stateAbbr, agegroup in product(dict_state_census, ['A', 'C', 'T']):
-			# identify census region of state
-			censusRegion = dict_state_census[stateAbbr]
-			dict_careseek_spatial[(stateAbbr, agegroup)] = dict_careseek_census[(censusRegion, agegroup)]
+			adult0910, child0910 = float(row[2]), float(row[8])
+			dict_careseek_spatial[(stateAbbr, 'A')] = adult0910
+			dict_careseek_spatial[(stateAbbr, 'C')] = child0910
+			# assign estimate for census region if state data is 0
+			if adult0910 == float(0):
+				dict_careseek_spatial[(stateAbbr, 'A')] = dict_careseek_census[(census, 'A')]
+			if child0910 == float(0):
+				dict_careseek_spatial[(stateAbbr, 'C')] = dict_careseek_census[(census, 'C')]
+		for st in dict_state_census:
+			census = dict_state_census[st]
+			dict_careseek_spatial[(st, 'T')] = dict_careseek_census[(census, 'T')]
 
+	# vestigial code for region-level analysis (if ever needed again)
 	# elif spatial_level == 'region':
 	# 	filename = ''
 

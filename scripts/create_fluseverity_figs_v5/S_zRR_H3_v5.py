@@ -95,7 +95,7 @@ plt.xlabel('H3 Proportion (CDC, Season)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/zRR_H3_cdc.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_H3_cdc.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # retrospective vs. H3 nrevss
@@ -108,7 +108,7 @@ ax2.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax2.set_xlabel('H3 Proportion (NREVSS)', fontsize=fs)
 ax2.tick_params(axis='both', labelsize=fssml)
 ax2.set_xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/zRR_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # Benchmark index vs. H3 nrevss
@@ -121,7 +121,7 @@ plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
 plt.ylim([-5,5])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/benchmark_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/benchmark_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 ###################################################
@@ -135,7 +135,7 @@ plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/H3cum_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/H3cum_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # retrospective vs. H3 Thanksgiving
@@ -147,7 +147,7 @@ plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/zRR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # early warning vs. H3 Thanksgiving
@@ -159,7 +159,7 @@ plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/earlyzOR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/earlyzOR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # Benchmark index vs. H3 Thanksgiving
@@ -172,7 +172,7 @@ plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
 plt.ylim([-5,5])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/benchmark_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/benchmark_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 ###################################################
@@ -186,7 +186,7 @@ plt.xlabel('H3 Proportion (CDC, Season)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/zRR_H3_cdc_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_H3_cdc_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 plt.plot(H3nrevss, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
@@ -197,7 +197,7 @@ plt.xlabel('H3 Proportion (NREVSS, Season)', fontsize=fs)
 plt.xticks(fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/zRR_H3_nrevss_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_H3_nrevss_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
-print 'zRR H3 NREVSS corr coef', np.corrcoef(H3nrevss, retrozOR)
+print 'zRR H3 NREVSS corr coef', np.corrcoef(H3nrevss, retrozOR) # 0.561

@@ -156,7 +156,7 @@ plt.close()
 print 'retrozOR_hosprate', np.corrcoef(retrozOR, CHR) # nan
 print 'retrozOR_mortrisk', np.corrcoef(retrozOR, CFR) # nan
 print 'retrozOR_dIratio', np.corrcoef(retrozOR, dI_ratio) # nan
-print 'retrozOR_inpoutp', np.corrcoef(retrozOR, inp_outp) # 0.240
-print 'retrozOR_inpatientAR', np.corrcoef(retrozOR, inpAR) # 0.254
+print 'retrozOR_inpoutp', np.corrcoef(retrozOR, inp_outp) # 0.243
+print 'retrozOR_inpatientAR', np.corrcoef(retrozOR, inpAR) # 0.244
 
 

@@ -120,7 +120,7 @@ wklabs = paste(c(rep('Oct', length(wkticks)-1), 'May'), substr(sdi2$wk[wkticks],
 
 ##########################################
 # combined figure
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5')
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/F1')
 
 png(filename="all_panels.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
 par(mfrow = c(4, 1), mar = margin)

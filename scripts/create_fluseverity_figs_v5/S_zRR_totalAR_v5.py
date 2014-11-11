@@ -49,14 +49,15 @@ fssml = 16
 d_nat_classif = fxn.readNationalClassifFile(natix)
 
 ## import adjusted attack rate ##
-d_wk, d_totIncid53ls, d_totIncidAdj53ls, d_RR53ls, d_zRR53ls = fxn.week_OR_processing(incid, pop)
+d_wk, d_pop, d_totILI53ls, d_totILIadj53ls, d_ageILIadj_season = fxn.week_OR_processing(incid, pop)
+d_totIncid53ls, d_totIncidAdj53ls, d_RR53ls, d_zRR53ls = fxn.week_RR_processing_part2(d_pop, d_totILI53ls, d_totILIadj53ls, d_ageILIadj_season)
 
 # plot values
 AR = [sum(d_totIncidAdj53ls[s][:fw]) for s in ps]
 retrozOR = [d_nat_classif[s][0] for s in ps]
 earlyzOR = [d_nat_classif[s][1] for s in ps]
 
-print 'retro corr coef', np.corrcoef(AR, retrozOR) # 0.839
+print 'retro corr coef', np.corrcoef(AR, retrozOR) # 0.856
 print 'early corr coef', np.corrcoef(AR, earlyzOR) # 0.424
 
 # draw plots
@@ -70,7 +71,7 @@ ax1.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax1.set_xlabel(fxn.gp_attackrate, fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_ylim([-15,15])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_totalAR.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_totalAR.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 

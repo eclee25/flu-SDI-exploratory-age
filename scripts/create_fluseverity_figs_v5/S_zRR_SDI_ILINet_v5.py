@@ -100,6 +100,6 @@ plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fl
 plt.close()
 
 
-print 'retro - SDI/ILINet', np.corrcoef(SDI_retro, ILINet_retro) # 0.719
+print 'retro - SDI/ILINet', np.corrcoef(SDI_retro, ILINet_retro) # 0.728
 print 'early - SDI/ILINet', np.corrcoef(SDI_early, ILINet_early) # 0.080
 

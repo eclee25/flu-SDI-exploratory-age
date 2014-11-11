@@ -6,6 +6,7 @@
 ###Date: 11/1/14
 ###Function: Draw mean retro zOR vs. state with all seasons together. Classify retrospective index according to peak week in state time series.
 ### 8/20/14: Draw same barplot comparing state index to national index. Which states are the most severe/mild across all seasons (state index - national index)/abs(national index). If state is milder than nation --> positive; if state is more severe than nation --> negative.
+# 11/7/14: care-seeking for ILI = age-specific estimate for state in 2009-10 BRFSS; states with missing data are filled in with the corresponding census region's age-specific estimate
 
 ###Import data: R_export/OR_zip3_week_outpatient_cl.csv, R_export/allpopstat_zip3_season_cl.csv
 #### These data were cleaned with data_extraction/clean_OR_hhsreg_week_outpatient.R and exported with OR_zip3_week.sql
@@ -135,8 +136,8 @@ sorted_states2 = [item[0] for item in sort_median_dict2]
 retroDev_by_state = [[val for val in d_st_devls_mask[state]] for state in sorted_states2]
 
 ## 11/1/14: highlight severe states ##
-severe_states = ['VA', 'NC', 'SC']
-almostsevere_states = ['MD', 'PA', 'FL', 'OH']
+severe_states = ['VA', 'NC', 'SC', 'MD', 'PA', 'FL']
+almostsevere_states = ['MI', 'OH', 'CT']
 almostmild_states = ['WA', 'CA', 'OR']
 # highlight severe state finding
 sorted_colors_ix = ['r' if st in severe_states else ('#fdae61' if st in almostsevere_states else ('#abd9e9' if st in almostmild_states else '0.85')) for st in sorted_states] 

@@ -48,8 +48,6 @@ d_wk, d_pop, d_totILI53ls, d_totILIadj53ls, d_ageILIadj_season = fxn.ILINet_week
 d_totIncid53ls, d_totIncidAdj53ls, d_RR53ls, d_zRR53ls = fxn.week_RR_processing_part2(d_pop, d_totILI53ls, d_totILIadj53ls, d_ageILIadj_season)
 d_indices = fxn.identify_retro_early_weeks(d_wk, d_totIncidAdj53ls)
 
-print d_pop
-
 # plot values
 fig = plt.figure()
 ax = plt.subplot(111)

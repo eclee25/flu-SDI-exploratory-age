@@ -66,10 +66,6 @@ f10r = [d_f10[s][0] for s in ps]
 s7r = [d_s7[s][0] for s in ps]
 s10r = [d_s10[s][0] for s in ps]
 
-print '10 week fall corr coef', np.corrcoef(benchmark, f10r)
-print '7 week summer corr coef', np.corrcoef(benchmark, s7r)
-print '10 week summer corr coef', np.corrcoef(benchmark, s10r)
-
 # draw plots
 fig1 = plt.figure()
 ax1 = fig1.add_subplot(1,1,1)
@@ -139,3 +135,7 @@ ax3.set_ylim([-15,15])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/Baseline_sensitivity/zRR-summer10_benchmark.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
+
+print '10 week fall corr coef', np.corrcoef(benchmark, f10r) # 0.724
+print '7 week summer corr coef', np.corrcoef(benchmark, s7r) # 0.677
+print '10 week summer corr coef', np.corrcoef(benchmark, s10r) #0.689
