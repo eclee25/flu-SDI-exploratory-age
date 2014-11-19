@@ -42,7 +42,10 @@ dfsumm<-function(x) {
 
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data')
 imp <- read.csv('all_cdc_source_data.csv', colClasses = c(rep('character', 3), rep('numeric', 35)), header = TRUE)
-preindex <- imp[as.numeric(imp$uqid) > 200039 & as.numeric(imp$uqid) < 201020,] 
+
+preindex <- imp # All data
+# preindex <- imp[as.numeric(imp$uqid) > 200039 & as.numeric(imp$uqid) < 201020,] # SDI seasons only
+
 preindex2 <- preindex[as.numeric(preindex$wk) > 39 | as.numeric(preindex$wk) < 18,] # CDC does not collect data for weeks after 17 in certain seasons. for consistency, do not include weeks 18-20 as "flu season" in the index
 preindex2$num_pos <- preindex2$num_samples * preindex2$perc_pos/100
 

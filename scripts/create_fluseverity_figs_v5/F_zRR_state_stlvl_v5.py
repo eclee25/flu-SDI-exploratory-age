@@ -137,11 +137,10 @@ retroDev_by_state = [[val for val in d_st_devls_mask[state]] for state in sorted
 
 ## 11/1/14: highlight severe states ##
 severe_states = ['VA', 'NC', 'SC', 'MD', 'PA', 'FL']
-almostsevere_states = ['MI', 'OH', 'CT']
 almostmild_states = ['WA', 'CA', 'OR']
 # highlight severe state finding
-sorted_colors_ix = ['r' if st in severe_states else ('#fdae61' if st in almostsevere_states else ('#abd9e9' if st in almostmild_states else '0.85')) for st in sorted_states] 
-sorted_colors_dev = ['r' if st in severe_states else ('#fdae61' if st in almostsevere_states else ('#abd9e9' if st in almostmild_states else '0.85')) for st in sorted_states2] 
+sorted_colors_ix = ['r' if st in severe_states else ('#abd9e9' if st in almostmild_states else '0.85') for st in sorted_states] 
+sorted_colors_dev = ['r' if st in severe_states else ('#abd9e9' if st in almostmild_states else '0.85') for st in sorted_states2] 
 
 print 'nat classif', [d_nat_classif[s][0] for s in ps]
 

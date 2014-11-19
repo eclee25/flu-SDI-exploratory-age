@@ -6,6 +6,12 @@ v5 README
 - OR replaced by relative risk (same as v4)
 - change colors of 02-03 season (darker green) and early warning period (light green) markers (same as v4)
 
+11/7/14
+- retrospective period for seasons that peak before week 2 is now from weeks 3-4
+
+11/11/14
+- national version of figure 5: sigma_r vs. hosp, ILINet, and P&I mortality
+- remove somewhat severe state-level results
 
 charts
 - all CDC surveillance data: changed colors, axes, and ped.deaths locationsz
