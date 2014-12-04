@@ -2,7 +2,7 @@
 ## Name: Elizabeth Lee
 ## Date: 11/2/14
 ## Function: draw figure 1 for manuscript
-### 10-year time series panels: SDI ILI % of total visits (outpatient only) & ILINet ILI % of total visits, positive lab test percentages, hospital rate for children, hospital rate for adults, pediatric deaths, P&I mortality (October 2001 through May 2009)
+### 10-year time series panels: SDI ILI % of total visits (outpatient only) & ILINet ILI % of total visits, positive lab test percentages, cumulative season hospital rate for children, cumulative season hospital rate for adults, pediatric deaths, P&I mortality (October 2001 through May 2009)
 ## Filenames: SQL_export/F1.csv, CDC_Source/Import_Data/all_cdc_source_data.csv
 ## Data Source: 'season', 'wk', 'yr', 'wknum', 'ILI', 'anydiag', 'pop'
 ## Notes: F1.csv: 'season', 'wk', 'yr', 'wknum', 'outpatient & office ILI', 'outpatient & office anydiag', 'pop'
@@ -12,35 +12,9 @@
 ## install.packages("pkg", dependencies=TRUE, lib="/usr/local/lib/R/site-library") # in sudo R
 ## update.packages(lib.loc = "/usr/local/lib/R/site-library")
 
-
-dfsumm<-function(x) {
-	if(!class(x)[1]%in%c("data.frame","matrix"))
-		stop("You can't use dfsumm on ",class(x)," objects!")
-	cat("\n",nrow(x),"rows and",ncol(x),"columns")
-	cat("\n",nrow(unique(x)),"unique rows\n")
-	s<-matrix(NA,nrow=6,ncol=ncol(x))
-	for(i in 1:ncol(x)) {
-		iclass<-class(x[,i])[1]
-		s[1,i]<-paste(class(x[,i]),collapse=" ")
-		y<-x[,i]
-		yc<-na.omit(y)
-		if(iclass%in%c("factor","ordered"))
-			s[2:3,i]<-levels(yc)[c(1,length(levels(yc)))] else
-		if(iclass=="numeric")
-			s[2:3,i]<-as.character(signif(c(min(yc),max(yc)),3)) else
-		if(iclass=="logical")
-			s[2:3,i]<-as.logical(c(min(yc),max(yc))) else
-			s[2:3,i]<-as.character(c(min(yc),max(yc)))
-			s[4,i]<-length(unique(yc))
-			s[5,i]<-sum(is.na(y))
-			s[6,i]<-!is.unsorted(yc)
-	}
-	s<-as.data.frame(s)
-	rownames(s)<-c("Class","Minimum","Maximum","Unique (excld. NA)","Missing values","Sorted")
-	colnames(s)<-colnames(x)
-	print(s)
-} 
-
+# 12/4/14
+setwd('/home/elee/R/source_functions')
+source("dfsumm.R")
 ##########################################
 # Data import
 # SDI
@@ -93,6 +67,7 @@ sdi2$ILI_diag_perc <- sdi2$ILI/sdi2$anydiag * 100
 
 ##########################################
 # process hosp rates so that they are not cumulative
+# 12/4/14: Matt says that the non-cumulative data are not accurate because hospitalizations are backfilled on the week of reporting, not on the week of the event # the plots will be changed to a cumulative hospitalization rate version
 cdc_lm$hosp_tot_diff <- NA
 cdc_lm$hosp_5.17_diff <- NA
 cdc_lm$hosp_18.49_diff <- NA
@@ -116,7 +91,6 @@ sz2 = 1.2
 un = "px"
 wkticks = c(seq(1, dim(sdi2)[1], by = 52), dim(sdi2)[1])
 wklabs = paste(c(rep('Oct', length(wkticks)-1), 'May'), substr(sdi2$wk[wkticks], 3, 4), sep=' ')
-
 
 ##########################################
 # combined figure
@@ -145,16 +119,16 @@ axis(4, at=seq(0, 35, by=15), labels=seq(0, 35, by=15))
 mtext(4, text = 'positive tests (%)', line = 2, cex = sz2)
 legend('topleft', c('A/H1 samp.', 'A/H3 samp.', 'B samp.', '% pos tests'), col = c('navy', 'violetred3', 'orange', 'black'), lwd = c(sz2, sz2, sz2, sz))
 
-# laboratory confirmed panel (hospitalizations, pediatric deaths)
+# laboratory confirmed panel (cumulative hospitalization rates, pediatric deaths)
 par(mar=margin)
 plot(cdc_lm$ped_deaths, col = 'forestgreen ', type = 'l', lwd = sz, axes = F, ylab = '', xlab = '', ylim = c(0,15))
 axis(4, at = seq(0, 15, by=5), labels = seq(0, 15, by=5), col.axis = 'black', col = 'black', col.ticks = 'black')
 mtext(4, text = 'deaths (#)', line = 2.5, col = 'black', cex = sz2)
 par(new=T)
-plot(cdc_lm$hosp_5.17_diff, type = 'l', xlab = '', ylab = '', axes = F, lwd = sz, ylim = c(0, 2), cex.lab = sz, col = 'red')
-lines(cdc_lm$hosp_18.49_diff, type = 'l', col = 'blue', lwd = sz)
-axis(2, at=seq(0, 2, by=0.5), labels=seq(0, 2, by=0.5))
-mtext(2, text = 'hosp. rate / 100K', line = sz, cex = sz2)
+plot(cdc_lm$hosp_5.17, type = 'l', xlab = '', ylab = '', axes = F, lwd = sz, ylim = c(0, 15), cex.lab = sz, col = 'red')
+lines(cdc_lm$hosp_18.49, type = 'l', col = 'blue', lwd = sz)
+axis(2, at=seq(0, 15, by=5), labels=seq(0, 15, by=5))
+mtext(2, text = 'cum. hosp. rate', line = sz, cex = sz2)
 legend('topleft', c('5-17 yr hosp.', '18-49 yr hosp.', 'pediatric deaths'), col = c('red', 'blue', 'forestgreen'), lwd = c(sz, sz, sz))
 
 # death panel
