@@ -27,8 +27,8 @@ import functions_v5 as fxn
 
 ### functions ###
 def factors_import(csvreadfile):
-	''' Import CDC_Source/Import_Data/cdc_severity_data_cleaned.csv, which includes the raw data used to create the benchmark index that pairs with the SDI severity index.
-	dict_benchfactors[season] = (proportion of patients with ILI, total hospitalization rate, proportion of total mortality due to P&I)
+	''' Import CDC_Source/Import_Data/cdc_severity_measures_hospMort_nat.csv, which includes the raw data used to create the benchmark index that pairs with the SDI severity index and some additional components.
+	dict_factors[season] = (proportion of patients with ILI during peak week, cumulative season hospitalization rate, proportion of total mortality due to P&I across the season)
 	Modified from "benchmark_factors_import"
 	'''
 
@@ -36,8 +36,9 @@ def factors_import(csvreadfile):
 	for row in csvreadfile:
 		row2 = [float('nan') if item == 'NA' else item for item in row]
 		season = int(row2[0])
-		pi_mort, ili_prop, hosp_tot = float(row2[6]), float(row2[10]), float(row2[13])
-		dict_factors[season] = (ili_prop, hosp_tot, pi_mort)
+		# 12/4/14: changed to peak ILI week proportion
+		pi_mort, pk_ili_prop, hosp_tot = float(row2[2]), float(row2[9]), float(row2[7])
+		dict_factors[season] = (pk_ili_prop, hosp_tot, pi_mort)
 
 	return dict_factors
 
@@ -68,12 +69,12 @@ d_factors = factors_import(cdc)
 # plot values
 retrozOR = [d_nat_classif[s][0] for s in ps]
 earlyzOR = [d_nat_classif[s][1] for s in ps]
-ili_prop = [d_factors[s][0]*100 for s in ps]
+pk_ili_prop = [d_factors[s][0]*100 for s in ps]
 hosp_tot = [d_factors[s][1] for s in ps][2:]
 pi_mort = [d_factors[s][2]*100for s in ps]
 
 # setup for best fit lines
-Ifit = np.polyfit(retrozOR, ili_prop, 1)
+Ifit = np.polyfit(retrozOR, pk_ili_prop, 1)
 Hfit = np.polyfit(retrozOR[2:], hosp_tot, 1)
 Pfit = np.polyfit(retrozOR, pi_mort, 1)
 Ifit_fn = np.poly1d(Ifit)
@@ -93,7 +94,7 @@ ax2 = ax1.twinx()
 # hosp, = ax2.plot(retrozOR, hosp_tot, marker = 'o', color = colorvec[1], linestyle = 'None', ms=msz)
 
 # best fit lines
-ax1.plot(retrozOR, ili_prop, 'o', retrozOR, Ifit_fn(retrozOR), '-', color = colorvec[0], lw = lwd)
+ax1.plot(retrozOR, pk_ili_prop, 'o', retrozOR, Ifit_fn(retrozOR), '-', color = colorvec[0], lw = lwd)
 ax1.plot(retrozOR, pi_mort, 'o', retrozOR, Pfit_fn(retrozOR), '-', color = colorvec[2], lw = lwd)
 ax2.plot(retrozOR[2:], hosp_tot, 'o', retrozOR[2:], Hfit_fn(retrozOR[2:]), '-', color = colorvec[1], lw = lwd)
 
@@ -109,9 +110,9 @@ ax2.set_ylim([0,40])
 ax2.tick_params(axis='both', labelsize=fssml)
 
 # handles for legend formatting
-Iformat, = ax2.plot([], [], color = colorvec[0], linestyle = '-', lw = lwd, label = 'ILI / Outpatient Visits (%)')
 Pformat, = ax2.plot([], [], color = colorvec[2], linestyle = '-', lw = lwd, label = 'P&I / All-Cause Mort. (%)')
-Hformat, = ax2.plot([], [], color = colorvec[1], linestyle = '-', lw = lwd, label = 'Total Hosp. Rate')
+Iformat, = ax2.plot([], [], color = colorvec[0], linestyle = '-', lw = lwd, label = 'Peak ILI / Visits (%)')
+Hformat, = ax2.plot([], [], color = colorvec[1], linestyle = '-', lw = lwd, label = 'Cum. Hosp. Rate')
 
 ax2.legend(loc=4)
 
@@ -119,6 +120,6 @@ plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fl
 plt.close()
 # plt.show()
 
-print 'ili_prop corr coef', np.corrcoef(ili_prop, retrozOR) # 0.817
+print 'pk_ili_prop corr coef', np.corrcoef(pk_ili_prop, retrozOR) # 0.752 (12/4/14)
 print 'hosp_tot corr coef', np.corrcoef(hosp_tot, retrozOR[2:]) # 0.706 w/o first two seasons
 print 'pi_mort corr coef', np.corrcoef(pi_mort, retrozOR) # 0.691
