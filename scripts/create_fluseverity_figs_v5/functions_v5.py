@@ -73,7 +73,7 @@ gp_sigma_r = r'Retrospective Severity, $\bar \sigma_r$'
 gp_sigma_w = r'Early Warning Severity, $\bar \sigma_w$'
 gp_sigmat = r'Adj. Ratio of Adult:Child ILI, $\sigma(t)$'
 gp_benchmark = r'Benchmark, $\beta$'
-gp_attackrate = r'Seasonal Attack Rate (per 100,000)'
+gp_attackrate = r'Seasonal ILI Visits per 100,000'
 gp_adjILI = r'Adj. ILI Visits per 100,000'
 
 ## SDI data ##

@@ -147,7 +147,7 @@ ax5.plot(inpAR, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
 for s, x, y in zip(sl, inpAR, retrozOR):
 	ax5.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
 ax5.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
-ax5.set_xlabel('Inpatient ILI Attack Rate per 100,000', fontsize=fs)
+ax5.set_xlabel('Inpatient ILI Visits per 100,000', fontsize=fs)
 ax5.tick_params(axis='both', labelsize=fssml)
 ax5.set_xlim([0,140])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_InpatientAR.png', transparent=False, bbox_inches='tight', pad_inches=0)
