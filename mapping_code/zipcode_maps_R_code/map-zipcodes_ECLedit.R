@@ -604,7 +604,7 @@ names(latlong)<-c('zip3', 'latitude', 'longitude')
 latlong$latitude<-as.numeric(latlong$latitude)
 latlong$longitude<-as.numeric(latlong$longitude)
 
-mergeddata = merge(d, latlong, by.x='zip3', by.y='zip3')
+mergeddata <- merge(d, latlong, by.x='zip3', by.y='zip3')
 
 # attack are floats, so they need to be binned
 # how many bins should there be?
