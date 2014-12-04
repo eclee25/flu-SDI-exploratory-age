@@ -70,12 +70,12 @@ for s, c, lab in zip(pltseas, cols, plt_labs):
 	adult, = ax.plot(xrange(fw), a_incid, color = c, lw = lwd, ms = msz, linestyle = lnsty[1], marker = fxn.gp_marker)
 
 # handles for child and adult line formatting
-Cformat, = ax.plot([], [], color = 'grey', linestyle = lnsty[0], lw = lwd, ms = msz, marker = fxn.gp_marker, label = 'child incidence')
-Aformat, = ax.plot([], [], color = 'grey', linestyle = lnsty[1], lw = lwd, ms = msz, marker = fxn.gp_marker, label = 'adult incidence')
+Cformat, = ax.plot([], [], color = 'grey', linestyle = lnsty[0], lw = lwd, ms = msz, marker = fxn.gp_marker, label = 'children')
+Aformat, = ax.plot([], [], color = 'grey', linestyle = lnsty[1], lw = lwd, ms = msz, marker = fxn.gp_marker, label = 'adults')
 
 ## designate legend/title labels
 ax.legend(loc = 'upper left')
-ax.set_ylabel('Adj. Incidence per 100,000', fontsize=fs)
+ax.set_ylabel(fxn.gp_adjILI, fontsize=fs)
 
 ## plot settings
 plt.gca().xaxis.set_major_locator(plt.NullLocator()) # hide xticks and xlabels
@@ -84,7 +84,7 @@ ax.set_xlabel('Week Number', fontsize=fs)
 plt.xlim([0, fw-1])
 
 # save figure
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/incidCA_nonnorm_singpanel.png' , transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/F2/incidCA_nonnorm_singpanel.png' , transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 

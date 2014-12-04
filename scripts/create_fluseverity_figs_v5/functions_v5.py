@@ -71,9 +71,10 @@ dict_careseek_census = {('NE', 'A'):0.44, ('MW', 'A'):0.39, ('SO', 'A'):0.42, ('
 ## generic label formatting ##
 gp_sigma_r = r'Retrospective Severity, $\bar \sigma_r$'
 gp_sigma_w = r'Early Warning Severity, $\bar \sigma_w$'
-gp_sigmat = r'Adult-Child Disease Burden, $\sigma(t)$'
+gp_sigmat = r'Adj. Ratio of Adult:Child ILI, $\sigma(t)$'
 gp_benchmark = r'Benchmark, $\beta$'
 gp_attackrate = r'Seasonal Attack Rate (per 100,000)'
+gp_adjILI = r'Adj. ILI Visits per 100,000'
 
 ## SDI data ##
 gp_seasonlabels = ['01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09']
