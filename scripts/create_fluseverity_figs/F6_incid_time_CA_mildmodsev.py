@@ -51,7 +51,7 @@ incid = csv.reader(incidin, delimiter=',')
 popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/totalpop_age.csv', 'r')
 pop = csv.reader(popin, delimiter=',')
 
-# d_wk[week] = seasonnum, d_incid[wk] = (child incid per 100,000, adult incid per 100,000, other incid per 100,000)
+# d_wk[week] = seasonnum, dict_incid[week] = (child ILI cases per 100,000 in US population in second calendar year of flu season, adult incid per 100,000, other age group ILI cases per 100,000)
 d_wk, d_incid = fxn.week_incidCA_processing(incid, pop)
 # dict_incidCA_norm[seasonnum] = [norm child incid wk40, norm child incid wk41, ...], dict_incidA_norm[seasonnum] = [norm adult incid wk40, norm adult incid wk 41, ...]
 d_incidC_norm, d_incidA_norm = fxn.normalize_incidCA(d_wk, d_incid)

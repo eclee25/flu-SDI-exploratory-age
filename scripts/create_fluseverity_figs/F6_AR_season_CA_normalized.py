@@ -45,9 +45,9 @@ incid = csv.reader(incidin, delimiter=',')
 popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/totalpop_age.csv', 'r')
 pop = csv.reader(popin, delimiter=',')
 
-# d_wk[week] = seasonnum, d_incid[wk] = (child incid per 100,000, adult incid per 100,000, other incid per 100,000)
+# d_wk[week] = seasonnum, dict_ageIncidAdjust53ls[(season, age)] = [adj incid per 100000 wk 40, ... wk 39]
 d_wk, d_incid = fxn.week_incidCA_processing(incid, pop)
-# # d_attackCA_norm[seasonnum] = (norm C attack rate, norm A attack rate)
+# dict_attackCA_norm[seasonnum] = (% dev from baseline child attack rate, % dev from baseline adult attack rate)
 d_attackCA_norm = fxn.normalize_attackCA(d_wk, d_incid)
 
 # initialize figure
@@ -59,8 +59,6 @@ ax = fig.add_subplot(2,1,1)
 mild = ax.bar(mild_s, [d_attackCA_norm[k][0] for k in mild_s], bw, color=sevcol[0], align='center')
 moderate = ax.bar(mod_s, [d_attackCA_norm[k][0] for k in mod_s], bw, color=sevcol[1], align='center')
 severe = ax.bar(sev_s, [d_attackCA_norm[k][0] for k in sev_s], bw, color=sevcol[2], align='center')
-# label formatting
-# ax.set_ylabel('Percent Deviation from Baseline')
 plt.gca().xaxis.set_major_locator(plt.NullLocator()) # hide xticks and xlabels
 ax.hlines(y=0, xmin=0, xmax=10)
 ax.legend([mild, moderate, severe], sevlab, loc='upper left')
@@ -74,7 +72,6 @@ ax = fig.add_subplot(2,1,2)
 ax.bar(mild_s, [d_attackCA_norm[k][1] for k in mild_s], bw, color=sevcol[0], align='center')
 ax.bar(mod_s, [d_attackCA_norm[k][1] for k in mod_s], bw, color=sevcol[1], align='center')
 ax.bar(sev_s, [d_attackCA_norm[k][1] for k in sev_s], bw, color=sevcol[2], align='center')
-# label formatting
 ax.hlines(y=0, xmin=0, xmax=10)
 ax.set_xticks(range(2,10))
 ax.set_xticklabels(s_lab)

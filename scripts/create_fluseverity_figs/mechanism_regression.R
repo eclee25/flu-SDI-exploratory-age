@@ -236,7 +236,7 @@ Mnat3l_AICtab <- data.frame(steps = Mnat3l_stepchanges, AIC = Mnat3l_AIC)
 Mnat3l_AICtab_wts <- calculateAkaikeWts(Mnat3l_AICtab)
 
 ## no offset (ILIs) ##
-Mnat3n <- lm(ix_noILI ~ H3_prop + precip + temp +  ili_a + ili_c + ili_t + ili_e, data=nat)
+Mnat3n <- lm(ix_noILI ~ H3_prop + precip + temp  + ili_a + ili_c + ili_t + ili_e, data=nat)
 summary(Mnat3n)
 step3n <- stepAIC(Mnat3n, direction='both')
 step3n$anova
