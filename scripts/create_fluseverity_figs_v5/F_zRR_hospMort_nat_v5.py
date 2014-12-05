@@ -97,13 +97,20 @@ ax2 = ax1.twinx()
 ax1.plot(retrozOR, pk_ili_prop, 'o', retrozOR, Ifit_fn(retrozOR), '-', color = colorvec[0], lw = lwd)
 ax1.plot(retrozOR, pi_mort, 'o', retrozOR, Pfit_fn(retrozOR), '-', color = colorvec[2], lw = lwd)
 ax2.plot(retrozOR[2:], hosp_tot, 'o', retrozOR[2:], Hfit_fn(retrozOR[2:]), '-', color = colorvec[1], lw = lwd)
+# delineate mild, moderate severe
+ax1.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+# ax1.fill([-15, -1, -1, -15], [0, 0, 10, 10], facecolor='blue', alpha=0.4)
+# ax1.fill([-1, 1, 1, -1], [0, 0, 10, 10], facecolor='yellow', alpha=0.4)
+# ax1.fill([1, 15, 15, 1], [0, 0, 10, 10], facecolor='red', alpha=0.4)
+ax1.annotate('Mild', xy=(-14.5,0.25), fontsize=fssml)
+ax1.annotate('Severe', xy=(11,9.5), fontsize=fssml)
 
 # ili and P&I axis
 ax1.set_ylabel('Percent (%)', fontsize=fs) 
 ax1.set_xlabel(fxn.gp_sigma_r, fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([-15,15])
-ax1.set_ylim([0,8])
+ax1.set_ylim([0,10])
 # hospitalization axis
 ax2.set_ylabel('Rate Per 100,000', fontsize=fs) 
 ax2.set_ylim([0,40])
