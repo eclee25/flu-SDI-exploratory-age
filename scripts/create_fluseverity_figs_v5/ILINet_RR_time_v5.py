@@ -67,9 +67,9 @@ plt.ylabel('RR, adult:child', fontsize=fs)
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width*0.9, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_RR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
-plt.close()
+# plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_RR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
+# plt.close()
 
+plt.show()
 
-
-
+print d_RR53ls[-2]

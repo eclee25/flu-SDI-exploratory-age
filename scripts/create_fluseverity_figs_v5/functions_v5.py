@@ -105,8 +105,8 @@ gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
 # set these parameters every time a plot is run
 
 # pseasons = gp_ILINet_plotting_seasons
-pseasons = gp_plotting_seasons
-
+# pseasons = gp_plotting_seasons
+pseasons = [int(-2), int(14)]
 
 ##############################################
 def anydiag_baseline_comparison(csvreadfile):
@@ -464,6 +464,7 @@ def ILINet_coverageCareseek_adjustment(dict_ILI_week, dict_wk, dict_anyvisit_wee
 	dict_anyvisit_season, dict_ili_season, dict_totILI53ls, dict_totILIAdjust53ls = {}, defaultdict(list), defaultdict(list), defaultdict(list)
 	for s in pseasons:
 		dummyweeks = sorted([wk for wk in dict_wk if dict_wk[wk] == s])
+		print dummyweeks
 		for age in age_keys:
 			Visits = [dict_anyvisit_week[wk] for wk in dummyweeks]
 			ILI = [dict_ILI_week[(wk, age)] for wk in dummyweeks]

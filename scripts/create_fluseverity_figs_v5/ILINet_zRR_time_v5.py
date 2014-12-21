@@ -69,7 +69,3 @@ ax.set_position([box.x0, box.y0, box.width*0.9, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_zRR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
-
-
-
-
