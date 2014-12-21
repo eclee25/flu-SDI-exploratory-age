@@ -1,0 +1,26 @@
+v5 README
+
+10/31/14
+- coverage adjustment (v9/vS) occurs at flu season level and total population level for SDI national, SDI state, and ILINet national levels
+- ILI care-seeking adjustment is age-specific and the same across all seasons (Census region estimates used for SDI state level)
+- OR replaced by relative risk (same as v4)
+- change colors of 02-03 season (darker green) and early warning period (light green) markers (same as v4)
+
+11/7/14
+- retrospective period for seasons that peak before week 2 is now from weeks 3-4
+
+11/11/14
+- national version of figure 5: sigma_r vs. hosp, ILINet, and P&I mortality
+- remove somewhat severe state-level results
+
+charts
+- all CDC surveillance data: changed colors, axes, and ped.deaths locationsz
+- incidence vs. time
+- adjusted incidence vs. time
+- relative risk (based on adjusted incidence) vs. time
+- z-normalized relative risk vs. time
+- retrospective severity vs. benchmark
+- early warning severity vs. benchmark
+- adjusted child and adult incidence vs. time for example mild, moderate, severe seasons
+
+- supplemental figures

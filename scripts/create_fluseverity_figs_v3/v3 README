@@ -1,0 +1,19 @@
+v3 README
+
+10/15/14
+- anydiag_allweeks_outpatient_age.csv -- Extract any diagnosis visits by week and by age group at the national level
+- Add "any diagnosis" visits as a surveillance system coverage adjustment to incidence rate: ili * any diag S9/any diag S#
+- Add age-specific ILI care-seeking adjustment
+
+10/19/14
+Table of Adjustments
+ID#		Metric	Cov		Care	Order
+01		OR 		N		N 		c/a
+02		OR 		Y 		N 		c/a
+03		OR 		N 		Y 		c/a
+04		OR 		Y 		Y 		c/a
+05		RR 		Y 		Y 		c/a
+06		OR 		Y 		Y 		a/c
+07		RR 		N 		N 		a/c
+08		RR 		N 		Y 		a/c
+09		RR		Y 		Y 		a/c

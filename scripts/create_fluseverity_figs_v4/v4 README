@@ -1,0 +1,18 @@
+v4 README
+
+10/19/14
+- "coverage" adjustment (v9/vS) occurs at flu season level instead of weekly level
+- ILI care-seeking adjustment (/careseek) is same across all seasons (same as v3)
+- OR is replaced by relative risk
+- change colors of 02-03 season (darker green) and early warning period (light green) markers
+
+charts
+- incidence vs. time
+- adjusted incidence vs. time
+- relative risk (based on adjusted incidence) vs. time
+- z-normalized relative risk vs. time
+- retrospective severity vs. benchmark
+- early warning severity vs. benchmark
+- adjusted child and adult incidence vs. time for example mild, moderate, severe seasons
+
+
