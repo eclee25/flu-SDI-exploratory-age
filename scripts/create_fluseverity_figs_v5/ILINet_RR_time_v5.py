@@ -72,4 +72,6 @@ ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 plt.show()
 
-print d_RR53ls[-2]
+# print sorted([wk for wk in d_wk if d_wk[wk]==-2])
+# print d_totIncid53ls[-2]
+# print d_totIncidAdj53ls[-2]
