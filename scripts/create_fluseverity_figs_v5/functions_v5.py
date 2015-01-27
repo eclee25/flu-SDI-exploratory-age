@@ -16,9 +16,9 @@
 
 ##############################################
 # header
-from collections import defaultdict
-from datetime import date, datetime
-from itertools import product
+from collections import defaultdict, deque
+from datetime import date, datetime, timedelta
+from itertools import product, islice
 import numpy as np
 import matplotlib.cm as cm
 import bisect
@@ -37,8 +37,8 @@ gp_begin_early_week = 2 # number of weeks after the week with Thanksgiving that 
 gp_plotting_seasons = range(2,10) # season numbers for which data will be plotted (eg. Season 2 = 2001-02)
 gp_plotting_regions = range(1, 11) # region numbers
 gp_mild =[3, 6, 7, 9] # seasons 3, 6, 7, 9
-gp_mod = [2, 5] # seasons 2, 5
-gp_sev = [4, 8] # seasons 4, 8, 10 (pandemic)
+gp_mod = [2] # seasons 2
+gp_sev = [4, 5, 8] # seasons 4, 8, 10 (pandemic)
 
 ## ILINet data ## 
 gp_ILINet_plotting_seasons = range(-2, 10) + range(11,15) # remove 2009-10 data
@@ -46,6 +46,9 @@ gp_ILINet_plotting_seasons = range(-2, 10) + range(11,15) # remove 2009-10 data
 ## pandemic analyses only ## 
 gp_pandemic_plotting_seasons = range(9,11) # 2008-09 and 2009-10 data only
 gp_pandemicbaseline = ['between pandemic waves', 'last season baseline', 'after pandemic']
+
+## France data ## 
+gp_FR_plotting_seasons = range(-8, 10) + range(11,15) # rm 2009-10 data
 
 ## create dict_ages ##
 age_keys = ['C', 'A', 'O']
@@ -55,6 +58,12 @@ other = ['<2 YEARS', '2-4 YEARS', '60-69 YEARS', '70-79 YEARS', '80 YEARS']
 dict_ages = defaultdict(list)
 # dict_ages[agegroup code] = [agegroup bin 1, age group bin 2,... in text]
 dict_ages = dict(zip(age_keys, [children, adults, other]))
+## create dict_ages_FR ##
+children_FR = ['5,10', '10,15', '15,20']
+adults_FR = ['20,25', '25,30', '30,35', '35,40', '40,45', '45,50', '50,55', '55,60', '60,65']
+other_FR = ['0,5', '65,70', '70,75', '75,80', '80,200']
+dict_ages_FR = defaultdict(list)
+dict_ages_FR = dict(zip(age_keys, [children_FR, adults_FR, other_FR]))
 
 ## ILI care-seeking behavior ##
 # national level, weighted averages based on sample size in Biggerstaff2012 and Biggerstaff2014
@@ -100,13 +109,17 @@ gp_linewidth = 3
 gp_ILINet_seasonlabels = ['97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14']
 gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
 
+## FR data ##
+gp_FR_seasonlabels = ['91-92', '92-93', '93-94', '94-95', '95-96', '96-97', '97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14']
+gp_FR_colors = cm.rainbow(np.linspace(0, 1, len(gp_FR_seasonlabels)))
+
 ##############################################
 ## call parameters ##
 # set these parameters every time a plot is run
 
 # pseasons = gp_ILINet_plotting_seasons
-# pseasons = gp_plotting_seasons
-pseasons = [int(-2), int(14)]
+# pseasons = gp_FR_plotting_seasons
+pseasons = gp_plotting_seasons
 
 ##############################################
 def anydiag_baseline_comparison(csvreadfile):
@@ -120,10 +133,10 @@ def anydiag_baseline_comparison(csvreadfile):
 	dict_dummyany = {}
 	# import data
 	for row in csvreadfile:
-		season, weeknum = int(row[0]), int(row[3])
 		anydiag = float(row[4])
 		week = row[1]
-		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		Sun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, season, weeknum = SDIweek(Sun_dt)
 		dict_wk[(wk, weeknum)] = season
 		dict_dummyany[(wk, weeknum)] = anydiag
 
@@ -226,7 +239,7 @@ def cdc_import_CFR_CHR (csv_allcdc):
 ##############################################
 def classif_zRR_processing(dict_wk, dict_totIncidAdj53ls, dict_zRR53ls):
 	''' Calculate retrospective and early warning zRR classification values for each season, which is the mean zRR for the duration of the retrospective and early warning periods, respectively. The retrospective period is designated relative to the peak incidence week in the flu season. The early warning period is designated relative to the week of Thanksgiving.
-	Mean retrospective period zRR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zRR is based on gp: normweeks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The Thanksgiving_import and identify_retro_early_weeks functions are nested within this function. Returns one dict:
+	Mean retrospective period zRR is based on a baseline normalization period (gp: normweeks), duration of retrospective period (gp: retro_duration), and number of weeks prior to peak incidence week, which dictates when the retrospective period begins that season (gp: begin_retro_week). Mean early warning period zRR is based on gp: normweeks, gp: early_duration, and gp: begin_early_week. 'gp' stands for global parameter, which is defined within functions.py. The identify_retro_early_weeks function is nested within this function. Returns one dict:
 	dict_classifzRR[seasonnum] = (mean retrospective zRR, mean early warning zRR)
 	'''
 	main(classif_zRR_processing)
@@ -256,7 +269,7 @@ def classif_zRR_processing(dict_wk, dict_totIncidAdj53ls, dict_zRR53ls):
 
 ##############################################
 def classif_zRR_processing_spatial(dict_wk, dict_spatialTotIncidAdj53ls, dict_spatialZRR53ls, spatial_keys):
-	''' Calculate retrospective and early warning zOR classification values for each season and spatial (state/region) combination. Spatial retrospective classifications are tied to the peak adjusted incidence week of the state/region in a given season. Spatial early warning classifications are tied to the week of Thanksgiving in a given season, and are thus the same as the early warning periods at the national level. The Thanksgiving_import and identify_retro_early_weeks functions are nested within this function. Returns one dict:
+	''' Calculate retrospective and early warning zOR classification values for each season and spatial (state/region) combination. Spatial retrospective classifications are tied to the peak adjusted incidence week of the state/region in a given season. Spatial early warning classifications are tied to the week of Thanksgiving in a given season, and are thus the same as the early warning periods at the national level. The identify_retro_early_weeks function is nested within this function. Returns one dict:
 	dict_classifzRR_spatial[(season, spatial)] = (mean retrospective zOR, mean early warning zOR)
 	'''
 	main(classif_zRR_processing_spatial)
@@ -358,16 +371,59 @@ def epidemic_duration(incid53ls, min_cum_perc, max_cum_perc):
 	return epidemic_dur
 
 ##############################################
+def excessPI_state_import():
+	''' Import CDC_Source/from_Cecile/ExcessPI_seasonal_statelvl.csv, which includes excess mortality rates by state from the 1998-99 through 2012-13 seasons. Function 'state_abbr_dictionary' is embedded.
+	dict_state_excessPI[(season, stateAbbr)] = (excess P&I mortality rate per 100,000, unitless detrended excess P&I mortality)
+	'''
+	main(excessPI_state_import)
+
+	dict_stateAbbr = state_abbr_dictionary()
+	csvfilein = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/from_Cecile/ExcessPI_seasonal_statelvl.csv')
+	csvfilein.readline() # remove header
+	csvfile = csv.reader(csvfilein, delimiter=',')
+	dict_state_excessPI = {}
+	for row in csvfile:
+		if row[2] == 'S2009':
+			continue
+		else:
+			stateAbbr = dict_stateAbbr[row[1].lower()] # convert state to abbr
+			season = int(row[2][-4:])-2000 # snum convention conversion
+			rates = (float(row[3]), float(row[4]))
+			if float(row[3]) < 0:
+				rates = (0,0)
+			dict_state_excessPI[(season, stateAbbr)] = rates
+
+	return dict_state_excessPI
+
+##############################################
+def aggregate_excessPI_state(dict_state_excessPI):
+	''' Aggregate state-level excess P&I mortality rates (from Cecile) to national level rates by season.
+	dict_nat_excessPI[season] = (excess P&I mortality rate per 100,000, unitless detrended excess P&I mortality)
+	'''
+	main(aggregate_excessPI_state)
+
+	seasons_in_dict = list(set([key[0] for key in dict_state_excessPI]))
+	# in national level excess mortality rate, include only states that report data across all available seasons
+	states_in_dict = [key[1] for key in dict_state_excessPI]
+	fullDataStates_list = [state for state in set(states_in_dict) if states_in_dict.count(state) == len(seasons_in_dict)]
+	# subset dict data to include states w/ excess rates for all seasons (I think all states have data though)
+	dict_excessPI_subset = dict((key, dict_state_excessPI[key]) for key in dict_state_excessPI if key[1] in fullDataStates_list)
+	# aggregate data by season to the national level
+	dict_nat_excessPI = {}
+	for season in seasons_in_dict:
+		dummytuple_list = [dict_excessPI_subset[key] for key in dict_excessPI_subset if key[0] == season]
+		dict_nat_excessPI[season] = (sum(zip(*dummytuple_list)[0]), sum(zip(*dummytuple_list)[1]))
+
+	return dict_nat_excessPI
+
+#############################################
 def identify_retro_early_weeks(dict_wk, dict_incid53ls):
 	''' Identify weeks in the early warning and retrospective periods for each season using indices in list for incidence. Returns one dict: dict_indices[(snum, classif period)] = (first index, last index for index slicing)
 	'''
 	main(identify_retro_early_weeks)
 
-	# import Thanksgiving data 
-	thanksin = open('/home/elee/Dropbox/My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv', 'r')
-	thanksin.readline() # remove header
-	csv_Thanksgiving = csv.reader(thanksin, delimiter=',')
-	dict_Thanksgiving = Thanksgiving_import(csv_Thanksgiving) 
+	# identify dates of actual Thanksgiving
+	dict_Thanksgiving = Thanksgiving_dates()
 
 	dict_indices = {}
 	for s in pseasons:
@@ -401,9 +457,10 @@ def ILI_AR(csv_SDI):
 	dict_facilitytypeAR = {}
 	dict_wk, dict_ILI_dummy = {}, {}
 	for row in csv_SDI:
-		season, week = int(row[0]), row[1]
+		week = row[1]
 		ILI, pop = float(row[4]), int(row[6]) # pop is the same for every entry that takes place in the same year
-		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		Sun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, season, _ = SDIweek(Sun_dt)
 		dict_wk[wk] = season
 		dict_ILI_dummy[wk] = (ILI, pop)
 	# list of unique season numbers
@@ -432,13 +489,13 @@ def ILINet_week_RR_processing(csv_incidence, csv_population):
 	dict_ILI_week, dict_wk, dict_anyvisit_week = {},{},{}
 	for row in csv_incidence: 
 		row_cl = [float('nan') if val == 'NA' else val for val in row]
-		week = str(row_cl[0])+'0' # additional 0 represents Sunday
-		wktime = datetime.strptime(week, '%Y%U%w') # format = 4-dig year, 2-dig week beginning on Monday (8/10/14), digit representing day of week; data are from one week later than week number listed on plots (for both ILINet and SDI data).
-		wk = datetime.date(wktime) # remove the time from the datetime format
+		week = str(row_cl[0])
+		# stripDate = datetime.strptime(week, '%Y%U%A') # format = 4-dig year, 2-dig week beginning on Monday (8/10/14), weekday string
+		wk = iso_ThuDate_from_weeknum(week)
 		dict_ILI_week[(wk, 'C')] = float(row_cl[33])
 		dict_ILI_week[(wk, 'A')] = float(row_cl[34])
 		dict_ILI_week[(wk, 'O')] = float(row_cl[27])-float(row_cl[33])-float(row_cl[34])
-		dict_wk[wk] = int(row_cl[12])
+		dict_wk[wk] = CDCweek(wk)
 		dict_anyvisit_week[wk] = float(row_cl[28])
 	
 	## import population data ##
@@ -446,7 +503,7 @@ def ILINet_week_RR_processing(csv_incidence, csv_population):
 	for row in csv_population:
 		season = int(row[0])
 		agecode = row[1]
-		# dict_pop[(season, agegroup code)] = population size of agegroup		
+		# dict_pop[(season, agegroup code)] = population size of agegroup	 	
 		dict_pop[(season, agecode)] = int(row[2]) 
 	
 	# adjust ILI cases by increasing coverage over time and constant age-specific ILI seeking behavior
@@ -464,7 +521,6 @@ def ILINet_coverageCareseek_adjustment(dict_ILI_week, dict_wk, dict_anyvisit_wee
 	dict_anyvisit_season, dict_ili_season, dict_totILI53ls, dict_totILIAdjust53ls = {}, defaultdict(list), defaultdict(list), defaultdict(list)
 	for s in pseasons:
 		dummyweeks = sorted([wk for wk in dict_wk if dict_wk[wk] == s])
-		print dummyweeks
 		for age in age_keys:
 			Visits = [dict_anyvisit_week[wk] for wk in dummyweeks]
 			ILI = [dict_ILI_week[(wk, age)] for wk in dummyweeks]
@@ -541,9 +597,10 @@ def proportion_ILI_anydiag(csv_SDI):
 	dict_ILI_anydiag = {}
 	dict_wk, dict_prop_dummy = {}, {}
 	for row in csv_SDI:
-		season, week = int(row[0]), row[1]
+		week = row[1]
 		ILI, anydiag = float(row[4]), int(row[5])
-		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		Sun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, season, _ = SDIweek(Sun_dt)
 		dict_wk[wk] = season
 		dict_prop_dummy[wk] = (ILI, anydiag)
 	# list of unique season numbers
@@ -660,6 +717,22 @@ def season_vaxmatch(csvreadfile):
 	return dict_vaxmatch
 
 ##############################################
+def state_abbr_dictionary():
+	''' Create dictionary with full state name and two-letter state abbreviations.
+	'''
+	main(state_abbr_dictionary)
+
+	csvfilein = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Census/state_abbreviations.csv')
+	csvfilein.readline() # remove header
+	csvfile = csv.reader(csvfilein, delimiter=',')
+	dict_stateAbbr = {}
+	for row in csvfile:
+		full = row[0].lower()
+		abbr = row[1]
+		dict_stateAbbr[full] = abbr
+	return dict_stateAbbr
+
+##############################################
 def Thanksgiving_H3perc_NREVSS(csvreadfile):
 	''' Import My_Bansal_Lab/Clean_Data_for_Import/NREVSS_Isolates_Thanksgiving.csv data, which includes information on seasons (eg. 2004 is 2003-04 season), total specimens tested, A/H1 samples, A/unable to subtype, A/H3 samples, A/2009H1N1 samples, B samples, H3N2v samples. Return a dictionary with season and proportion of H3 isolates of all subtyped flu isolates collected that season. The original source of isolate information is the CDC Flu Season Summaries, WHO NREVSS surveillance system (not the CDC system).
 	dict_H3[seasonnum] = proportion of H3 isolates of all isolates collected that season
@@ -680,20 +753,21 @@ def Thanksgiving_H3perc_NREVSS(csvreadfile):
 	return dict_H3
 
 ##############################################
-def Thanksgiving_import(csv_Thanksgiving):
-	''' Import Thanksgiving data from My_Bansal_Lab/ThanksgivingWeekData_cl.csv. Columns in dataset are year, week, total number of specimens, A/H1 samples, A/unable to subtype samples, A/H3 samples, A/2009H1N1 samples, A/no subtype information samples, B samples, A/H3N2v samples, percent of samples positive for flu, HHS region number, unique ID, season (the second calendar year of the flu season), date of the Sunday immediately preceding Thanksgiving. Return a dictionary with season to Sunday date of Thanksgiving week. These dates are used to determine which weeks fall under the early warning classification period.
-	dict_Thanksgiving[seasonnum] = date of the Sunday immediately preceding Thanksgiving
+def Thanksgiving_dates():
+	''' Identify dates of US Thanksgiving (fourth Thursday of November every year) from 1998 to 2014 (seasons -2 to 14). These dates are used to determine which weeks fall under the early warning classification period.
+	dict_Thanksgiving[seasonnum] = date of Thanksgiving
 	'''
-	main(Thanksgiving_import)
-	
+	main(Thanksgiving_dates)
+
 	dict_Thanksgiving = {}
-	for row in csv_Thanksgiving:
-		week_og = row[14]
-		Twk = date(int(week_og[6:]), int(week_og[:2]), int(week_og[3:5]))
-		season = int(row[13])-2000 # 6/18/14, so season 1998 is converted to -2
-		# dict_Thanksgiving[seasonnum] = date of the Sunday immediately preceding Thanksgiving
-		dict_Thanksgiving[season] = Twk
-		
+	for year in xrange(1990,2016):
+		seas = year+1-2000
+		Nov_dt_ls = [date(year, 11, day) for day in range(1, 31)]
+		Nov_wkday_ls = [dt.weekday() for dt in Nov_dt_ls] # weekday method: Thu=3 and isoweekday method: Thu=5
+		Thx_index = Nov_wkday_ls.index(3) + 7*3 # ID list index of 4th Thursday
+		Thx_dt = Nov_dt_ls[Thx_index] # ID date of 4th Thursday
+		dict_Thanksgiving[seas] = Thx_dt
+	
 	return dict_Thanksgiving
 
 ##############################################
@@ -705,8 +779,9 @@ def week_anydiag_processing(csv_anydiag):
 	dict_any53ls = defaultdict(list)
 	for row in csv_anydiag:
 		week = row[1]
-		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
-		dict_wk[wk] = int(row[0])
+		Sun_dtun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, seas, _ = SDIweek(Sun_dt)
+		dict_wk[wk] = seas
 		dict_any[wk] = float(row[2])/int(row[3])*100000
 
 	# plotting version of dict_any
@@ -732,9 +807,10 @@ def week_incidCA_processing(csv_incidence, csv_population):
 	dict_ILI_week, dict_wk = {}, {}
 	for row in csv_incidence: 
 		week = row[1]
-		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		Sun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, seas, _ = SDIweek(Sun_dt)
 		dict_ILI_week[(wk, str(row[2]))] = float(row[3])
-		dict_wk[wk] = int(row[0])
+		dict_wk[wk] = seas
 	
 	## import population data ##
 	dict_pop_age = {}
@@ -782,13 +858,13 @@ def coverageCareseek_adjustment(filename_anydiagAge, dict_ILI_week):
 
 	dict_anyvisit_week, dict_wk = {},{}
 	for row in anydiag:
-		season = int(row[0])
 		week = row[1]
-		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		Sun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, seas, wknum = SDIweek(Sun_dt)
 		agecode = str(row[2])
 		visits = int(row[3])
 		dict_anyvisit_week[(wk, agecode)] = float(visits)
-		dict_wk[wk] = (season, wk.isocalendar()[1]+1) # isocalendar wk number+1 because isocalendar goes from Monday to Sunday
+		dict_wk[wk] = (seas, wknum) 
 
 	# estimate number of ILI cases that would have been captured in the dataset had the coverage been at 08-09 flu season levels for all years
 	dict_anyvisit_season, dict_ili_season, dict_totILI53ls, dict_totILIAdjust53ls = {}, defaultdict(list), defaultdict(list), defaultdict(list)
@@ -845,9 +921,10 @@ def week_OR_processing(csv_incidence, csv_population):
 	dict_ILI_week, dict_wk = {}, {}
 	for row in csv_incidence: 
 		week = row[1]
-		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		Sun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, seas, _ = SDIweek(Sun_dt) # Thu date, season, wknum
 		dict_ILI_week[(wk, str(row[2]))] = float(row[3])
-		dict_wk[wk] = int(row[0])
+		dict_wk[wk] = seas
 	
 	## import population data ##
 	dict_pop_age = {}
@@ -868,7 +945,7 @@ def week_OR_processing(csv_incidence, csv_population):
 	# adjust ILI cases by increasing coverage over time and constant age-specific ILI seeking behavior 
 	# 10/31/14: could change this to anydiag_allweeks_outpatient.csv since coverage adjustment is no longer age-specific
 	fname = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/anydiag_allweeks_outpatient_age.csv'
-	# dict_ageILIadj_season[(season, age)] = [ILI * (visits in flu season 9)/(visits in flu season #)/(ILI care-seeking behavior) wk 40, ...wk 39]; dict_totILI53ls[season] = [ILI wk 40,... ILI wk 39]; dict_totILIAdjust53ls = [adj ILI wk 40, ... adj ILI wk 39]
+	# dict_ageILIadj_season[(season, age)] = [ILI * (visits in flu season 9)/(visits in flu season #)/(ILI care-seeking behavior) wk 40, ...wk 39]; dict_totILI53ls[season] = [ILI wk 40,... ILI wk 39]; dict_totILIAdjust53ls[season] = [adj ILI wk 40, ... adj ILI wk 39]
 	dict_ageILIadj_season, dict_totILI53ls, dict_totILIadj53ls = coverageCareseek_adjustment(fname, dict_ILI_week)
 	# 11/6/14: when summer baselines are needed, uncomment
 	# dict_ageILIadj_season, dict_totILI53ls, dict_totILIadj53ls = coverageCareseek_adjustment_altbaseline(fname, dict_ILI_week)
@@ -921,13 +998,13 @@ def coverageCareseek_adjustment_altbaseline(filename_anydiagAge, dict_ILI_week):
 
 	dict_anyvisit_week, dict_wk = {},{}
 	for row in anydiag:
-		season = int(row[0])
 		week = row[1]
-		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		Sun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, seas, wknum = SDIweek(Sun_dt)
 		agecode = str(row[2])
 		visits = int(row[3])
 		dict_anyvisit_week[(wk, agecode)] = float(visits)
-		dict_wk[wk] = (season, wk.isocalendar()[1]+1) # isocalendar wk number+1 because isocalendar goes from Monday to Sunday
+		dict_wk[wk] = (seas, wknum) # isocalendar wk number+1 because isocalendar goes from Monday to Sunday
 
 	# estimate number of ILI cases that would have been captured in the dataset had the coverage been at 08-09 flu season levels for all years
 	dict_anyvisit_season, dict_ili_season, dict_totILI53ls, dict_totILIAdjust53ls = {}, defaultdict(list), defaultdict(list), defaultdict(list)
@@ -995,7 +1072,7 @@ def week_RR_processing_part2_altbaseline(dict_pop, dict_totILI53ls, dict_totILIa
 		# 10/16/14 change OR to relative risk
 		RR = [a/c if c and a else float('nan') for c, a in zip(child_attack, adult_attack)] 
 		dict_RR53ls[s] = RR
-		# zRR53ls dict
+	# zRR53ls dict
 	for s in pseasons:
 		normalization_period = dict_RR53ls[s-1][-gp_normweeks:]
 		season_mean = np.mean(normalization_period)
@@ -1017,10 +1094,11 @@ def week_import_zip3(csv_incidence_region, csv_population_region):
 	## import ILI data ##
 	dict_weekZip3_ili, dict_wk = {}, {}
 	for row in csv_incidence_region: 
-		week, season = row[1], int(row[0])
-		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		week = row[1]
+		Sun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, seas, _ = SDIweek(Sun_dt)
 		zip3, age, ili = str(row[2]), str(row[3]), int(row[4])
-		dict_wk[wk] = season
+		dict_wk[wk] = seas
 		dict_weekZip3_ili[(wk, zip3, age)] = ili
 
 	## import population data ##
@@ -1085,13 +1163,13 @@ def covCareseek_adjustment_spatial(dict_seasSpatialAge_iliLS, dict_zip3_region, 
 	anydiag = csv.reader(anydiagin, delimiter=',')
 	dict_wk, dict_weekZip3_visit = {}, {}
 	for row in anydiag:
-		season = int(row[0])
 		week = row[1]
-		wk = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		Sun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, seas, _ = SDIweek(Sun_dt)
 		zip3 = str(row[2])
 		visits = float(row[3])
 		dict_weekZip3_visit[(wk, zip3)] = visits
-		dict_wk[wk] = season
+		dict_wk[wk] = seas
 
 	# branching for state vs. region level analysis
 	if spatial_level == 'state':
@@ -1273,8 +1351,260 @@ def week_zOR_processing_pandemic(dict_wk, dict_OR, baseline_text):
 	
 	return dict_zOR
 
+##############################################
+def SDIweek(datetimeWeek):
+	''' Process Sunday date in SDI data to return Thursday date, correct season number, and week number, where season 0 is 1999-2000 flu season.
+	'''
+	Thu_date = datetimeWeek + timedelta(days=4) # Sun+4days=Thursday
+	year, weeknum, _ = Thu_date.isocalendar() # yr, wknum, day
+	if weeknum >= 40:
+		season = year+1-2000
+	else:
+		season = year-2000
+
+	return Thu_date, int(season), weeknum
 
 ##############################################
+def CDCweek(datetimeThuWeek):
+	''' Process year-weeknumber in ILINet data to return correct season number, where season 0 is 1999-2000 flu season.
+	'''
+	year, weeknum, _ = datetimeThuWeek.isocalendar() # yr, wknum, day
+	if weeknum >= 40:
+		season = year+1-2000
+	else:
+		season = year-2000
+
+	return int(season)
+
+##############################################
+def iso_ThuDate_from_weeknum(weekString):
+	'''Given a certain year and week number, return the ISO8601 Thursday date. January 4 occurs in week 1 of the year.
+	'''
+	year, weeknum = weekString[:4], weekString[4:] # string year-weeknumber 
+	fourth_jan = date(int(year), 1, 4)
+	days_to_Thu = timedelta(days=4-fourth_jan.isoweekday())
+	return fourth_jan + days_to_Thu + timedelta(weeks=int(weeknum)-1)
+
+##############################################
+def zRR_movingAverage_windows(dict_zRR53ls, window):
+	''' Calculate moving average of zRR values given dict_zRR53ls and an integer indicating window length in weeks. moving_average fxn is nested.
+
+		dict_window_zRRma[window period in season (eg. 0 for wks 40-41)] = [zRR avg of window period 0 for season 1, zRR avg of window period 0 for season 2, ...]
+	'''
+	main(zRR_movingAverage_windows)
+
+	dict_zRR53ls_ma = defaultdict(list)
+	# calculate moving average for zRR ts for each season
+	for s in pseasons:
+		dummy_zRR = dict_zRR53ls[s]
+		dummy_generator = moving_average(dummy_zRR, window)
+		dict_zRR53ls_ma[s] = [item for item in dummy_generator]
+	length_ma_ls = len(dict_zRR53ls_ma[3]) # choose random season to grab number of moving avg weeks
+
+	# generate a list of moving average lists, where sublists are ordered by season number
+	dict_window_zRRma = defaultdict(list)
+	moving_average_lists = [dict_zRR53ls_ma[s] for s in pseasons]
+	for window_period, zRRma in zip(range(length_ma_ls), zip(*moving_average_lists)):
+		dict_window_zRRma[window_period] = list(zRRma)
+
+	return dict_window_zRRma
+
+##############################################
+def moving_average(iterable, window):
+	''' Calculation of moving average copied from python documentation "deque Recipes"
+	'''
+    # python deque recipes
+	it = iter(iterable)
+	d = deque(islice(it, window-1))
+	d.appendleft(0)
+	s = sum(d)
+	for elem in it:
+		s += elem - d.popleft()
+		d.append(elem)
+		yield s / float(window)
+
+##############################################
+def FR_week_RR_processing(csv_incidence):
+	''' Import national France data (inc2_inc-tranche-fr_V2.csv), which includes season number, week, 5-year age group, and ILI incid. Data are extrapolated to cover the entire country. Children are 5-19 yo and adults are 20-64 yo. Return three dicts:
+	dict_wk[wk] = seasonnum
+	dict_totIncid53ls[season] = [incid per 100,000 wk40, .. wk39] (no adjustments for FR data)
+	dict_ageIncid53ls[(season, age)] = [incid per 100,000 wk40, .. wk39] (no adjustments for FR data)
+	'''
+	main(FR_week_RR_processing)
+	
+	## import ILI data ##
+	# dict_ILIpop_smallAge_week[(week, agestring)] = (ILI, popsize); dict_wk[week] = seasonnum
+	dict_ILIpop_smallAge_week, dict_wk = {}, {}
+	for row in csv_incidence: 
+		week = row[0]
+		wk = iso_ThuDate_from_weeknum(week)
+		agestring = row[2][1:-1]
+		dict_ILIpop_smallAge_week[(wk, agestring)] = (float(row[4]), int(row[8]))
+		dict_wk[wk] = CDCweek(wk)
+
+	# unique weeks for totIncid
+	unique_weeks = [key for key in dict_wk]
+	dict_totIncid_week, dict_ageIncid_week = {},{}
+	# total incidence per 100,000
+	for wk in unique_weeks:
+		dummy_dict = dict((key, dict_ILIpop_smallAge_week[key]) for key in dict_ILIpop_smallAge_week if key[0] == wk)
+		ILI_pop = [sum(vals) for vals in zip(*dummy_dict.values())]
+		dict_totIncid_week[wk] = ILI_pop[0]/ILI_pop[1]*100000
+		# age-specific incidence per 100,000
+		for age in dict_ages_FR:
+			dummy_dict_age = dict((key, dummy_dict[key]) for key in dummy_dict if key[1] in dict_ages_FR[age])
+			ILI_pop_age = [sum(vals) for vals in zip(*dummy_dict_age.values())]
+			dict_ageIncid_week[(wk, age)] = ILI_pop_age[0]/ILI_pop_age[1]*100000
+
+	## convert to 53 week lists ##
+	FRseasons = set(sorted(dict_wk.values())) # unique seasons in FR data
+	dict_totIncid53ls, dict_ageIncid53ls = defaultdict(list), defaultdict(list)
+	for s in FRseasons:
+		dummyweeks = sorted([wk for wk in dict_wk if dict_wk[wk] == s])
+		incidTot = [dict_totIncid_week[wk] for wk in dummyweeks]
+		if len(dummyweeks) == 52:
+			incidTot.insert(13, (incidTot[12]+incidTot[13])/2.)
+		dict_totIncid53ls[s] = incidTot
+		for age in age_keys:
+			incidAge = [dict_ageIncid_week[(wk, age)] for wk in dummyweeks]
+			if len(dummyweeks) == 52:
+				incidAge.insert(13, (incidAge[12]+incidAge[13])/2.)
+			dict_ageIncid53ls[(s, age)] = incidAge
+
+	return dict_wk, dict_totIncid53ls, dict_ageIncid53ls
+
+##############################################
+def FR_week_RR_processing_part2(dict_wk, dict_ageIncid53ls):
+	''' Calculate RR and zRR for France data. Return two dicts:
+	dict_RR53ls[s] = [RR wk 40,...RR wk39]
+	dict_zRR53ls[s] = [zRR wk 40,...zRR wk39]
+	'''
+	main(FR_week_RR_processing_part2)
+
+	dict_RR53ls, dict_zRR53ls = defaultdict(list), defaultdict(list)
+	FRseasons = gp_FR_plotting_seasons # unique seasons in FR data 
+	for s in FRseasons:
+		child_incid = dict_ageIncid53ls[(s, 'C')]
+		adult_incid = dict_ageIncid53ls[(s, 'A')]
+		RR = [a/c if c and a else float('nan') for c, a in zip(child_incid, adult_incid)]
+		dict_RR53ls[s] = RR
+		# zRR53ls dict
+		normalization_period = dict_RR53ls[s][:gp_normweeks]
+		season_mean = np.mean(normalization_period)
+		season_sd = np.std(normalization_period)
+		dict_zRR53ls[s] = [(val-season_mean)/season_sd for val in dict_RR53ls[s]]
+
+	return dict_RR53ls, dict_zRR53ls
+
+##############################################
+def week_ILIpercent_processing(csv_ILI, csv_visits):
+	''' Import SQL_export/OR_allweeks_outpatient.csv and anydiag_allweeks_outpatient.csv, which together, includes season, week, ILI, age, total visits. Calculate percent of visits due to ILI in the surveillance system for the IMS data for total population. 
+	dict_wk[Thu date of week] = seasonnum
+	dict_ILIpercent[Thu date of week] = ILI as percent of total visits in that week (not a cumulative measure)
+	'''
+	main(week_ILIpercent_processing)
+	dict_visits_week, dict_wk = {},{}
+	for row in csv_visits:
+		week = row[1]
+		Sun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, seas, _ = SDIweek(Sun_dt) # Thu date, season, wknum
+		dict_visits_week[wk] = int(row[2])
+		dict_wk[wk] = seas
+
+	dict_ILIage_week, dict_ILI_week = {},{}
+	for row in csv_ILI:
+		week = row[1]
+		Sun_dt = date(int(week[:4]), int(week[5:7]), int(week[8:]))
+		wk, seas, _ = SDIweek(Sun_dt) # Thu date, season, wknum
+		age = row[2]
+		dict_ILIage_week[(wk, age)] = float(row[3])
+	# combine ILI counts to total population level
+	for week in dict_wk:
+		dict_ILI_week[week] = sum([dict_ILIage_week[(week, age)] for age in age_keys])
+	# calculate ILI as percent of total visits for every week
+	dict_ILIpercent = {}
+	for week in dict_wk:
+		dict_ILIpercent[week] = dict_ILI_week[week]/dict_visits_week[week]*100
+
+	return dict_wk, dict_ILIpercent
+
+##############################################
+def deltaILIpercent_processing(dict_wk, dict_ILIpercent, refWeek_keyword='week40'):
+	''' Calculate difference in ILI percentage over the flu season based on reference "baseline" week, as designated by refWeek_keyword argument. refWeek options include: week40 (default), week36, midsummer (week30), and minILIsummer (week with minimum ILI percent during summer weeks). Returns two dicts:
+	dict_deltaILIpercent53ls[s] = [deltaILI percent wk 40, wk 41, ...wk 39
+	dict_refWeek[s] = Thu date of reference week for that season
+
+	'''
+	main(deltaILIpercent_processing)
+
+	dict_ILIpercent53ls, dict_refWeek, dict_deltaILIpercent53ls = defaultdict(list), {}, defaultdict(list)
+	for s in pseasons:
+		dummyweeks = [week for week in sorted(dict_wk) if dict_wk[week]==s]
+		ILIpercent = [dict_ILIpercent[week] for week in dummyweeks]
+		if len(dummyweeks) == 52:
+			ILIpercent.insert(13, (ILIpercent[12]+ILIpercent[13])/2.)
+		dict_ILIpercent53ls[s] = ILIpercent
+		pre_dummyweeks = [week for week in sorted(dict_wk) if dict_wk[week]==s-1 and week.isocalendar()[1] in range(21, 40)] # include summer weeks only
+		# decision tree for different starting points
+		if refWeek_keyword == 'week36':
+			(week,) = [week for week in pre_dummyweeks if week.isocalendar()[1] == 36] # (idiom,) for ensuring only one week is grabbed
+		elif refWeek_keyword == 'midsummer':
+			(week,) = [week for week in pre_dummyweeks if week.isocalendar()[1] == 30]
+		elif refWeek_keyword == 'minILIsummer':
+			minILI = min([dict_ILIpercent[week] for week in pre_dummyweeks])
+			(week,) = [week for week in pre_dummyweeks if dict_ILIpercent[week] == minILI]
+		else: # week40 in the season
+			week = dummyweeks[0]
+		# assign reference week
+		dict_refWeek[s] = week
+	# subtract ILI percent from reference week ILI percent
+	for s in pseasons:
+		refWeek = dict_refWeek[s]
+		dict_deltaILIpercent53ls[s] = [(percent-dict_ILIpercent[refWeek]) for percent in dict_ILIpercent53ls[s]]
+
+	return dict_deltaILIpercent53ls, dict_refWeek
+
+##############################################
+def cumulativeDeltaILIpercent(dict_wk, dict_ILIpercent, dict_deltaILIpercent53ls, dict_refWeek):
+	''' Return one dict with cumulative sum of delta ILI percent starting with reference week, through the entire flu season (through next year's week 39)
+	dict_cumDeltaILIpercent53ls[s] = [cum sum at wk 40 starting with ref week, cum sum wk 41,..., wk 39]
+	'''
+	main(cumulativeDeltaILIpercent)
+	dict_cumDeltaILIpercent53ls = defaultdict(list)
+	for s in pseasons:
+		pre_dummyweeks = [week for week in sorted(dict_wk) if dict_wk[week]==s-1 and week.isocalendar()[1] in range(21, 40)]
+		refWeek = dict_refWeek[s] # weekdate of reference week
+		cumDeltaWeek39 = sum([dict_ILIpercent[week] for week in pre_dummyweeks if week >= refWeek])
+		# calculate cumulative delta ILI percent for season
+		cumDeltaILI = np.cumsum(dict_deltaILIpercent53ls[s])
+		dict_cumDeltaILIpercent53ls[s] = [(cumD + cumDeltaWeek39) for cumD in cumDeltaILI] # add cumulative data from reference week
+
+	return dict_cumDeltaILIpercent53ls
+
+##############################################
+def ILIpercent_processing_CDCbaseline(dict_wk, dict_ILIpercent):
+	''' Calculate difference in ILI percentage over the flu season based on reference "baseline" week, as calculated by CDC (mean of ILI percentage of past 1 to 3 non-flu seasons, as available, by weeks + 2 std. dev.) Returns two dicts:
+	dict_deltaILIpercent53ls[s] = [deltaILI percent wk 40, wk 41, ...wk 39]
+
+	'''
+	main(ILIpercent_processing_CDCbaseline)
+
+	dict_ILIpercent53ls, dict_deltaILIpercent53ls = defaultdict(list), defaultdict(list)
+	for s in pseasons:
+		dummyweeks = [week for week in sorted(dict_wk) if dict_wk[week]==s]
+		ILIpercent = [dict_ILIpercent[week] for week in dummyweeks]
+		if len(dummyweeks) == 52:
+			ILIpercent.insert(13, (ILIpercent[12]+ILIpercent[13])/2.)
+		dict_ILIpercent53ls[s] = ILIpercent
+		BL_dummyweeks = [week for week in sorted(dict_wk) if dict_wk[week] in range(s-3, s) and week.isocalendar()[1] in range(21, 40)] # include summer weeks for up to last 3 seasons; real CDC baseline defines non-influenza weeks differently
+		BL_ILIpercent = [dict_ILIpercent[week] for week in BL_dummyweeks]
+		cdcBL = np.mean(BL_ILIpercent) + 2 * np.std(BL_ILIpercent)
+		# subtract ILI percent from CDC baseline ILI percent
+		dict_deltaILIpercent53ls[s] = [(percent-cdcBL) for percent in dict_ILIpercent53ls[s]]
+		print s, cdcBL
+
+	return dict_deltaILIpercent53ls
+
 ##############################################
 # footer
 
