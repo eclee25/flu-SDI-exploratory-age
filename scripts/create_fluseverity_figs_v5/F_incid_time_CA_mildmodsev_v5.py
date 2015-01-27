@@ -42,7 +42,7 @@ s_lab = fxn.gp_seasonlabels
 wklab = fxn.gp_weeklabels
 plt_labs = fxn.gp_severitylabels
 
-pltseas = [mild_s[0], mod_s[1], sev_s[1]] # plot only one example of each type of seasons
+pltseas = [mild_s[0], mod_s[0], sev_s[1]] # plot only one example of each type of seasons
 
 ### functions ###
 
