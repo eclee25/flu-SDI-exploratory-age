@@ -68,9 +68,9 @@ d_nat_classif = fxn.readNationalClassifFile(natix)
 # import hosp rate, peak ili proportion, total p&i mortality
 d_factors = factors_import(cdc)
 # import state-level excess p&i mortality
-d_state_excessPI = fxn.excessPI_state_import()
+d_st_excessPI, d_st_pop = fxn.excessPI_state_import()
 # aggregate state-level excess p&i to national level
-d_nat_excessPI = fxn.aggregate_excessPI_state(d_state_excessPI)
+d_nat_excessPI = fxn.aggregate_excessPI_state(d_st_excessPI, d_st_pop)
 
 # plot values
 retrozOR = [d_nat_classif[s][0] for s in ps]
@@ -78,8 +78,7 @@ earlyzOR = [d_nat_classif[s][1] for s in ps]
 pk_ili_prop = [d_factors[s][0]*100 for s in ps]
 hosp_tot = [d_factors[s][1] for s in ps][2:]
 pi_mort = [d_factors[s][2]*100 for s in ps]
-ex_pi_mort = [d_nat_excessPI[s][0]/10 for s in ps]
-print ex_pi_mort
+ex_pi_mort = [d_nat_excessPI[s][0] for s in ps]
 
 # setup for best fit lines
 Ifit = np.polyfit(retrozOR, pk_ili_prop, 1)
@@ -115,7 +114,7 @@ ax1.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
 # ax1.fill([-1, 1, 1, -1], [0, 0, 10, 10], facecolor='yellow', alpha=0.4)
 # ax1.fill([1, 15, 15, 1], [0, 0, 10, 10], facecolor='red', alpha=0.4)
 ax1.annotate('Mild', xy=(-14.5,0.25), fontsize=fssml)
-ax1.annotate('Severe', xy=(11,9.5), fontsize=fssml)
+ax1.annotate('Severe', xy=(11,6.5), fontsize=fssml)
 
 # ili and P&I axis
 ax1.set_ylabel('Percent (%)', fontsize=fs) 
@@ -132,9 +131,9 @@ ax2.tick_params(axis='both', labelsize=fssml)
 # Pformat, = ax2.plot([],[], color = colorvec[2], linestyle = '-', lw = lwd, label = 'P&I / All-Cause Mort. (%)')
 Iformat, = ax2.plot([],[], color = colorvec[0], linestyle = '-', lw = lwd, label = 'Peak ILI / Visits (%)')
 Hformat, = ax2.plot([],[], color = colorvec[1], linestyle = '-', lw = lwd, label = 'Cum. Hosp. Rate')
-Eformat, = ax2.plot([],[], color = colorvec[3], linestyle = '-', lw = lwd, label = 'Excess P&I Mort. Rate / 10')
+Eformat, = ax2.plot([],[], color = colorvec[3], linestyle = '-', lw = lwd, label = 'Excess P&I Mort. Rate')
 
-ax2.legend(loc=4, prop={'size':12})
+ax2.legend(loc=2, prop={'size':12})
 
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/F5/hospMort_zRR_nat.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
@@ -143,4 +142,4 @@ plt.close()
 print 'pk_ili_prop corr coef', np.corrcoef(pk_ili_prop, retrozOR) # 0.752 (12/4/14)
 print 'hosp_tot corr coef', np.corrcoef(hosp_tot, retrozOR[2:]) # 0.706 w/o first two seasons
 print 'pi_mort corr coef', np.corrcoef(pi_mort, retrozOR) # 0.691
-print 'ex_pi_mort corr coef', np.corrcoef(ex_pi_mort, retrozOR) # 0.640
+print 'ex_pi_mort corr coef', np.corrcoef(ex_pi_mort, retrozOR) # 0.660
