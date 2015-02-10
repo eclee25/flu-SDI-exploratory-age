@@ -23,6 +23,7 @@ import numpy as np
 import matplotlib.cm as cm
 import bisect
 import csv
+import random as rnd
 
 ##############################################
 # global parameters - methods
@@ -374,6 +375,7 @@ def epidemic_duration(incid53ls, min_cum_perc, max_cum_perc):
 def excessPI_state_import():
 	''' Import CDC_Source/from_Cecile/ExcessPI_seasonal_statelvl.csv, which includes excess mortality rates by state from the 1998-99 through 2012-13 seasons. Function 'state_abbr_dictionary' is embedded.
 	dict_state_excessPI[(season, stateAbbr)] = (excess P&I mortality rate per 100,000, unitless detrended excess P&I mortality)
+	2/6/15: added dict_state_pop[(season, stateAbbr)] = population size
 	'''
 	main(excessPI_state_import)
 
@@ -381,7 +383,7 @@ def excessPI_state_import():
 	csvfilein = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/from_Cecile/ExcessPI_seasonal_statelvl.csv')
 	csvfilein.readline() # remove header
 	csvfile = csv.reader(csvfilein, delimiter=',')
-	dict_state_excessPI = {}
+	dict_state_excessPI, dict_state_pop = {},{}
 	for row in csvfile:
 		if row[2] == 'S2009':
 			continue
@@ -392,27 +394,40 @@ def excessPI_state_import():
 			if float(row[3]) < 0:
 				rates = (0,0)
 			dict_state_excessPI[(season, stateAbbr)] = rates
+			dict_state_pop[(season, stateAbbr)] = int(row[5])
 
-	return dict_state_excessPI
+	return dict_state_excessPI, dict_state_pop
 
 ##############################################
-def aggregate_excessPI_state(dict_state_excessPI):
+def aggregate_excessPI_state(dict_state_excessPI, dict_state_pop):
 	''' Aggregate state-level excess P&I mortality rates (from Cecile) to national level rates by season.
 	dict_nat_excessPI[season] = (excess P&I mortality rate per 100,000, unitless detrended excess P&I mortality)
 	'''
 	main(aggregate_excessPI_state)
 
-	seasons_in_dict = list(set([key[0] for key in dict_state_excessPI]))
+	seasons_in_dict = sorted(list(set([key[0] for key in dict_state_excessPI])))
 	# in national level excess mortality rate, include only states that report data across all available seasons
 	states_in_dict = [key[1] for key in dict_state_excessPI]
-	fullDataStates_list = [state for state in set(states_in_dict) if states_in_dict.count(state) == len(seasons_in_dict)]
-	# subset dict data to include states w/ excess rates for all seasons (I think all states have data though)
+	fullDataStates_list = sorted([state for state in set(states_in_dict) if states_in_dict.count(state) == len(seasons_in_dict)])
+	# subset dict data to include states w/ excess rates for all seasons (I think all states + DC have data though)
 	dict_excessPI_subset = dict((key, dict_state_excessPI[key]) for key in dict_state_excessPI if key[1] in fullDataStates_list)
+	print len(dict_excessPI_subset) # 765 = 51 states * 15 seasons
+	## calculate proportion of population in state for each season and state combination
+	dict_pop_proportion = {}
+	for item in dict_state_pop:
+		s = item[0]
+		totalpop = float(sum([dict_state_pop[key] for key in dict_state_pop if key[0]==s]))
+		dict_pop_proportion[item] = dict_state_pop[item]/totalpop
+
 	# aggregate data by season to the national level
 	dict_nat_excessPI = {}
-	for season in seasons_in_dict:
-		dummytuple_list = [dict_excessPI_subset[key] for key in dict_excessPI_subset if key[0] == season]
-		dict_nat_excessPI[season] = (sum(zip(*dummytuple_list)[0]), sum(zip(*dummytuple_list)[1]))
+	for s in seasons_in_dict:
+		proportions = [dict_pop_proportion[(s, st)] for st in fullDataStates_list]
+		excessPI = [dict_excessPI_subset[(s, st)][0] for st in fullDataStates_list]
+		detrended = [dict_excessPI_subset[(s, st)][1] for st in fullDataStates_list]
+		nat_excessPI = np.average(excessPI, weights=proportions, returned=False)
+		nat_detrended = np.average(detrended, weights=proportions, returned=False)
+		dict_nat_excessPI[s] = (nat_excessPI, nat_detrended)
 
 	return dict_nat_excessPI
 
@@ -1604,6 +1619,13 @@ def ILIpercent_processing_CDCbaseline(dict_wk, dict_ILIpercent):
 		print s, cdcBL
 
 	return dict_deltaILIpercent53ls
+
+##############################################
+def returnShuffled(importList):
+	''' Return a shuffled version of a list.
+	'''
+	rnd.shuffle(importList)
+	return importList
 
 ##############################################
 # footer
