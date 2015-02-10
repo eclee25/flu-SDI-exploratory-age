@@ -22,11 +22,8 @@ import numpy as np
 
 ## local modules ##
 import functions_v5 as fxn
-
 ### data structures ###
-
 ### functions ###
-
 ### data files ###
 stixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_classif_covCareAdj_v5_7st.csv', 'r')
 stixin.readline() # remove header
@@ -53,7 +50,7 @@ d_st_classif = fxn.readStateClassifFile(stix)
 plot_keys = [key for key in sorted(d_st_classif)]
 mask_keys = [key for key in sorted(d_st_classif) if not np.isnan(d_st_classif[key][0])] # rm nan
 ## import excess P&I mortality rates ##
-d_st_excessPI = fxn.excessPI_state_import()
+d_st_excessPI, d_st_pop = fxn.excessPI_state_import()
 
 # plot values
 retrozOR = [d_st_classif[key][0] for key in mask_keys]
@@ -86,14 +83,14 @@ ax1.set_ylabel('Rate per 100,000', fontsize=fs)
 ax1.set_xlabel(fxn.gp_sigma_r, fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([-15,15])
-ax1.set_ylim([-5, 16])
+ax1.set_ylim([-1, 16])
 
 # handles for legend formatting
 Eformat, = ax1.plot([], [], color = colorvec[0], linestyle = '-', lw = lwd, label = 'Excess P&I Mort. Rate')
 
 ax1.legend(loc=2)
 
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/exploratory/F5_eMort_zRR_st_allSeas.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/F5/eMort_zRR_st.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 plt.show()
 

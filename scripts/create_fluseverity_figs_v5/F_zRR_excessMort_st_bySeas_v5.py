@@ -53,7 +53,7 @@ d_st_classif = fxn.readStateClassifFile(stix)
 # grab list of unique keys in dataset
 plot_keys = [key for key in sorted(d_st_classif)]
 ## import excess P&I mortality rates ##
-d_st_excessPI = fxn.excessPI_state_import()
+d_st_excessPI, d_st_pop = fxn.excessPI_state_import()
 
 for s in ps:
 	mask_keys = [key for key in sorted(d_st_classif) if not np.isnan(d_st_classif[key][0]) and key[0] == s] # rm nan
