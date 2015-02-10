@@ -31,6 +31,20 @@ def entireSeasonRR(dict_ageILIadj_season, dict_pop, seasonnum):
 	pop_ratio = (dict_pop[(seasonnum, 'C')])/(dict_pop[(seasonnum, 'A')])
 	return ILI_ratio * pop_ratio
 
+def tightSeasonRR(dict_ageILIadj_season, dict_pop, seasonnum):
+	''' Calculate relative risk based off of adjusted ILI visits from weeks 50 through 12 in flu season.
+	''' 
+	ILI_ratio = sum(dict_ageILIadj_season[(seasonnum,'A')][10:fw-7])/sum(dict_ageILIadj_season[(seasonnum,'C')][10:fw-7])
+	pop_ratio = (dict_pop[(seasonnum, 'C')])/(dict_pop[(seasonnum, 'A')])
+	return ILI_ratio * pop_ratio
+
+def nonfluSeasonRR(dict_ageILIadj_season, dict_pop, seasonnum):
+	''' Calculate relative risk based off of adjusted ILI visits from weeks 21 to 39, which occurs during the summer after the flu season.
+	''' 
+	ILI_ratio = sum(dict_ageILIadj_season[(seasonnum,'A')][fw:])/sum(dict_ageILIadj_season[(seasonnum,'C')][fw:])
+	pop_ratio = (dict_pop[(seasonnum, 'C')])/(dict_pop[(seasonnum, 'A')])
+	return ILI_ratio * pop_ratio
+
 ### data files ###
 incidin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/OR_allweeks_outpatient.csv','r')
 incid = csv.reader(incidin, delimiter=',')
@@ -67,26 +81,65 @@ d_classifzOR = fxn.classif_zRR_processing(d_wk, d_totIncidAdj53ls, d_zRR53ls)
 # plot values
 benchmark = [d_benchmark[s] for s in ps]
 fluSeason_RR = [entireSeasonRR(d_ageILIadj_season, d_pop, s) for s in ps]
+nonfluSeason_RR = [nonfluSeasonRR(d_ageILIadj_season, d_pop, s) for s in ps]
+tightfluSeason_RR = [tightSeasonRR(d_ageILIadj_season, d_pop, s) for s in ps]
 
-print 'entire season corr coef', np.corrcoef(benchmark, fluSeason_RR) # 0.738
+
+print 'entire flu season (40 to 20) corr coef', np.corrcoef(benchmark, fluSeason_RR) # 0.738
+print 'non flu season corr coef', np.corrcoef(benchmark, nonfluSeason_RR) # 0.136
+print 'tight flu season (50 to 12) corr coef', np.corrcoef(benchmark, tightfluSeason_RR) # 0.760
+
 
 # draw plots
 fig1 = plt.figure()
 ax1 = fig1.add_subplot(1,1,1)
-# mean retro zOR vs. benchmark index
+# flu season RR vs. benchmark index
 ax1.plot(benchmark, fluSeason_RR, marker = 'o', color = 'black', linestyle = 'None')
 ax1.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
-ax1.annotate('Mild', xy=(-4.75,0.9), fontsize=fssml)
-ax1.annotate('Severe', xy=(4,0.9), fontsize=fssml)
+ax1.annotate('Mild', xy=(-4.75,0.5), fontsize=fssml)
+ax1.annotate('Severe', xy=(4,0.5), fontsize=fssml)
 for s, x, y in zip(sl, benchmark, fluSeason_RR):
 	ax1.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
-ax1.set_ylabel('Flu Season RR', fontsize=fs) 
+ax1.set_ylabel('Flu Season RR (R=0.74)', fontsize=fs) 
 ax1.set_xlabel(fxn.gp_benchmark, fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([-5,5])
-ax1.set_ylim([0,1])
+ax1.set_ylim([0,0.6])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/exploratory/seasonRR_benchmark.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
+fig2 = plt.figure()
+ax2 = fig2.add_subplot(1,1,1)
+# nonflu season vs. benchmark index
+ax2.plot(benchmark, nonfluSeason_RR, marker = 'o', color = 'black', linestyle = 'None')
+ax2.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+ax2.annotate('Mild', xy=(-4.75,0.5), fontsize=fssml)
+ax2.annotate('Severe', xy=(4,0.5), fontsize=fssml)
+for s, x, y in zip(sl, benchmark, nonfluSeason_RR):
+	ax2.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+ax2.set_ylabel('Non-Flu Season RR (R=0.14)', fontsize=fs) 
+ax2.set_xlabel(fxn.gp_benchmark, fontsize=fs)
+ax2.tick_params(axis='both', labelsize=fssml)
+ax2.set_xlim([-5,5])
+ax2.set_ylim([0,0.6])
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/exploratory/nonfluseasonRR_benchmark.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.close()
 
+
+fig3 = plt.figure()
+ax3 = fig3.add_subplot(1,1,1)
+# tight flu season RR vs. benchmark index
+ax3.plot(benchmark, tightfluSeason_RR, marker = 'o', color = 'black', linestyle = 'None')
+ax3.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
+ax3.annotate('Mild', xy=(-4.75,0.5), fontsize=fssml)
+ax3.annotate('Severe', xy=(4,0.5), fontsize=fssml)
+for s, x, y in zip(sl, benchmark, tightfluSeason_RR):
+	ax3.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
+ax3.set_ylabel('Weeks 50 to 12 RR (R=0.76)', fontsize=fs) 
+ax3.set_xlabel(fxn.gp_benchmark, fontsize=fs)
+ax3.tick_params(axis='both', labelsize=fssml)
+ax3.set_xlim([-5,5])
+ax3.set_ylim([0,0.6])
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/exploratory/tightseasonRR_benchmark.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.close()
