@@ -19,10 +19,11 @@ import csv
 import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 import numpy as np
-
+from collections import defaultdict
+import random as rnd
 ## local modules ##
 import functions_v5 as fxn
-
+rnd.seed(10)
 ### data structures ###
 ### functions ###
 ### data files ###
@@ -50,6 +51,7 @@ first_wk = [('0'+str(wk))[-2:] for wk in wk1]
 wk2 = range(41,54) + range(1,40)
 sec_wk = [('0'+str(wk))[-2:] for wk in wk2]
 window_xticks = [fir+sec for fir, sec in zip(first_wk, sec_wk)]
+nswaps = 250
 
 ### program ###
 # import benchmark
@@ -76,15 +78,24 @@ print [np.mean(d_zRR53ls[s][:2]) for s in ps]
 print d_window_zRRma[0]
 print benchmarks
 
+# create null hypothesis through shuffling
+dict_iter_nullCorr = defaultdict(list)
+for i in range(nswaps):
+	null_corr = [pearsonr(fxn.returnShuffled(d_window_zRRma[w][:]), benchmarks)[0] for w in sorted(d_window_zRRma)] # create list copy to shuffle
+	dict_iter_nullCorr[i] = null_corr
+
 fig1 = plt.figure()
 ax1 = fig1.add_subplot(1,1,1)
-ax1.plot(range(52), benchmark_zRRma_corr, marker='o', color='black', linestyle='solid', linewidth=lw)
+for i in range(nswaps):
+	ax1.plot(range(52), dict_iter_nullCorr[i], color='grey', alpha=0.4, linewidth=1) # null line
+ax1.plot(range(7), benchmark_zRRma_corr[:7], marker='o', color='black', alpha=0.4, linestyle='solid', linewidth=lw)
+ax1.plot(range(6, 52), benchmark_zRRma_corr[6:], marker='o', color='black', linestyle='solid', linewidth=lw)
 ax1.set_ylabel(r'Pearson R: $\beta$ & $\sigma(t)$ (2-wk mean)', fontsize=fs) 
 ax1.set_xlabel('Window Period', fontsize=fs)
 plt.xticks(range(52)[::5], window_xticks[::5])
 ax1.set_xlim([0,53])
 ax1.set_ylim([-0.5,1.0])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/exploratory/corrCoef_window_summerBL.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/exploratory/corrCoef_window_summerBL_wNull.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
