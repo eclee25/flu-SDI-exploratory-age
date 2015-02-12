@@ -136,11 +136,12 @@ sorted_states2 = [item[0] for item in sort_median_dict2]
 retroDev_by_state = [[val for val in d_st_devls_mask[state]] for state in sorted_states2]
 
 ## 11/1/14: highlight severe states ##
-severe_states = ['VA', 'NC', 'SC', 'MD', 'PA', 'FL']
+severe_states = ['VA', 'NC']
+almostsevere_states = ['SC', 'MD', 'PA', 'FL', 'DE']
 almostmild_states = ['WA', 'CA', 'OR']
 # highlight severe state finding
-sorted_colors_ix = ['r' if st in severe_states else ('#abd9e9' if st in almostmild_states else '0.85') for st in sorted_states] 
-sorted_colors_dev = ['r' if st in severe_states else ('#abd9e9' if st in almostmild_states else '0.85') for st in sorted_states2] 
+sorted_colors_ix = ['r' if st in severe_states else ('#abd9e9' if st in almostmild_states else ('#FFA07A' if st in almostsevere_states else '0.85')) for st in sorted_states] 
+sorted_colors_dev = ['r' if st in severe_states else ('#abd9e9' if st in almostmild_states else ('#FFA07A' if st in almostsevere_states else '0.85')) for st in sorted_states2] 
 
 print 'nat classif', [d_nat_classif[s][0] for s in ps]
 
@@ -155,7 +156,7 @@ plt.xlim([0.5, 37.5])
 plt.ylim([-8, 8])
 plt.xticks(xrange(1, len(sorted_states)+1), sorted_states, rotation = 'vertical', fontsize=fssml)
 plt.yticks(fontsize=fssml)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/zRR_state_state.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_state_state.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -171,7 +172,7 @@ plt.xlim([0.5, 37.5])
 plt.xticks(xrange(1, len(sorted_states2)+1), sorted_states2, rotation = 'vertical', fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.ylim([-4,4])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/zRR_state_state_deviation.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/F4/zRR_state_state_deviation.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 

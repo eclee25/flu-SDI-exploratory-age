@@ -24,3 +24,8 @@ charts
 - adjusted child and adult incidence vs. time for example mild, moderate, severe seasons
 
 - supplemental figures
+
+2/11/15
+- retrospective period fixed to two week period that begins three weeks before the peak, regardless of seasonal timing
+- early warning period removed for seasons that peaked before beginning of January because their early warning would be during the main epidemic increase
+- changed scales of y-axes

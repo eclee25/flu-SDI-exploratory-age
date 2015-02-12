@@ -399,11 +399,11 @@ def excessPI_state_import():
 	return dict_state_excessPI, dict_state_pop
 
 ##############################################
-def aggregate_excessPI_state(dict_state_excessPI, dict_state_pop):
-	''' Aggregate state-level excess P&I mortality rates (from Cecile) to national level rates by season.
+def weightAvg_excessPI_state(dict_state_excessPI, dict_state_pop):
+	''' Aggregate state-level excess P&I mortality rates (from Cecile) to national level rates by season, where aggregation is population-weighted average of all state-level rates.
 	dict_nat_excessPI[season] = (excess P&I mortality rate per 100,000, unitless detrended excess P&I mortality)
 	'''
-	main(aggregate_excessPI_state)
+	main(weightAvg_excessPI_state)
 
 	seasons_in_dict = sorted(list(set([key[0] for key in dict_state_excessPI])))
 	# in national level excess mortality rate, include only states that report data across all available seasons
@@ -431,6 +431,27 @@ def aggregate_excessPI_state(dict_state_excessPI, dict_state_pop):
 
 	return dict_nat_excessPI
 
+##############################################
+def sum_excessPI_state(dict_state_excessPI):
+	''' Aggregate state-level excess P&I mortality rates (from Cecile) to national level rates by season, where aggregation is the sum of all excess P&I mortality rates at the state level.
+	dict_nat_excessPI[season] = (excess P&I mortality rate per 100,000, unitless detrended excess P&I mortality)
+	'''
+	main(sum_excessPI_state)
+
+	seasons_in_dict = list(set([key[0] for key in dict_state_excessPI]))
+	# in national level excess mortality rate, include only states that report data across all available seasons
+	states_in_dict = [key[1] for key in dict_state_excessPI]
+	fullDataStates_list = [state for state in set(states_in_dict) if states_in_dict.count(state) == len(seasons_in_dict)]
+	# subset dict data to include states w/ excess rates for all seasons (I think all states have data though)
+	dict_excessPI_subset = dict((key, dict_state_excessPI[key]) for key in dict_state_excessPI if key[1] in fullDataStates_list)
+	# aggregate data by season to the national level
+	dict_nat_excessPI = {}
+	for season in seasons_in_dict:
+		dummytuple_list = [dict_excessPI_subset[key] for key in dict_excessPI_subset if key[0] == season]
+		dict_nat_excessPI[season] = (sum(zip(*dummytuple_list)[0]), sum(zip(*dummytuple_list)[1]))
+
+	return dict_nat_excessPI
+
 #############################################
 def identify_retro_early_weeks(dict_wk, dict_incid53ls):
 	''' Identify weeks in the early warning and retrospective periods for each season using indices in list for incidence. Returns one dict: dict_indices[(snum, classif period)] = (first index, last index for index slicing)
@@ -445,18 +466,19 @@ def identify_retro_early_weeks(dict_wk, dict_incid53ls):
 		weekdummy = sorted([wk for wk in dict_wk if dict_wk[wk] == s])
 		# identify retrospective week indices
 		peak_index = peak_flu_week_index(dict_incid53ls[s])
-		# 11/7: if the season peaks before week 2
-		if peak_index <= 15:
-			begin_retro = 16 # fixed at week 3
-			print s, 'peaks <= week 2'
-		else:
-			begin_retro = peak_index - gp_begin_retro_week
+		# 2/11/15: rm retrospective condition for early seasons
+		begin_retro = peak_index - gp_begin_retro_week
 		end_retro = begin_retro + gp_retro_duration
-
+		
 		# identify early warning week indices
 		Thx_index = weekdummy.index(dict_Thanksgiving[s])
 		begin_early = Thx_index + gp_begin_early_week
 		end_early = begin_early + gp_early_duration
+
+		# 2/11/15: rm early warning for seasons that peak before January
+		if peak_index <= 14:
+			print s, 'peaks <= week 1'
+			begin_early, end_early = (-99, -99)
 
 		# create dictionary with early warning and retrospective indices by season
 		dict_indices[(s, 'r')] = (begin_retro, end_retro)

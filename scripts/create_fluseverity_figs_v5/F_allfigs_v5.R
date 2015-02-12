@@ -79,6 +79,14 @@ for (s in 2:9){
 }
 
 ##########################################
+# 2/11/15: process pediatric deaths so that they are cumulative
+cdc_lm$ped_deaths_cum <- NA
+for (s in 2:9){
+  dat <- cdc_lm[cdc_lm$season == s,]
+  # put NA for first week in every season so that the cumulative deaths will not be connected across seasons (there are no ped deaths in those weeks anyways)
+  cdc_lm$ped_deaths_cum[cdc_lm$season == s] <- c(NA, cumsum(dat$ped_deaths[2:length(dat$ped_deaths)]))
+}
+##########################################
 # plotting parameters
 w = 580 
 h = 580
@@ -121,13 +129,13 @@ legend('topleft', c('A/H1 samp.', 'A/H3 samp.', 'B samp.', '% pos tests'), col =
 
 # laboratory confirmed panel (cumulative hospitalization rates, pediatric deaths)
 par(mar=margin)
-plot(cdc_lm$ped_deaths, col = 'forestgreen ', type = 'l', lwd = sz, axes = F, ylab = '', xlab = '', ylim = c(0,15))
-axis(4, at = seq(0, 15, by=5), labels = seq(0, 15, by=5), col.axis = 'black', col = 'black', col.ticks = 'black')
-mtext(4, text = 'deaths (#)', line = 2.5, col = 'black', cex = sz2)
+plot(cdc_lm$ped_deaths_cum, col = 'forestgreen ', type = 'l', lwd = sz, axes = F, ylab = '', xlab = '', ylim = c(0,100))
+axis(4, at = seq(0, 100, by=20), labels = seq(0, 100, by=20), col.axis = 'black', col = 'black', col.ticks = 'black')
+mtext(4, text = 'cum. deaths (#)', line = 2.5, col = 'black', cex = sz2)
 par(new=T)
-plot(cdc_lm$hosp_5.17, type = 'l', xlab = '', ylab = '', axes = F, lwd = sz, ylim = c(0, 15), cex.lab = sz, col = 'red')
+plot(cdc_lm$hosp_5.17, type = 'l', xlab = '', ylab = '', axes = F, lwd = sz, ylim = c(0, 10), cex.lab = sz, col = 'red')
 lines(cdc_lm$hosp_18.49, type = 'l', col = 'blue', lwd = sz)
-axis(2, at=seq(0, 15, by=5), labels=seq(0, 15, by=5))
+axis(2, at=seq(0, 10, by=2), labels=seq(0, 10, by=2))
 mtext(2, text = 'cum. hosp. rate', line = sz, cex = sz2)
 legend('topleft', c('5-17 yr hosp.', '18-49 yr hosp.', 'pediatric deaths'), col = c('red', 'blue', 'forestgreen'), lwd = c(sz, sz, sz))
 

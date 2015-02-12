@@ -99,8 +99,8 @@ states = sorted(list(set([key[1] for key in d_st]))) # list unique states
 n_code = [d_nat_codes[s][0] for s in seasons]
 ct = 0
 for st in states:
-	# include only states where all early warning and retrospective classifications are available
-	if sum(sum(np.isnan([d_st_codes[(s, st)] for s in seasons]))) == 0:
+	# include only states where all early warning and retrospective classifications are available (2/11/15 except S4 early warning)
+	if sum(sum(np.isnan([d_st_codes[(s, st)] for s in seasons]))) == 1:
 		ct += 1
 		# state early warning classif
 		st_code_early = [d_st_codes[(s, st)][1] for s in seasons]
@@ -136,9 +136,9 @@ bg_rate_early = np.mean([d_correct_by_season[key][0]/float(len(incl_states)) for
 bg_rate_retro = np.mean([d_correct_by_season[key][1]/float(len(incl_states)) for key in d_correct_by_season])
 bg_rate_st2st = np.mean([d_correct_by_season[key][2]/float(len(incl_states)) for key in d_correct_by_season])
 
-print 'bg rate early', bg_rate_early
-print 'bg rate retro', bg_rate_retro
-print 'bg rate st2st', bg_rate_st2st
+print 'bg rate early', bg_rate_early # 2/11/15: 0.269
+print 'bg rate retro', bg_rate_retro # 2/11/15: 0.543
+print 'bg rate st2st', bg_rate_st2st # 2/11/15: 0.380
 
 ###########################
 # print accuracy counts per state to file

@@ -69,8 +69,8 @@ d_nat_classif = fxn.readNationalClassifFile(natix)
 d_factors = factors_import(cdc)
 # import state-level excess p&i mortality
 d_st_excessPI, d_st_pop = fxn.excessPI_state_import()
-# aggregate state-level excess p&i to national level
-d_nat_excessPI = fxn.aggregate_excessPI_state(d_st_excessPI, d_st_pop)
+# take the weighted average of state-level excess p&i to get the national level data
+d_nat_excessPI = fxn.weightAvg_excessPI_state(d_st_excessPI, d_st_pop)
 
 # plot values
 retrozOR = [d_nat_classif[s][0] for s in ps]
@@ -98,10 +98,6 @@ print 'Excess PI mort', Efit_fn
 fig1 = plt.figure()
 ax2 = fig1.add_subplot(1,1,1)
 ax1 = ax2.twinx()
-# # mean retro zOR vs. metrics
-# ili, = ax1.plot(retrozOR, ili_prop, marker = 'o', color = colorvec[0], linestyle = 'None', ms=msz)
-# pi, = ax1.plot(retrozOR, pi_mort, marker = 'o', color = colorvec[2], linestyle = 'None', ms=msz)
-# hosp, = ax2.plot(retrozOR, hosp_tot, marker = 'o', color = colorvec[1], linestyle = 'None', ms=msz)
 
 # best fit lines
 ax1.plot(retrozOR, pk_ili_prop, 'o', retrozOR, Ifit_fn(retrozOR), '-', color = colorvec[0], lw = lwd)
@@ -120,10 +116,10 @@ ax1.annotate('Severe', xy=(11,6.5), fontsize=fssml)
 ax1.set_ylabel('Percent (%)', fontsize=fs) 
 ax2.set_xlabel(fxn.gp_sigma_r, fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
-ax1.set_xlim([-15,15])
+ax1.set_xlim([-15,18])
 ax1.set_ylim([0,7])
 # hospitalization axis
-ax2.set_ylabel('Rate Per 100,000', fontsize=fs) 
+ax2.set_ylabel('Rate per 100,000', fontsize=fs) 
 ax2.set_ylim([0,45])
 ax2.tick_params(axis='both', labelsize=fssml)
 
@@ -139,7 +135,8 @@ plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fl
 plt.close()
 # plt.show()
 
-print 'pk_ili_prop corr coef', np.corrcoef(pk_ili_prop, retrozOR) # 0.752 (12/4/14)
-print 'hosp_tot corr coef', np.corrcoef(hosp_tot, retrozOR[2:]) # 0.706 w/o first two seasons
-print 'pi_mort corr coef', np.corrcoef(pi_mort, retrozOR) # 0.691
-print 'ex_pi_mort corr coef', np.corrcoef(ex_pi_mort, retrozOR) # 0.660
+# updated 2/11/15
+print 'pk_ili_prop corr coef', np.corrcoef(pk_ili_prop, retrozOR) # 0.681
+print 'hosp_tot corr coef', np.corrcoef(hosp_tot, retrozOR[2:]) # 0.591 w/o first two seasons
+print 'pi_mort corr coef', np.corrcoef(pi_mort, retrozOR) # 0.573
+print 'ex_pi_mort corr coef', np.corrcoef(ex_pi_mort, retrozOR) # 0.535 (weightAvg_excessPI_state)

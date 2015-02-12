@@ -9,6 +9,7 @@
 # 10/31 coverage adjustment no longer age-specific at national or state level
 # 11/1 split from export_zOR_classif.py
 # 11/4 ILINet data
+# 2/11/15 change retrospective calc back to peak-based only, rm early warning for early seasons
 
 ###Import data: SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop_age.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 

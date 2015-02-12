@@ -5,6 +5,7 @@
 ###Author: Elizabeth Lee
 ###Date: 11/6/14
 ###Function: Export zOR retrospective and early warning classifications into csv file format (SDI and ILINet national). Use alternative baselines (7 weeks in summer, 10 weeks in summer, 10 weeks in fall)
+# Change to summer baseline option in week_OR_processing when running this code!
 
 ###Import data: SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop_age.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 

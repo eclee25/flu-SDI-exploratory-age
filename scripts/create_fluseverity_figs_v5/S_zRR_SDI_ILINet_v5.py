@@ -67,13 +67,13 @@ ax1.fill([30, 1, 1, 30], [1, 1, 30, 30], facecolor='red', alpha=0.4)
 ax1.fill([-1, 1, 1, -1], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
 ax1.fill([-30, -1, -1, -30], [-1, -1, -30, -30], facecolor='blue', alpha=0.4)
 ax1.annotate('Mild', xy=(-2,-3), fontsize=fssml)
-ax1.annotate('Severe', xy=(3.5,13), fontsize=fssml)
+ax1.annotate('Severe', xy=(3.5,15.5), fontsize=fssml)
 ax1.set_title(fxn.gp_sigma_r, fontsize=fs)
 ax1.set_ylabel('SDI', fontsize=fs)
 ax1.set_xlabel('ILINet', fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([-5,5])
-ax1.set_ylim([-15,15])
+ax1.set_ylim([-15,18])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_SDI_ILINet_retro.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
@@ -94,12 +94,12 @@ ax2.set_title(fxn.gp_sigma_w, fontsize=fs)
 ax2.set_ylabel('SDI', fontsize=fs)
 ax2.set_xlabel('ILINet', fontsize=fs)
 ax2.tick_params(axis='both', labelsize=fssml)
-ax2.set_xlim([-5,5])
+ax2.set_xlim([-5,10])
 ax2.set_ylim([-10,10])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_SDI_ILINet_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
-
-print 'retro - SDI/ILINet', np.corrcoef(SDI_retro, ILINet_retro) # 0.728
+# updated 2/11/15 
+print 'retro - SDI/ILINet', np.corrcoef(SDI_retro, ILINet_retro) # 0.775
 print 'early - SDI/ILINet', np.corrcoef(SDI_early, ILINet_early) # 0.080
 

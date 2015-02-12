@@ -57,8 +57,9 @@ AR = [sum(d_totIncidAdj53ls[s][:fw]) for s in ps]
 retrozOR = [d_nat_classif[s][0] for s in ps]
 earlyzOR = [d_nat_classif[s][1] for s in ps]
 
-print 'retro corr coef', np.corrcoef(AR, retrozOR) # 0.856
-print 'early corr coef', np.corrcoef(AR, earlyzOR) # 0.424
+
+print 'retro corr coef', np.corrcoef(AR, retrozOR) # 0.744 (updated 2/11/15)
+print 'early corr coef', np.corrcoef(AR, earlyzOR) # 0.424 - old (would be nan with 2/11/15 update)
 
 # draw plots
 fig1 = plt.figure()
@@ -70,7 +71,7 @@ for s, x, y in zip(sl, AR, retrozOR):
 ax1.set_ylabel(fxn.gp_sigma_r, fontsize=fs) 
 ax1.set_xlabel(fxn.gp_attackrate, fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
-ax1.set_ylim([-15,15])
+ax1.set_ylim([-15,18])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_totalAR.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()

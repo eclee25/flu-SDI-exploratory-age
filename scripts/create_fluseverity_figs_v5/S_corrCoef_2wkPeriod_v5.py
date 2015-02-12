@@ -32,7 +32,7 @@ incid = csv.reader(incidin, delimiter=',')
 popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/totalpop_age.csv', 'r')
 pop = csv.reader(popin, delimiter=',')
 ixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index.csv','r')
-ixin.readline()
+ixin.readline() 
 ix = csv.reader(ixin, delimiter=',')
 
 ### called/local plotting parameters ###
@@ -78,6 +78,9 @@ print [np.mean(d_zRR53ls[s][:2]) for s in ps]
 print d_window_zRRma[0]
 print benchmarks
 
+for w in sorted(d_window_zRRma):
+	print w, pearsonr(d_window_zRRma[w], benchmarks)
+
 # create null hypothesis through shuffling
 dict_iter_nullCorr = defaultdict(list)
 for i in range(nswaps):
@@ -86,16 +89,18 @@ for i in range(nswaps):
 
 fig1 = plt.figure()
 ax1 = fig1.add_subplot(1,1,1)
-for i in range(nswaps):
-	ax1.plot(range(52), dict_iter_nullCorr[i], color='grey', alpha=0.4, linewidth=1) # null line
+# # null hypothesis band
+# for i in range(nswaps):
+# 	ax1.plot(range(52), dict_iter_nullCorr[i], color='grey', alpha=0.4, linewidth=1) # null line
 ax1.plot(range(7), benchmark_zRRma_corr[:7], marker='o', color='black', alpha=0.4, linestyle='solid', linewidth=lw)
 ax1.plot(range(6, 52), benchmark_zRRma_corr[6:], marker='o', color='black', linestyle='solid', linewidth=lw)
+ax1.fill([14, 18, 18, 14], [0.6, 0.6, 0.9, 0.9], facecolor='green', alpha=0.4)
 ax1.set_ylabel(r'Pearson R: $\beta$ & $\sigma(t)$ (2-wk mean)', fontsize=fs) 
 ax1.set_xlabel('Window Period', fontsize=fs)
 plt.xticks(range(52)[::5], window_xticks[::5])
 ax1.set_xlim([0,53])
 ax1.set_ylim([-1.0,1.0])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/exploratory/corrCoef_window_fallBL_wNull.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/corrCoef_window_gFallBL.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 

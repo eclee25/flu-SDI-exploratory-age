@@ -136,6 +136,7 @@ plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fl
 plt.close()
 # plt.show()
 
-print '10 week fall corr coef', np.corrcoef(benchmark, f10r) # 0.724
-print '7 week summer corr coef', np.corrcoef(benchmark, s7r) # 0.677
-print '10 week summer corr coef', np.corrcoef(benchmark, s10r) #0.689
+# updated 2/11/15
+print '10 week fall corr coef', np.corrcoef(benchmark, f10r) # 0.769
+print '7 week summer corr coef', np.corrcoef(benchmark, s7r) # 0.584
+print '10 week summer corr coef', np.corrcoef(benchmark, s10r) #0.663

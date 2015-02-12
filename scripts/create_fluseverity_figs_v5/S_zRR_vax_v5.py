@@ -68,7 +68,7 @@ for s, x, y in zip(sl, vaxmatch, retrozOR):
 ax1.set_ylabel(fxn.gp_sigma_r, fontsize=fs) 
 ax1.set_xlabel('Trivalent Vaccine Match (%)', fontsize=fs)
 ax1.set_xlim([0,100])
-ax1.set_ylim([-15,15])
+ax1.set_ylim([-15,18])
 ax1.tick_params(axis='both', labelsize=fssml)
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_vaxmatch.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
@@ -83,11 +83,12 @@ for s, x, y in zip(sl, vaxeffic, retrozOR):
 ax2.set_ylabel(fxn.gp_sigma_r, fontsize=fs) 
 ax2.set_xlabel('TIV/LAIV Weighted Vaccine Efficacy (%)', fontsize=fs)
 ax2.set_xlim([0,100])
-ax2.set_ylim([-15,15])
+ax2.set_ylim([-15,18])
 ax2.tick_params(axis='both', labelsize=fssml)
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_vaxeffic.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
-print 'vaxmatch corr coef', np.corrcoef(vaxmatch, retrozOR) # -0.823
+# updated 2/11/15
+print 'vaxmatch corr coef', np.corrcoef(vaxmatch, retrozOR) # -0.797
 print 'vaxeffic corr coef', np.corrcoef(vaxeffic, retrozOR) # nan

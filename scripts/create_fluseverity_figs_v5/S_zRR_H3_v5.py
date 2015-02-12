@@ -108,6 +108,7 @@ ax2.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax2.set_xlabel('H3 Proportion (NREVSS)', fontsize=fs)
 ax2.tick_params(axis='both', labelsize=fssml)
 ax2.set_xlim([0,1])
+ax2.set_ylim([-15, 18])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
@@ -200,4 +201,5 @@ plt.xlim([0,1])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_H3_nrevss_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
-print 'zRR H3 NREVSS corr coef', np.corrcoef(H3nrevss, retrozOR) # 0.561
+# updated 2/11/15
+print 'zRR H3 NREVSS corr coef', np.corrcoef(H3nrevss, retrozOR) # 0.458

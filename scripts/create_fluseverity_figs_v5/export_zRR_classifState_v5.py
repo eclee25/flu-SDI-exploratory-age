@@ -9,6 +9,7 @@
 
 # 10/31 coverage adjustment no longer age-specific at national or state level
 # 11/1 split from export_zOR_classif.py
+# 2/11/15 change retrospective calc back to peak-based only, rm early warning for early seasons
 
 ###Import data: R_export/OR_zip3_week_outpatient_cl.csv, R_export/allpopstat_zip3_season_cl.csv
 #### These data were cleaned with data_extraction/clean_OR_hhsreg_week_outpatient.R and exported with OR_zip3_week.sql

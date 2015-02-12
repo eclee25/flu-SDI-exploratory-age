@@ -101,6 +101,7 @@ ax1.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax1.set_xlabel('Hospitalization Rate per 100,000', fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([0, 35])
+ax1.set_ylim([-15, 18])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_HospPerPop.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
@@ -113,6 +114,7 @@ for s, x, y in zip(sl, CFR, retrozOR):
 ax2.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax2.set_xlabel('P&I Mortality Risk:ILI Case Proportion', fontsize=fs)
 ax2.tick_params(axis='both', labelsize=fssml)
+ax2.set_ylim([-15, 18])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_ILIMortalityRisk.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
@@ -125,6 +127,7 @@ for s, x, y in zip(sl, dI_ratio, retrozOR):
 ax3.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax3.set_xlabel('P&I Deaths to ILI', fontsize=fs)
 ax3.tick_params(axis='both', labelsize=fssml)
+ax3.set_ylim([-15, 18])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_DeathILIRatio.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
@@ -137,6 +140,7 @@ for s, x, y in zip(sl, inp_outp, retrozOR):
 ax4.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax4.set_xlabel('Inpatient to Outpatient ILI Proportion of All Cases', fontsize=fs)
 ax4.tick_params(axis='both', labelsize=fssml)
+ax4.set_ylim([-15, 18])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_InpatientOutpatient.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
@@ -150,13 +154,15 @@ ax5.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax5.set_xlabel('Inpatient ILI Visits per 100,000', fontsize=fs)
 ax5.tick_params(axis='both', labelsize=fssml)
 ax5.set_xlim([0,140])
+ax5.set_ylim([-15, 18])
 plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_InpatientAR.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
+# updated 2/11/15
 print 'retrozOR_hosprate', np.corrcoef(retrozOR, CHR) # nan
 print 'retrozOR_mortrisk', np.corrcoef(retrozOR, CFR) # nan
 print 'retrozOR_dIratio', np.corrcoef(retrozOR, dI_ratio) # nan
-print 'retrozOR_inpoutp', np.corrcoef(retrozOR, inp_outp) # 0.243
-print 'retrozOR_inpatientAR', np.corrcoef(retrozOR, inpAR) # 0.244
+print 'retrozOR_inpoutp', np.corrcoef(retrozOR, inp_outp) # 0.416                            
+print 'retrozOR_inpatientAR', np.corrcoef(retrozOR, inpAR) # 0.442
 
 

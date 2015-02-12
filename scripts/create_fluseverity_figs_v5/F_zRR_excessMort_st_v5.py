@@ -95,6 +95,6 @@ plt.close()
 plt.show()
 
 # all, severe, mild reporting order
-print 'excess PI corr coef', np.corrcoef(excessPI, retrozOR) # 0.231, -0.169, 0.007
-print 'detrended excess PI corr coef', np.corrcoef(excessPI_detrended, retrozOR) # 0.272, -0.149, 0.025
+print 'excess PI corr coef', np.corrcoef(excessPI, retrozOR) # 0.111, 
+print 'detrended excess PI corr coef', np.corrcoef(excessPI_detrended, retrozOR) # 0.157,
 
