@@ -38,7 +38,7 @@ ixin.readline()
 ix = csv.reader(ixin, delimiter=',')
 
 ## normalization schemes
-combo = "_norm2"
+combo = ""
 ix1in = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index_long_norm1.csv','r')
 ix1in.readline()
 ix1 = csv.reader(ix1in, delimiter=',')
@@ -55,13 +55,13 @@ fssml = 16
 ### program ###
 # import data
 # d_benchmark[seasonnum] = CDC benchmark index value
-d_benchmark = fxn.benchmark_import(ix2, 8) # no ILINet
+d_benchmark = fxn.benchmark_import(ix, 8) # no ILINet
 d_classifzOR = fxn.readNationalClassifFile(sev)
 
 # plot values
 benchmark = [d_benchmark[s] for s in ps]
 retrozOR = [d_classifzOR[s][0] for s in ps]
-earlyzOR = [d_classifzOR[s][1] for s in ps]
+earlyzOR = np.ma.masked_invalid([d_classifzOR[s][1] for s in ps])
 
 # draw plots
 # mean retro zOR vs. benchmark index
@@ -111,4 +111,5 @@ plt.close()
 # reported: initial, norm2, norm1
 print 'retro corr coef', np.corrcoef(benchmark, retrozOR) 
 # 0.701, 0.366, 0.399
-print 'early corr coef', np.corrcoef(benchmark, earlyzOR) # , , 
+mask_bench = np.ma.array(benchmark, mask=np.ma.getmask(earlyzOR))
+print 'early corr coef', np.corrcoef(mask_bench.compressed(), earlyzOR.compressed()) # -.261, , 
