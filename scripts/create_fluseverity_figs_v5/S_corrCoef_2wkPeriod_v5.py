@@ -87,14 +87,31 @@ for i in range(nswaps):
 	null_corr = [pearsonr(fxn.returnShuffled(d_window_zRRma[w][:]), benchmarks)[0] for w in sorted(d_window_zRRma)] # create list copy to shuffle
 	dict_iter_nullCorr[i] = null_corr
 
+# generate 95% CI for null
+dict_iter_nullCorr95 = {}
+for w in sorted(d_window_zRRma):
+	dummyW = [itemLS[w] for itemLS in dict_iter_nullCorr.values()] # values for same window across all iterations
+	dict_iter_nullCorr95[w] = (np.percentile(dummyW, 2.5), np.percentile(dummyW, 97.5)) # lower and upper bounds on confidence interval
+
+# null hypothesis 95% CI
+LB = [dict_iter_nullCorr95[w][0] for w in sorted(d_window_zRRma)]
+UB = [dict_iter_nullCorr95[w][1] for w in sorted(d_window_zRRma)]
+
 fig1 = plt.figure()
 ax1 = fig1.add_subplot(1,1,1)
-# # null hypothesis band
-# for i in range(nswaps):
-# 	ax1.plot(range(52), dict_iter_nullCorr[i], color='grey', alpha=0.4, linewidth=1) # null line
+
+ax1.plot(range(52), LB, color='red', linewidth=lw) # lower bound line
+ax1.plot(range(52), UB, color='red', linewidth=lw) # null line
 ax1.plot(range(7), benchmark_zRRma_corr[:7], marker='o', color='black', alpha=0.4, linestyle='solid', linewidth=lw)
 ax1.plot(range(6, 52), benchmark_zRRma_corr[6:], marker='o', color='black', linestyle='solid', linewidth=lw)
-ax1.fill([14, 18, 18, 14], [0.6, 0.6, 0.9, 0.9], facecolor='green', alpha=0.4)
+# ax1.fill([14, 18, 18, 14], [0.6, 0.6, 0.9, 0.9], facecolor='green', alpha=0.4) # highligh p<0.05
+
+# handles for legend formatting
+kformat, = ax1.plot([],[], color='black', linewidth=lw, marker='o', label = 'valid weeks of analysis')
+gformat, = ax1.plot([],[], color='black', alpha=0.4, linewidth=lw, marker='o', label = 'normalization period')
+CIformat, = ax1.plot([],[], color='red', linewidth=lw, label = '95% CI for randomized null')
+ax1.legend(loc=4)
+
 ax1.set_ylabel(r'Pearson R: $\beta$ & $\sigma(t)$ (2-wk mean)', fontsize=fs) 
 ax1.set_xlabel('Window Period', fontsize=fs)
 plt.xticks(range(52)[::5], window_xticks[::5])

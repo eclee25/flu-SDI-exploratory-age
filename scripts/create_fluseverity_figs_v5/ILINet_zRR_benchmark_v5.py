@@ -38,7 +38,7 @@ ixin.readline()
 ix = csv.reader(ixin, delimiter=',')
 
 ## normalization schemes
-combo = ""
+combo = "_norm2"
 ix1in = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index_long_norm1.csv','r')
 ix1in.readline()
 ix1 = csv.reader(ix1in, delimiter=',')
@@ -55,13 +55,16 @@ fssml = 16
 ### program ###
 # import data
 # d_benchmark[seasonnum] = CDC benchmark index value
-d_benchmark = fxn.benchmark_import(ix, 8) # no ILINet
+d_benchmark = fxn.benchmark_import(ix2, 8) # no ILINet
 d_classifzOR = fxn.readNationalClassifFile(sev)
 
 # plot values
 benchmark = [d_benchmark[s] for s in ps]
 retrozOR = [d_classifzOR[s][0] for s in ps]
 earlyzOR = np.ma.masked_invalid([d_classifzOR[s][1] for s in ps])
+
+for s, i, j in zip(ps, benchmark, retrozOR):
+	print s, i, j # to determine number of matches
 
 # draw plots
 # mean retro zOR vs. benchmark index
@@ -108,7 +111,7 @@ plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fl
 plt.close()
 # plt.show()
 
-# reported: initial, norm2, norm1
+# updated 2/13/15 reported: initial, norm2, norm1
 print 'retro corr coef', np.corrcoef(benchmark, retrozOR) 
 # 0.701, 0.366, 0.399
 mask_bench = np.ma.array(benchmark, mask=np.ma.getmask(earlyzOR))
