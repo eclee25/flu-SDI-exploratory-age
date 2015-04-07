@@ -31,10 +31,10 @@ incid = csv.reader(incidin, delimiter=';')
 ### called/local plotting parameters ###
 ps = fxn.pseasons
 fw = fxn.gp_fluweeks
-# sl = fxn.gp_FR_seasonlabels
-# colvec = fxn.gp_FR_colors
-sl = fxn.gp_seasonlabels
-colvec = fxn.gp_colors
+sl = fxn.gp_FR_seasonlabels
+colvec = fxn.gp_FR_colors
+# sl = fxn.gp_seasonlabels # for S2-9
+# colvec = fxn.gp_colors # for S2-9
 wklab = fxn.gp_weeklabels
 norm = fxn.gp_normweeks
 fs = 24
@@ -65,7 +65,7 @@ ax.set_xlim([0, fw])
 ax.set_ylim([-6, 8])
 ax.set_xlabel('Week Number', fontsize=fs)
 ax.set_ylabel(fxn.gp_sigmat, fontsize=fs)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/FR/zRR_time_S2S9.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/FR/zRR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 

@@ -50,7 +50,7 @@ def print_dict_to_file3(dic, dic_validSeasons, filename):
 if fxn.pseasons == fxn.gp_plotting_seasons:
 
 	##############################################
-	# SDI STATE: state-level peak-based retrospective classification
+	# SDI STATE WITH ALL EARLY WARNING: state-level peak-based retrospective classification
 	# import zip3 level files
 	reg_incidin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/OR_zip3_week_outpatient_cl.csv', 'r')
 	reg_incidin.readline()
@@ -68,9 +68,36 @@ if fxn.pseasons == fxn.gp_plotting_seasons:
 	# spatial keys == states
 	states = list(set([d_zip3_region[k][0] for k in d_zip3_region]))
 	# create dict with state-level classifications
-	d_classifzRR_spatial = fxn.classif_zRR_processing_spatial(d_wk, d_spatialTotIncidAdj53ls, d_spatialZRR53ls, states)
+	d_classifzRR_spatial = fxn.classif_zRR_processing_spatial(d_wk, d_spatialTotIncidAdj53ls, d_spatialZRR53ls, states, 'withEarly')
 
 	##############################################
 	## save classifications to file ##
 	fn4 = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_classif_covCareAdj_v5_%sst.csv' %(nw)
+	print_dict_to_file3(d_classifzRR_spatial, d_validDataCount, fn4)
+
+
+	##############################################
+	# SDI STATE WITH ALL EARLY WARNING: state-level peak-based retrospective classification
+	# import zip3 level files
+	reg_incidin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/OR_zip3_week_outpatient_cl.csv', 'r')
+	reg_incidin.readline()
+	regincid = csv.reader(reg_incidin, delimiter=',')
+	reg_popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/allpopstat_zip3_season_cl.csv','r')
+	reg_popin.readline()
+	regpop = csv.reader(reg_popin, delimiter=',')
+
+	# import data
+	d_wk, d_weekZip3_ili, d_seasZip3_pop, d_zip3_region = fxn.week_import_zip3(regincid, regpop)
+	# process ILI data
+	d_seasSpatialAge_iliLS, d_seasSpatial_pop = fxn.week_ILI_processing_spatial(d_wk, d_weekZip3_ili, d_seasZip3_pop, d_zip3_region, 'state')
+	# adjustments, 53rd week, RR, zRR
+	d_spatialTotIncid53ls, d_spatialTotIncidAdj53ls, d_spatialRR53ls, d_spatialZRR53ls, d_validDataCount = fxn.week_RR_processing_spatial(d_wk, d_seasSpatialAge_iliLS, d_seasSpatial_pop, d_zip3_region, 'state')
+	# spatial keys == states
+	states = list(set([d_zip3_region[k][0] for k in d_zip3_region]))
+	# create dict with state-level classifications
+	d_classifzRR_spatial = fxn.classif_zRR_processing_spatial(d_wk, d_spatialTotIncidAdj53ls, d_spatialZRR53ls, states, 'withoutEarly')
+
+	##############################################
+	## save classifications to file ##
+	fn4 = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_classif_covCareAdj_v5_%sst_withoutEarly.csv' %(nw)
 	print_dict_to_file3(d_classifzRR_spatial, d_validDataCount, fn4)

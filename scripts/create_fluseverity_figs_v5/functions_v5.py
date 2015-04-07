@@ -118,9 +118,9 @@ gp_FR_colors = cm.rainbow(np.linspace(0, 1, len(gp_FR_seasonlabels)))
 ## call parameters ##
 # set these parameters every time a plot is run
 
-pseasons = gp_ILINet_plotting_seasons
+# pseasons = gp_ILINet_plotting_seasons
 # pseasons = gp_FR_plotting_seasons
-# pseasons = gp_plotting_seasons
+pseasons = gp_plotting_seasons
 
 ##############################################
 def anydiag_baseline_comparison(csvreadfile):
@@ -269,8 +269,8 @@ def classif_zRR_processing(dict_wk, dict_totIncidAdj53ls, dict_zRR53ls):
 	return dict_classifzRR
 
 ##############################################
-def classif_zRR_processing_spatial(dict_wk, dict_spatialTotIncidAdj53ls, dict_spatialZRR53ls, spatial_keys):
-	''' Calculate retrospective and early warning zOR classification values for each season and spatial (state/region) combination. Spatial retrospective classifications are tied to the peak adjusted incidence week of the state/region in a given season. Spatial early warning classifications are tied to the week of Thanksgiving in a given season, and are thus the same as the early warning periods at the national level. The identify_retro_early_weeks function is nested within this function. Returns one dict:
+def classif_zRR_processing_spatial(dict_wk, dict_spatialTotIncidAdj53ls, dict_spatialZRR53ls, spatial_keys, code):
+	''' Calculate retrospective and early warning zOR classification values for each season and spatial (state/region) combination. Spatial retrospective classifications are tied to the peak adjusted incidence week of the state/region in a given season. Spatial early warning classifications are tied to the week of Thanksgiving in a given season, and are thus the same as the early warning periods at the national level. The identify_retro_early_weeks_spatial function is nested within this function. Returns one dict:
 	dict_classifzRR_spatial[(season, spatial)] = (mean retrospective zOR, mean early warning zOR)
 	'''
 	main(classif_zRR_processing_spatial)
@@ -280,7 +280,11 @@ def classif_zRR_processing_spatial(dict_wk, dict_spatialTotIncidAdj53ls, dict_sp
 		dict_incidAdj_dummy = dict((key[0], dict_spatialTotIncidAdj53ls[key]) for key in dict_spatialTotIncidAdj53ls if key[1] == spatial)
 		# subset begin/end retro and early week indexes for a given spatial designation (in order to be able to use the identify_retro_early_weeks function)
 		# dict_indices[(season, period ('r' or 'e'))] = (begin index, end index)
-		dict_indices = identify_retro_early_weeks(dict_wk, dict_incidAdj_dummy)
+		
+		if code == 'withEarly':
+			dict_indices = identify_retro_early_weeks_spatial(dict_wk, dict_incidAdj_dummy)
+		elif code == 'withoutEarly':
+			dict_indices = identify_retro_early_weeks(dict_wk, dict_incidAdj_dummy)
 		
 		for s in pseasons:
 			# peak-based retrospective classification
@@ -454,7 +458,7 @@ def sum_excessPI_state(dict_state_excessPI):
 
 #############################################
 def identify_retro_early_weeks(dict_wk, dict_incid53ls):
-	''' Identify weeks in the early warning and retrospective periods for each season using indices in list for incidence. Returns one dict: dict_indices[(snum, classif period)] = (first index, last index for index slicing)
+	''' Identify weeks in the early warning and retrospective periods for each season using indices in list for incidence. Early warning indexes are not produced if the epidemic peaks before January in the flu season. Returns one dict: dict_indices[(snum, classif period)] = (first index, last index for index slicing)
 	'''
 	main(identify_retro_early_weeks)
 
@@ -479,6 +483,34 @@ def identify_retro_early_weeks(dict_wk, dict_incid53ls):
 		if peak_index <= 14:
 			print s, 'peaks <= week 1'
 			begin_early, end_early = (-99, -99)
+
+		# create dictionary with early warning and retrospective indices by season
+		dict_indices[(s, 'r')] = (begin_retro, end_retro)
+		dict_indices[(s, 'e')] = (begin_early, end_early)
+
+	return dict_indices
+
+#############################################
+def identify_retro_early_weeks_spatial(dict_wk, dict_incid53ls):
+	''' Identify weeks in the early warning and retrospective periods for each state-specific season time series using indices in list for incidence. Early warning indexes are always produced. Returns one dict: dict_indices[(snum, classif period)] = (first index, last index for index slicing)
+	'''
+	main(identify_retro_early_weeks_spatial)
+
+	# identify dates of actual Thanksgiving
+	dict_Thanksgiving = Thanksgiving_dates()
+
+	dict_indices = {}
+	for s in pseasons:
+		weekdummy = sorted([wk for wk in dict_wk if dict_wk[wk] == s])
+		# identify retrospective week indices based on peak week
+		peak_index = peak_flu_week_index(dict_incid53ls[s])
+		begin_retro = peak_index - gp_begin_retro_week
+		end_retro = begin_retro + gp_retro_duration
+		
+		# identify early warning week indices (included even if the season is early)
+		Thx_index = weekdummy.index(dict_Thanksgiving[s])
+		begin_early = Thx_index + gp_begin_early_week
+		end_early = begin_early + gp_early_duration
 
 		# create dictionary with early warning and retrospective indices by season
 		dict_indices[(s, 'r')] = (begin_retro, end_retro)
