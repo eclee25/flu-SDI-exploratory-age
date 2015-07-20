@@ -5,6 +5,7 @@
 ###Author: Elizabeth Lee
 ###Date: 11/4/14
 ###Function: scatter plot zOR metrics vs. trivalent vaccine match and vaccine efficacy at national level
+# 7/20/15: new notation
 
 ###Import data: Py_export/SDI_nat_classif_covCareAdj_v5_7.csv, SQL_export/subtype5.csv
 
@@ -70,7 +71,7 @@ ax1.set_xlabel('Trivalent Vaccine Match (%)', fontsize=fs)
 ax1.set_xlim([0,100])
 ax1.set_ylim([-15,18])
 ax1.tick_params(axis='both', labelsize=fssml)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_vaxmatch.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_vaxmatch.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -85,7 +86,7 @@ ax2.set_xlabel('TIV/LAIV Weighted Vaccine Efficacy (%)', fontsize=fs)
 ax2.set_xlim([0,100])
 ax2.set_ylim([-15,18])
 ax2.tick_params(axis='both', labelsize=fssml)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_vaxeffic.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_vaxeffic.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
