@@ -5,6 +5,7 @@
 ###Author: Elizabeth Lee
 ###Date: 11/4/14
 ###Function: mean peak-based retro zRR metric vs. total attack rate
+# 7/20/15: new notation
 
 ###Import data: Py_export/SDI_nat_classif_covCareAdj_v5_7.csv, 
 
@@ -72,7 +73,7 @@ ax1.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax1.set_xlabel(fxn.gp_attackrate, fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_ylim([-15,18])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_totalAR.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_totalAR.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 

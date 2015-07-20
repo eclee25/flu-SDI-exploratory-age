@@ -13,6 +13,7 @@
 ### Acute ILI (inpatient) attack rate
 
 # 11/4 v5 adjustments
+# 7/20/15: updated notation
 
 ###Import data: 
 #### CDC_Source/Import_Data/all_cdc_source_data.csv: "uqid", "yr", "wk", "num_samples", "perc_pos", "a_H1", "a_unsub" , "a_H3", "a_2009H1N1", "a_nosub", "b", "a_H3N2", "season", "allcoz_all", "allcoz_65.", "allcoz_45.64", "allcoz_25.44", "allcoz_1.24",  "allcoz_.1", "pi_only", "ped_deaths", "hosp_0.4", "hosp_18.49", "hosp_50.64", "hosp_5.17", "hosp_65.", "hosp_tot", "ilitot",   "patients", "providers", "perc_wt_ili", "perc_unwt_ili", "ili_0.4", "ili_5.24", "ili_25.64", "ili_25.49", "ili_50.64", "ili_65."  
@@ -102,7 +103,7 @@ ax1.set_xlabel('Hospitalization Rate per 100,000', fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([0, 35])
 ax1.set_ylim([-15, 18])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_HospPerPop.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_HospPerPop.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # mean retrospective zOR vs. proportion of P&I deaths of all-cause mortality divided by proportion of ILI cases from all visits
@@ -115,7 +116,7 @@ ax2.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax2.set_xlabel('P&I Mortality Risk:ILI Case Proportion', fontsize=fs)
 ax2.tick_params(axis='both', labelsize=fssml)
 ax2.set_ylim([-15, 18])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_ILIMortalityRisk.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_ILIMortalityRisk.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # mean retrospective zOR vs. ratio of P&I deaths to ILI cases (two different data sources)
@@ -128,7 +129,7 @@ ax3.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax3.set_xlabel('P&I Deaths to ILI', fontsize=fs)
 ax3.tick_params(axis='both', labelsize=fssml)
 ax3.set_ylim([-15, 18])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_DeathILIRatio.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_DeathILIRatio.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # mean retrospective zOR vs. ratio of proportion of ILI cases in inpatient and outpatient facilities
@@ -141,7 +142,7 @@ ax4.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax4.set_xlabel('Inpatient to Outpatient ILI Proportion of All Cases', fontsize=fs)
 ax4.tick_params(axis='both', labelsize=fssml)
 ax4.set_ylim([-15, 18])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_InpatientOutpatient.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_InpatientOutpatient.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # mean retrospective zOR vs. inpatient ILI attack rate per 100,000 population
@@ -155,7 +156,7 @@ ax5.set_xlabel('Inpatient ILI Visits per 100,000', fontsize=fs)
 ax5.tick_params(axis='both', labelsize=fssml)
 ax5.set_xlim([0,140])
 ax5.set_ylim([-15, 18])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_CFR_CHR/zRR_InpatientAR.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_InpatientAR.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # updated 2/11/15
