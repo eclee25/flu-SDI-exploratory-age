@@ -5,6 +5,7 @@
 ###Author: Elizabeth Lee
 ###Date: 1/15/15
 ###Function: correlation coefficient between benchmark and zRR vs. moving 2 week window for SDI data for 7 week fall baseline 
+### 7/20/15: new benchmark
 
 ###Import data: SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 
@@ -31,7 +32,7 @@ incidin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_exp
 incid = csv.reader(incidin, delimiter=',')
 popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/totalpop_age.csv', 'r')
 pop = csv.reader(popin, delimiter=',')
-ixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index.csv','r')
+ixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixT_avg_quantileThresh.csv','r')
 ixin.readline() 
 ix = csv.reader(ixin, delimiter=',')
 
@@ -56,7 +57,7 @@ nswaps = 250
 ### program ###
 # import benchmark
 # d_benchmark[seasonnum] = CDC benchmark index value
-d_benchmark = fxn.benchmark_import(ix, 8) # no ILINet
+d_benchmark = fxn.benchmark_import(ix, 1) # no ILINet
 benchmarks = [d_benchmark[s] for s in ps]
 
 ###################################
@@ -112,12 +113,12 @@ gformat, = ax1.plot([],[], color='black', alpha=0.4, linewidth=lw, marker='o', l
 CIformat, = ax1.plot([],[], color='red', linewidth=lw, label = '95% CI for randomized null')
 ax1.legend(loc=4)
 
-ax1.set_ylabel(r'Pearson R: $\beta$ & $\sigma(t)$ (2-wk mean)', fontsize=fs) 
+ax1.set_ylabel(r'Pearson R: $\beta$ & $\rho(t)$ (2-wk mean)', fontsize=fs) 
 ax1.set_xlabel('Window Period', fontsize=fs)
 plt.xticks(range(52)[::5], window_xticks[::5])
 ax1.set_xlim([0,53])
 ax1.set_ylim([-1.0,1.0])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/corrCoef_window_gFallBL.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/corrCoef_window_gFallBL.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
