@@ -87,7 +87,7 @@ gp_attackrate = r'Seasonal ILI Visits per 100,000'
 gp_adjILI = r'Adj. ILI Visits per 100,000'
 
 ## Benchmark ##
-gp_beta_thresholds = [25, 75]
+gp_beta_thresholds = [25, 70]
 
 ## SDI data ##
 gp_seasonlabels = ['01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09']
