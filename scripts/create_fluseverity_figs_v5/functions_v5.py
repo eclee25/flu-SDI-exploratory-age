@@ -79,12 +79,15 @@ dict_careseek_census = {('NE', 'A'):0.44, ('MW', 'A'):0.39, ('SO', 'A'):0.42, ('
 # global parameters - plotting
 
 ## generic label formatting ##
-gp_sigma_r = r'Retrospective Severity, $\bar \sigma_r$'
-gp_sigma_w = r'Early Warning Severity, $\bar \sigma_w$'
-gp_sigmat = r'Adj. Ratio of Adult:Child ILI, $\sigma(t)$'
-gp_benchmark = r'Benchmark, $\beta$'
+gp_sigma_r = r'Retrospective Severity, $\bar \rho_{s,r}$'
+gp_sigma_w = r'Early Warning Severity, $\bar \rho_{s,w}$'
+gp_sigmat = r'Adj. Ratio of Adult:Child ILI, $\rho_{s}(t)$'
+gp_benchmark = r'Benchmark, $\beta_{s}$'
 gp_attackrate = r'Seasonal ILI Visits per 100,000'
 gp_adjILI = r'Adj. ILI Visits per 100,000'
+
+## Benchmark ##
+gp_beta_thresholds = [25, 75]
 
 ## SDI data ##
 gp_seasonlabels = ['01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09']
@@ -1673,6 +1676,13 @@ def ILIpercent_processing_CDCbaseline(dict_wk, dict_ILIpercent):
 		print s, cdcBL
 
 	return dict_deltaILIpercent53ls
+
+##############################################
+def return_benchmark_thresholds(benchmark):
+	''' Returns two threshold values, 1) below which seasons are mild and 2) above which seasons are severe.
+	'''
+	main(return_benchmark_thresholds)
+	return np.percentile(benchmark, gp_beta_thresholds)
 
 ##############################################
 def returnShuffled(importList):
