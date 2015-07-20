@@ -4,6 +4,7 @@
 ### clean data for region level regression with retrospective severity index: season, region, H3 proportion among total subtypable isolates in region, SDI toddler AR, SDI child AR, SDI adult AR, SDI elderly AR, temperature by region, precipitation/humidity by region, antigenic novelty?
 
 ## 11/5: v5: age-specific incidence as covariates in the model adjusted for care seeking behavior for ILI and visits, rm OR regression, response = benchmark normalized across 1997-98 to 2013-14 period.
+## 7/20/15: update with new beta values
 
 ## Filenames: Py_export/
 ## Data Source: 
@@ -48,9 +49,8 @@ require(corrplot)
 ## nation level analysis, 1997-2014 ## 
 ###################################
 ## outcome: benchmark index long ##
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data')
-bench <- read.csv('cdc_severity_index_long.csv', colClasses='numeric', header=T, na.strings="NA")
-# bench&ix_noILI # original normalization
+setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
+bench <- read.csv('benchmark_ixT_avg_quantileThresh.csv', colClasses='numeric', header=T, na.strings="NA")
 ###################################
 ## H3 proportion among total isolates national ##
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/My_Work/Clean_Data_for_Import')
@@ -125,21 +125,21 @@ natclimate <- read.csv('nat_seas_pcp_tmp.csv', header=T, colClasses='numeric')
 dum <- merge(bench, H3, by='season')
 dum3 <- merge(dum, ili_seas, by='season')
 dum2 <- merge(dum3, natclimate, by='season')
-nat <- data.frame(season=dum2$season, benchmark=dum2$ix_noILI, H3=dum2$a_H3_prop, ili_t=dum2$adj_0.4, ili_c=dum2$adj_5.24, ili_a=dum2$adj_25.64, ili_e=dum2$adj_65., precip=dum2$mn_pcp, temp=dum2$mn_tavg, ili_tot=dum2$adj_tot, OR_ac=dum2$OR_ac, OR_ce=dum2$OR_ce, OR_ct=dum2$OR_ct, OR_ae=dum2$OR_ae, OR_at=dum2$OR_at)
+nat <- data.frame(season=dum2$season, benchmark=dum2$ixT_avg_noILI, H3=dum2$a_H3_prop, ili_t=dum2$adj_0.4, ili_c=dum2$adj_5.24, ili_a=dum2$adj_25.64, ili_e=dum2$adj_65., precip=dum2$mn_pcp, temp=dum2$mn_tavg, ili_tot=dum2$adj_tot, OR_ac=dum2$OR_ac, OR_ce=dum2$OR_ce, OR_ct=dum2$OR_ct, OR_ae=dum2$OR_ae, OR_at=dum2$OR_at)
 
-# 11/5/14 write to file
+# 7/20/15 write to file
 # adjusted age-specific incidence for coverage and care-seeking
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
-write.csv(nat,'regression_data_v5.csv', row.names=FALSE)
+write.csv(nat,'regression_data_ixT_v5.csv', row.names=FALSE) # 7/20/15 5:30 pm
 
 ###################################
 ## read data ##
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
-nat <- read.csv('regression_data_v5.csv', header=T, colClasses='numeric')
+nat <- read.csv('regression_data_ixT_v5.csv', header=T, colClasses='numeric')
 
 ###################################
 ## is the benchmark normally distributed? ##
-qqnorm(nat$ix_noILI, ylab='benchmark index'); qqline(nat$ix_noILI, col=2)
+qqnorm(nat$benchmark, ylab='benchmark index'); qqline(nat$benchmark, col=2)
 
 ###################################
 ## cross-correlation plots between covariates ##
@@ -150,7 +150,7 @@ ps = 14
 margin = c(1, 4, 1, 4) + 0.1 # bottom, left, top, right
 omargin = c(1, 1, 1, 1)
 un = "px"
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/Regression')
+setwd('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures')
 
 ###################################
 panel.hist <- function(x, ...)
@@ -199,13 +199,13 @@ cor.pval <- cor.mtest(nat_sub,0.95) # p-values of correlation coefficients
 par(mar = margin)
 png(filename="corrmx_pairs.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
 pairs(~benchmark + H3 + ili_t + ili_c + ili_a + ili_e + ili_tot + precip + temp, data=nat, diag.panel=panel.hist, upper.panel=panel.cor)
-dev.off()
+dev.off() 
 
 # save fig: coefficients
 par(mar = margin)
 png(filename="corrmx_coefficients.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
 corrplot(cor.mx, method='ellipse', type='lower', tl.col='black', diag=FALSE, addCoef.col='black')
-dev.off()
+dev.off() # saved 7/20/15 5:34 pm
 
 # save fig: p-values
 par(mar = margin)
@@ -217,14 +217,15 @@ dev.off()
 par(mar = margin)
 png(filename="corrmx_significant.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
 corrplot(cor.mx, method='ellipse', type='lower', tl.col='black', diag=FALSE, p.mat=cor.pval[[1]], insig='pch', sig.level=0.05)
-dev.off()
+dev.off() # saved 7/20/15 5:34 pm
 
-# RR charts (nothing is significant with the benchmark)
-colindexes2 <- c(2, 3, 15, 11, 14, 13, 12, 8, 9)
-nat_sub2 <- nat[,colindexes2]
-cor.mx2 <- cor(nat_sub2)
-cor.pval2 <- cor.mtest(nat_sub2, 0.95)
-corrplot(cor.mx2, method='ellipse', type='lower', tl.col='black', diag=FALSE, p.mat=cor.pval2[[1]], insig='pch', sig.level=0.05, addCoef.col='black')
+# 7/20/15: not in analysis
+# # RR charts (nothing is significant with the benchmark)
+# colindexes2 <- c(2, 3, 15, 11, 14, 13, 12, 8, 9)
+# nat_sub2 <- nat[,colindexes2]
+# cor.mx2 <- cor(nat_sub2)
+# cor.pval2 <- cor.mtest(nat_sub2, 0.95)
+# corrplot(cor.mx2, method='ellipse', type='lower', tl.col='black', diag=FALSE, p.mat=cor.pval2[[1]], insig='pch', sig.level=0.05, addCoef.col='black')
 
 ###################################
 # ## nation level linear models ## 

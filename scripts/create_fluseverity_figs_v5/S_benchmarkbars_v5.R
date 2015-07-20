@@ -4,8 +4,9 @@
 ## Function: Bar plot of benchmark index for SDI and ILINet comparison. v5 ILINet = 1997-98 to 2013-14 normalization.
 ## Filenames: 
 ## Data Source: 
-## Notes: 
+## Notes: 7/20/15 update: log transformed and standardized beta, long version
 ## 
+
 ## useful commands:
 ## install.packages("pkg", dependencies=TRUE, lib="/usr/local/lib/R/site-library") # in sudo R
 ## update.packages(lib.loc = "/usr/local/lib/R/site-library")
@@ -38,13 +39,14 @@ dfsumm<-function(x) {
 	colnames(s)<-colnames(x)
 	print(s)
 } 
+require(dplyr)
 
 # plot formatting
 w = 464 
 h = 464
 ps = 14
-margin = c(1, 4, 1, 4) + 0.1 # bottom, left, top, right
-omargin = c(1, 1, 1, 1)
+margin = c(1, 3, 1, 4) + 0.1 # bottom, left, top, right
+omargin = c(1, 0, 1, 1)
 un = "px"
 
 ###################################
@@ -52,71 +54,74 @@ un = "px"
 
 # read data
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
-nat <-read.csv('regression_data_v5.csv', header=T, colClasses='numeric')
+ixTData <- read.csv('benchmark_ixT_avg_quantileThresh.csv', header=T, colClasses='numeric')
 
 # specific formatting
 seasonlab <- c('97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14')
 # assign colors based on severity
 # red severe, yellow moderate, blue mild
-sev <- which(nat$benchmark> 1)
-mod <- which(nat$benchmark<= 1 & nat$benchmark >= -1)
+sev <- which(ixTData$classif25==1)
+mod <- which(ixTData$classif25==0)
 colorvec <- rep('blue',16)
 colorvec[sev] <- 'red'
 colorvec[mod] <- 'yellow'
 
 # barplot
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp')
+setwd('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures')
 par(mar = margin)
 png(filename="benchmarkbars_exploratory.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
-mids <- barplot(nat$benchmark, xlab='', ylab=expression(paste('Benchmark, ', beta, sep=' ')), ylim=c(-6,6), col = colorvec)
+mids <- barplot(ixTData$ixT_avg_noILI, xlab='', ylab=expression(paste('Benchmark, ', beta, sep=' ')), ylim=c(-1.5, 1.5), col = colorvec, cex.lab=1.3)
+abline(h = quantile(ixTData$ixT_avg_noILI, c(0.25, 0.75)), col="black")
 axis(1, at=mids, seasonlab, las = 2)
 mtext('Season', side=1, line=3.5)
-dev.off()
+dev.off() # 7/20/15, 5:21 pm
 
-###################################
-## plot benchmark index 01-02 to 08-09 ## 9/3/14
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data')
-og <- read.csv('cdc_severity_index.csv', header=T, colClasses='numeric')
+# 7/20/15 short benchmark removed from paper
+# ###################################
+# ## plot benchmark index 01-02 to 08-09 ## 9/3/14
+# setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data')
+# og <- read.csv('cdc_severity_index.csv', header=T, colClasses='numeric')
+# 
+# # specific formatting
+# seasonlab <- c('01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09')
+# # assign colors based on severity
+# # red severe, yellow moderate, blue mild
+# sev <- which(og$ix_noILI> 1)
+# mod <- which(og$ix_noILI<= 1 & og$ix_noILI >= -1)
+# colorvec <- rep('blue',8)
+# colorvec[sev] <- 'red'
+# colorvec[mod] <- 'yellow'
+# 
+# # barplot
+# setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/bench_composition')
+# par(mar = margin)
+# png(filename="benchmarkbars_orig.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
+# mids <- barplot(og$ix_noILI, xlab='', ylab=expression(paste('Benchmark, ', beta, sep=' ')), ylim=c(-6,6), col = colorvec)
+# axis(1, at=mids, seasonlab, las = 2)
+# mtext('Season', side=1, line=3.5)
+# dev.off()
 
-# specific formatting
-seasonlab <- c('01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09')
-# assign colors based on severity
-# red severe, yellow moderate, blue mild
-sev <- which(og$ix_noILI> 1)
-mod <- which(og$ix_noILI<= 1 & og$ix_noILI >= -1)
-colorvec <- rep('blue',8)
-colorvec[sev] <- 'red'
-colorvec[mod] <- 'yellow'
-
-# barplot
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/bench_composition')
-par(mar = margin)
-png(filename="benchmarkbars_orig.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
-mids <- barplot(og$ix_noILI, xlab='', ylab=expression(paste('Benchmark, ', beta, sep=' ')), ylim=c(-6,6), col = colorvec)
-axis(1, at=mids, seasonlab, las = 2)
-mtext('Season', side=1, line=3.5)
-dev.off()
-
-###################################
-## plot benchmark index 01-02 to 08-09, excesspi replacement ## 9/3/14
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data')
-exc <- read.csv('cdc_severity_index_excesspi.csv', header=T, colClasses='numeric')
-
-# specific formatting
-seasonlab <- c('01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09')
-# assign colors based on severity
-# red severe, yellow moderate, blue mild
-sev <- which(exc$ix_noILI> 1)
-mod <- which(exc$ix_noILI<= 1 & exc$ix_noILI >= -1)
-colorvec <- rep('blue',8)
-colorvec[sev] <- 'red'
-colorvec[mod] <- 'yellow'
-
-# barplot
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/bench_composition')
-par(mar = margin)
-png(filename="benchmarkbars_excesspi.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
-mids <- barplot(exc$ix_noILI, xlab='', ylab=expression(paste('Benchmark, ', beta, sep=' ')), ylim=c(-6,6), col = colorvec)
-axis(1, at=mids, seasonlab, las = 2)
-mtext('Season', side=1, line=3.5)
-dev.off()
+# 7/20/15 short benchmark removed from paper
+# ###################################
+# ## plot benchmark index 01-02 to 08-09, excesspi replacement ## 9/3/14
+# setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data')
+# exc <- read.csv('cdc_severity_index_excesspi.csv', header=T, colClasses='numeric')
+# 
+# # specific formatting
+# seasonlab <- c('01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09')
+# # assign colors based on severity
+# # red severe, yellow moderate, blue mild
+# sev <- which(exc$ix_noILI> 1)
+# mod <- which(exc$ix_noILI<= 1 & exc$ix_noILI >= -1)
+# colorvec <- rep('blue',8)
+# colorvec[sev] <- 'red'
+# colorvec[mod] <- 'yellow'
+# 
+# # barplot
+# setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs/Supp/bench_composition')
+# par(mar = margin)
+# png(filename="benchmarkbars_excesspi.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
+# mids <- barplot(exc$ix_noILI, xlab='', ylab=expression(paste('Benchmark, ', beta, sep=' ')), ylim=c(-6,6), col = colorvec)
+# axis(1, at=mids, seasonlab, las = 2)
+# mtext('Season', side=1, line=3.5)
+# dev.off()
