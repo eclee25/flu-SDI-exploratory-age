@@ -5,6 +5,7 @@
 ###Author: Elizabeth Lee
 ###Date: 8/25/14
 ###Function: scatter plot benchmark index vs. benchmark index contributing factors at national level
+# 7/20/15: update benchmark
 
 ###Import data: CDC_Source/Import_Data/cdc_severity_data_cleaned.csv
 
@@ -33,7 +34,7 @@ fssml = 16
 ### functions ###
 
 ### data files ###
-benchin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index.csv','r')
+benchin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixT_avg_quantileThresh.csv','r')
 benchin.readline() # rm header
 bench = csv.reader(benchin, delimiter=',')
 factorsin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_data_cleaned.csv', 'r')
@@ -42,7 +43,7 @@ factors = csv.reader(factorsin, delimiter=',')
 
 ## read benchmark index data ##
 # d_benchmark[season] = index value
-d_benchmark = fxn.benchmark_import(bench, 8)
+d_benchmark = fxn.benchmark_import(bench, 1)
 ## read benchmark data ##
 # dict_benchfactors[season] = (percent positive isolates, proportion of total mortality due to P&I, number of pediatric deaths, child hospitalization rate, adult hospitalization rate)
 d_benchfactors = fxn.benchmark_factors_import(factors)
@@ -64,9 +65,9 @@ for s, x, y in zip(sl, pos_iso, index):
 ax1.set_ylabel(fxn.gp_benchmark, fontsize=fs) 
 ax1.set_xlabel('Positive Flu Isolates (%)', fontsize=fs)
 ax1.set_xlim([0,20])
-ax1.set_ylim([-5,5])
+ax1.set_ylim([-1.5,1.5])
 ax1.tick_params(axis='both', labelsize=fssml)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/Bfactors_simpleSevMetrics/bench_posiso.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/bench_posiso.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -79,9 +80,9 @@ for s, x, y in zip(sl, pi_mort, index):
 ax2.set_ylabel(fxn.gp_benchmark, fontsize=fs) 
 ax2.set_xlabel('All-Cause Mortality due to P&I (%)', fontsize=fs)
 ax2.set_xlim([6, 8])
-ax2.set_ylim([-5,5])
+ax2.set_ylim([-1.5,1.5])
 ax2.tick_params(axis='both', labelsize=fssml)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/Bfactors_simpleSevMetrics/bench_pimort.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/bench_pimort.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -94,9 +95,9 @@ for s, x, y in zip(sl, ped_dea, index):
 ax3.set_ylabel(fxn.gp_benchmark, fontsize=fs) 
 ax3.set_xlabel('Pediatric Deaths', fontsize=fs)
 ax3.set_xlim([40,100])
-ax3.set_ylim([-5,5])
+ax3.set_ylim([-1.5,1.5])
 ax3.tick_params(axis='both', labelsize=fssml)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/Bfactors_simpleSevMetrics/bench_peddea.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/bench_peddea.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -109,9 +110,9 @@ for s, x, y in zip(sl, c_hos, index):
 ax4.set_ylabel(fxn.gp_benchmark, fontsize=fs) 
 ax4.set_xlabel('5-17 Years Hosp. Rate (per 100,000)', fontsize=fs)
 ax4.set_xlim([0,10])
-ax4.set_ylim([-5,5])
+ax4.set_ylim([-1.5,1.5])
 ax4.tick_params(axis='both', labelsize=fssml)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/Bfactors_simpleSevMetrics/bench_chos.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/bench_chos.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -124,9 +125,9 @@ for s, x, y in zip(sl, a_hos, index):
 ax5.set_ylabel(fxn.gp_benchmark, fontsize=fs) 
 ax5.set_xlabel('18-49 Years Hosp. Rate (per 100,000)', fontsize=fs)
 ax5.set_xlim([0,10])
-ax5.set_ylim([-5,5])
+ax5.set_ylim([-1.5,1.5])
 ax5.tick_params(axis='both', labelsize=fssml)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/Bfactors_simpleSevMetrics/bench_ahos.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/bench_ahos.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -137,9 +138,9 @@ cor_ped = np.corrcoef(index, ped_dea)
 cor_chos = np.corrcoef(index, c_hos)
 cor_ahos = np.corrcoef(index, a_hos)
 
-# updated 2/12/15
-print cor_pos # 0.895
-print cor_pi # 0.801
+# updated 7/20/15
+print cor_pos # 0.911
+print cor_pi # 0.834
 print cor_ped # nan
 print cor_chos # nan
 print cor_ahos # nan
