@@ -9,6 +9,7 @@
 # 10/15/14 ILI incidence ratio (obsolete)
 # 10/19 incidence rate adjusted by any diagnosis visits (coverage adj = visits S9/visits S#) and ILI care-seeking behavior; change to relative risk
 # 10/31 coverage adjustment no longer age-specific
+# 7/20/15: update notation
 
 ###Import data: SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 
@@ -71,6 +72,6 @@ ax.set_xticklabels(wklab[::5])
 ax.set_xlim([0, fw-1])
 ax.set_xlabel('Week Number', fontsize=fs)
 ax.set_ylabel(fxn.gp_sigmat, fontsize=fs)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/F2/zRR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/zRR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
