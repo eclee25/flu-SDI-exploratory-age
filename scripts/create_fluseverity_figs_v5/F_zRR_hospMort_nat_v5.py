@@ -6,6 +6,7 @@
 ###Date: 11/11/14
 ###Function: mean peak-based retro zRR metric vs. hospitalization rate, P&I mortality perc, and excess mortality rate with best fit lines
 # 1/13/15 add excess mortality rates
+# 7/20/15: update notation
 
 ###Import data: Py_export/SDI_nat_classif_covCareAdj_v5_7.csv, 
 
@@ -131,7 +132,7 @@ Eformat, = ax2.plot([],[], color = colorvec[3], linestyle = '-', lw = lwd, label
 
 ax2.legend(loc=2, prop={'size':12})
 
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/F5/hospMort_zRR_nat.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/hospMort_zRR_nat.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 

@@ -5,6 +5,7 @@
 ###Author: Elizabeth Lee
 ###Date: 1/9/15
 ###Function: mean peak-based retro zRR metric vs. hospitalization rate and P&I mortality perc with best fit lines at state level
+# 7/20/15: update notation
 
 ###Import data: Py_export/SDI_st_classif_covCareAdj_v5_7.csv, Census/state_abbreviations.csv
 
@@ -90,7 +91,7 @@ Eformat, = ax1.plot([], [], color = colorvec[0], linestyle = '-', lw = lwd, labe
 
 ax1.legend(loc=2)
 
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/F5/eMort_zRR_st.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/eMort_zRR_st.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 plt.show()
 
