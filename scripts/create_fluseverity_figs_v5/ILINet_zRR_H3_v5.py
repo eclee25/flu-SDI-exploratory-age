@@ -6,6 +6,7 @@
 ###Date: 11/4/14
 ###Function: mean zOR retrospective classification vs. % H3 isolates of all subtyped isolates that season
 # 11/4 v5 updated zRR
+# 7/21/15: new notation
 
 ###Import data: CDC_Source/Import_Data/all_cdc_source_data.csv, SQL_export/subtype5.csv, Census/Import_Data/totalpop_age_Census_98-14.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv, My_Bansal_Lab/Clean_Data_for_Import/NREVSS_Isolates_Season.csv
 
@@ -47,7 +48,7 @@ nrevss_thanksin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/My_Wo
 nrevss_thanksin.readline()
 nrevss_thanks = csv.reader(nrevss_thanksin, delimiter=',')
 # import data for index
-benchin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index_long.csv', 'r')
+benchin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixT_avg_quantileThresh.csv', 'r')
 benchin.readline()
 bench = csv.reader(benchin, delimiter=',')
 
@@ -66,7 +67,7 @@ d_H3nrevss = fxn.season_H3perc_NREVSS(nrevss_sub)
 d_H3nrevss_Thanks = fxn.Thanksgiving_H3perc_NREVSS(nrevss_thanks)
 d_classifzOR = fxn.readNationalClassifFile(sev)
 # dict_benchmark[seasonnum] = CDC severity index value
-d_benchmark = fxn.benchmark_import(bench, 8)
+d_benchmark = fxn.benchmark_import(bench, 1)
 
 # plot values
 
@@ -91,86 +92,92 @@ ax1.set_xlabel('H3 Proportion (NREVSS)', fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([0,1])
 ax1.set_ylim([-10,30])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_zRR_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/ILINet_zRR_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
-# Benchmark index vs. H3 nrevss
-plt.plot(H3nrevss, benchmark, marker = 'o', color = 'black', linestyle = 'None')
-for s, x, y in zip(sl, H3nrevss, benchmark):
-	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel(fxn.gp_benchmark, fontsize=fs)
-plt.xlabel('H3 Proportion (NREVSS, Season)', fontsize=fs)
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
-plt.xlim([0,1])
-plt.ylim([-5,5])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_benchmark_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
-plt.close()
+# 7/21/15: not in supplement
+# # Benchmark index vs. H3 nrevss
+# plt.plot(H3nrevss, benchmark, marker = 'o', color = 'black', linestyle = 'None')
+# for s, x, y in zip(sl, H3nrevss, benchmark):
+# 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
+# plt.ylabel(fxn.gp_benchmark, fontsize=fs)
+# plt.xlabel('H3 Proportion (NREVSS, Season)', fontsize=fs)
+# plt.xticks(fontsize=fssml)
+# plt.yticks(fontsize=fssml)
+# plt.xlim([0,1])
+# plt.ylim([-5,5])
+# plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_benchmark_H3_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+# plt.close()
 
 ###################################################
-# cumulative H3 isolates to Thanksgiving
-# H3 total season vs. H3 Thanksgiving
-plt.plot(H3Thanks, H3nrevss, marker = 'o', color = 'black', linestyle = 'None')
-for s, x, y in zip(sl, H3Thanks, H3nrevss):
-	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel('H3 Proportion (NREVSS, Season)', fontsize=fs)
-plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
-plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_H3cum_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
-plt.close()
+# 7/21/15: not in supplement
+# # cumulative H3 isolates to Thanksgiving
+# # H3 total season vs. H3 Thanksgiving
+# plt.plot(H3Thanks, H3nrevss, marker = 'o', color = 'black', linestyle = 'None')
+# for s, x, y in zip(sl, H3Thanks, H3nrevss):
+# 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
+# plt.ylabel('H3 Proportion (NREVSS, Season)', fontsize=fs)
+# plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
+# plt.xticks(fontsize=fssml)
+# plt.yticks(fontsize=fssml)
+# plt.xlim([0,1])
+# plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_H3cum_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+# plt.close()
 
-# retrospective vs. H3 Thanksgiving
-plt.plot(H3Thanks, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
-for s, x, y in zip(sl, H3Thanks, retrozOR):
-	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel(fxn.gp_sigma_r, fontsize=fs)
-plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
-plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_zRR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
-plt.close()
+# 7/21/15: not in supplement
+# # retrospective vs. H3 Thanksgiving
+# plt.plot(H3Thanks, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
+# for s, x, y in zip(sl, H3Thanks, retrozOR):
+# 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
+# plt.ylabel(fxn.gp_sigma_r, fontsize=fs)
+# plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
+# plt.xticks(fontsize=fssml)
+# plt.yticks(fontsize=fssml)
+# plt.xlim([0,1])
+# plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_zRR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+# plt.close()
 
-# early warning vs. H3 Thanksgiving
-plt.plot(H3Thanks, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
-for s, x, y in zip(sl, H3Thanks, earlyzOR):
-	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel(fxn.gp_sigma_w, fontsize=fs)
-plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
-plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_earlyzRR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
-plt.close()
+# 7/21/15: not in supplement
+# # early warning vs. H3 Thanksgiving
+# plt.plot(H3Thanks, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
+# for s, x, y in zip(sl, H3Thanks, earlyzOR):
+# 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
+# plt.ylabel(fxn.gp_sigma_w, fontsize=fs)
+# plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
+# plt.xticks(fontsize=fssml)
+# plt.yticks(fontsize=fssml)
+# plt.xlim([0,1])
+# plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_earlyzRR_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+# plt.close()
 
-# Benchmark index vs. H3 Thanksgiving
-plt.plot(H3Thanks, benchmark, marker = 'o', color = 'black', linestyle = 'None')
-for s, x, y in zip(sl, H3Thanks, benchmark):
-	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel(fxn.gp_benchmark, fontsize=fs)
-plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
-plt.xlim([0,1])
-plt.ylim([-5,5])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_benchmark_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
-plt.close()
+# 7/21/15: not in supplement
+# # Benchmark index vs. H3 Thanksgiving
+# plt.plot(H3Thanks, benchmark, marker = 'o', color = 'black', linestyle = 'None')
+# for s, x, y in zip(sl, H3Thanks, benchmark):
+# 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
+# plt.ylabel(fxn.gp_benchmark, fontsize=fs)
+# plt.xlabel('H3 Proportion (NREVSS, to Thanksgiving)', fontsize=fs)
+# plt.xticks(fontsize=fssml)
+# plt.yticks(fontsize=fssml)
+# plt.xlim([0,1])
+# plt.ylim([-5,5])
+# plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_benchmark_H3thx_nrevss.png', transparent=False, bbox_inches='tight', pad_inches=0)
+# plt.close()
 
 ###################################################
 # 5/7/14 these figures weren't exactly what we are interested in
 
-plt.plot(H3nrevss, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
-for s, x, y in zip(sl, H3nrevss, earlyzOR):
-	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
-plt.ylabel(fxn.gp_sigma_w, fontsize=fs)
-plt.xlabel('H3 Proportion (NREVSS, Season)', fontsize=fs)
-plt.xticks(fontsize=fssml)
-plt.yticks(fontsize=fssml)
-plt.xlim([0,1])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_zRR_H3_nrevss_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
-plt.close()
+# 7/21/15: not in supplement
+# plt.plot(H3nrevss, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
+# for s, x, y in zip(sl, H3nrevss, earlyzOR):
+# 	plt.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
+# plt.ylabel(fxn.gp_sigma_w, fontsize=fs)
+# plt.xlabel('H3 Proportion (NREVSS, Season)', fontsize=fs)
+# plt.xticks(fontsize=fssml)
+# plt.yticks(fontsize=fssml)
+# plt.xlim([0,1])
+# plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/ILINet/ILINet_zRR_H3_nrevss_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
+# plt.close()
 
 # updated 2/11/15
 print 'zRR-H3 nrevss corr coef', np.corrcoef(H3nrevss, retrozOR) # 0.083
