@@ -73,7 +73,7 @@ def relative_to_national(dict_st_classif, dict_nat_classif):
 	return dict_st_deviation
 
 def identify_state_deviation_colors(dict_st_devls_mask):
-	''' Identify which states may be colored as being more severe or more mild than other states across study seasons. Severe or mild means 90% of data points were above or below deviation = 0. Moderately more severe or more mild means 75% of data points were above or below deviation = 0.
+	''' Identify which states may be colored as being more severe or more mild than other states across study seasons. Severe or mild means 75% of data points were above or below deviation = 0. Moderately more severe or more mild means 70% of data points were above or below deviation = 0.
 	'''
 	severe_states, almostsevere_states = [],[]
 	mild_states, almostmild_states = [],[]
