@@ -7,6 +7,7 @@
 ###Function: Draw mean retro zOR vs. state with all seasons together. Classify retrospective index according to peak week in state time series.
 ### 8/20/14: Draw same barplot comparing state index to national index. Which states are the most severe/mild across all seasons (state index - national index)/abs(national index). If state is milder than nation --> positive; if state is more severe than nation --> negative.
 # 11/7/14: care-seeking for ILI = age-specific estimate for state in 2009-10 BRFSS; states with missing data are filled in with the corresponding census region's age-specific estimate
+# 7/21/15: update notation, colors
 
 ###Import data: R_export/OR_zip3_week_outpatient_cl.csv, R_export/allpopstat_zip3_season_cl.csv
 #### These data were cleaned with data_extraction/clean_OR_hhsreg_week_outpatient.R and exported with OR_zip3_week.sql
@@ -70,6 +71,29 @@ def relative_to_national(dict_st_classif, dict_nat_classif):
 		dict_st_deviation[key] = (relative_deviation_retro, relative_deviation_early)
 
 	return dict_st_deviation
+
+def identify_state_deviation_colors(dict_st_devls_mask):
+	''' Identify which states may be colored as being more severe or more mild than other states across study seasons. Severe or mild means 90% of data points were above or below deviation = 0. Moderately more severe or more mild means 75% of data points were above or below deviation = 0.
+	'''
+	severe_states, almostsevere_states = [],[]
+	mild_states, almostmild_states = [],[]
+	
+	# identify which states may be severer or milder relative to all other states
+	for state in dict_st_devls_mask:
+		q25, q30, q70, q75 = np.percentile(dict_st_devls_mask[state], [25, 30, 70, 75])
+		if q25 >= 0:
+			severe_states.append(state)
+		elif q30 >= 0:
+			almostsevere_states.append(state)
+		elif q75 <= 0:
+			mild_states.append(state)
+		elif q70 <= 0:
+			almostmild_states.append(state)
+
+		print state, q25, q30, q70, q75
+
+	return severe_states, almostsevere_states, mild_states, almostmild_states
+
 
 ### data files ###
 # state zOR data
@@ -136,12 +160,13 @@ sorted_states2 = [item[0] for item in sort_median_dict2]
 retroDev_by_state = [[val for val in d_st_devls_mask[state]] for state in sorted_states2]
 
 ## 11/1/14: highlight severe states ##
-severe_states = ['VA', 'NC']
-almostsevere_states = ['SC', 'MD', 'PA', 'FL', 'DE']
-almostmild_states = ['WA', 'CA', 'OR']
+sev_st, asev_st, mild_st, amild_st = identify_state_deviation_colors(d_st_devls_mask)
+
+print sev_st, asev_st, mild_st, amild_st
+
 # highlight severe state finding
-sorted_colors_ix = ['r' if st in severe_states else ('#abd9e9' if st in almostmild_states else ('#FFA07A' if st in almostsevere_states else '0.85')) for st in sorted_states] 
-sorted_colors_dev = ['r' if st in severe_states else ('#abd9e9' if st in almostmild_states else ('#FFA07A' if st in almostsevere_states else '0.85')) for st in sorted_states2] 
+sorted_colors_ix = ['r' if st in sev_st else ('#abd9e9' if st in amild_st else ('#FFA07A' if st in asev_st else ('b' if st in mild_st else '0.85'))) for st in sorted_states] 
+sorted_colors_dev = ['r' if st in sev_st else ('#abd9e9' if st in amild_st else ('#FFA07A' if st in asev_st else ('b' if st in mild_st else '0.85'))) for st in sorted_states2] 
 
 print 'nat classif', [d_nat_classif[s][0] for s in ps]
 
@@ -151,12 +176,12 @@ for patch, color in zip(bxp['boxes'], sorted_colors_ix):
 	patch.set_facecolor(color)
 plt.axhline(y=-1, color='k')
 plt.axhline(y=1, color='k')
-plt.ylabel(fxn.gp_sigma_r, fontsize=fs)
+plt.ylabel(r'Retrospective Severity, $\bar{\rho_{s,r,st}}$', fontsize=fs)
 plt.xlim([0.5, 37.5])
 plt.ylim([-8, 8])
 plt.xticks(xrange(1, len(sorted_states)+1), sorted_states, rotation = 'vertical', fontsize=fssml)
 plt.yticks(fontsize=fssml)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_state_state.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_state_state.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -167,12 +192,12 @@ bxp2 = plt.boxplot(retroDev_by_state, patch_artist=True)
 for patch, color in zip(bxp2['boxes'], sorted_colors_dev):
 	patch.set_facecolor(color)
 plt.axhline(y=0, color='k')
-plt.ylabel(r'Deviation from National $\bar{\sigma_{r}}$', fontsize=fs)
+plt.ylabel(r'Deviation of $\bar{\rho_{s,r,st}}$ from $\bar{\rho_{s,r,US}}$', fontsize=fs)
 plt.xlim([0.5, 37.5])
 plt.xticks(xrange(1, len(sorted_states2)+1), sorted_states2, rotation = 'vertical', fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.ylim([-4,4])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/F4/zRR_state_state_deviation.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/zRR_state_state_deviation.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 

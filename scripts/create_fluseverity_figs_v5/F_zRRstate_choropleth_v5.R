@@ -6,6 +6,7 @@
 ### Filename: /home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_classif_covCareAdj_v5_7st.csv
 ## Data Source: 
 ## Notes: ggplot2 references: http://blog.revolutionanalytics.com/2009/11/choropleth-challenge-result.html
+# 7/21/15: update notation
 ## 
 ## useful commands:
 ## install.packages("pkg", dependencies=TRUE, lib="/usr/local/lib/R/site-library") # in sudo R
@@ -62,7 +63,7 @@ abbr$region <- tolower(abbr$region) # convert state names to lower case because 
 orig3 <- merge(orig2, abbr, by = 'state', all=T)
 
 us_state_map <- map_data('state')
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5')
+setwd('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures')
 
 for (seas in 2:9){
   orig_season2 <- orig3[(orig3$season == seas),]
@@ -74,6 +75,6 @@ for (seas in 2:9){
     theme_minimal(base_size = 16, base_family = "") +
     theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank()) +
     labs(x=NULL, y=NULL) +
-    scale_fill_brewer(expression(paste('severity, ', sigma[r])), type='div', palette=7, labels=levels(orig3$mean_retro_zOR), drop=FALSE)
+    scale_fill_brewer(expression(paste('severity, ', bar(rho["s,r"]))), type='div', palette=7, labels=levels(orig3$mean_retro_zOR), drop=FALSE)
   ggsave(seasonmap2, width=5, height=3, file=sprintf('RetrozRR_State_Season%s_stlvl.png', seas))
 }

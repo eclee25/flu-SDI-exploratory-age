@@ -121,9 +121,9 @@ gp_FR_colors = cm.rainbow(np.linspace(0, 1, len(gp_FR_seasonlabels)))
 ## call parameters ##
 # set these parameters every time a plot is run
 
-pseasons = gp_ILINet_plotting_seasons
+# pseasons = gp_ILINet_plotting_seasons
 # pseasons = gp_FR_plotting_seasons
-# pseasons = gp_plotting_seasons
+pseasons = gp_plotting_seasons
 
 ##############################################
 def anydiag_baseline_comparison(csvreadfile):
