@@ -70,7 +70,7 @@ colorvec[mod] <- 'yellow'
 setwd('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures')
 par(mar = margin)
 png(filename="benchmarkbars_exploratory.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
-mids <- barplot(ixTData$ixT_avg_noILI, xlab='', ylab=expression(paste('Benchmark, ', beta, sep=' ')), ylim=c(-1.5, 1.5), col = colorvec, cex.lab=1.3)
+mids <- barplot(ixTData$ixT_avg_noILI, xlab='', ylab=expression(paste('Benchmark, ', beta[s], sep=' ')), ylim=c(-1.5, 1.5), col = colorvec, cex.lab=1.3)
 abline(h = quantile(ixTData$ixT_avg_noILI, c(0.25, 0.75)), col="black")
 axis(1, at=mids, seasonlab, las = 2)
 mtext('Season', side=1, line=3.5)
