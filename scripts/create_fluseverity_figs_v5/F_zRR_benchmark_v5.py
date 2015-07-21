@@ -9,6 +9,8 @@
 # 10/15 ILI incidence ratio (obsolete)
 # 10/19 incidence rate adjusted by any diagnosis visits (coverage adj = visits S9/visits S#) and ILI care-seeking behavior; change to relative risk
 # 10/31 coverage adjustment no longer age-specific
+# 7/20/15: new beta
+# 7/21/15: pearson's r with scipy.stats, adds p-value
 
 ###Import data: /home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index.csv, SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop_age.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 
@@ -23,6 +25,7 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats
 
 ## local modules ##
 import functions_v5 as fxn
@@ -80,8 +83,10 @@ compMask_earlyzOR = np.ma.compressed(mask_earlyzOR)
 compMask_benchmark = np.ma.compressed(mask_benchmark)
 
 
-print 'retro corr coef', np.corrcoef(benchmark, retrozOR) # 7/20/15: 0.707
-print 'early corr coef', np.corrcoef(compMask_benchmark, compMask_earlyzOR) # 7/20/15: 0.594
+# print 'retro corr coef', np.corrcoef(benchmark, retrozOR) # 7/20/15: 0.707
+# print 'early corr coef', np.corrcoef(compMask_benchmark, compMask_earlyzOR) # 7/20/15: 0.594
+print 'retro pearsonr', scipy.stats.pearsonr(benchmark, retrozOR) # R = 0.707, p-value = 0.05
+print 'early pearsonr', scipy.stats.pearsonr(compMask_benchmark, compMask_earlyzOR) # R = 0.594, p-value = 0.16
 
 # draw plots
 fig1 = plt.figure()
