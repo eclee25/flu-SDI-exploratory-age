@@ -50,7 +50,7 @@ def print_dict_to_file3(dic, dic_validSeasons, filename):
 if fxn.pseasons == fxn.gp_plotting_seasons:
 
 	##############################################
-	# SDI STATE WITH ALL EARLY WARNING: state-level peak-based retrospective classification
+	# SDI STATE: WITH ALL AVAILABLE EARLY WARNING INDEXES: state-level peak-based retrospective classification
 	# import zip3 level files
 	reg_incidin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/OR_zip3_week_outpatient_cl.csv', 'r')
 	reg_incidin.readline()
@@ -77,7 +77,7 @@ if fxn.pseasons == fxn.gp_plotting_seasons:
 
 
 	##############################################
-	# SDI STATE WITH ALL EARLY WARNING: state-level peak-based retrospective classification
+	# SDI STATE: WITHOUT EARLY WARNING INDEXES FOR STATES WITH EARLY SEASONS: state-level peak-based retrospective classification
 	# import zip3 level files
 	reg_incidin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/OR_zip3_week_outpatient_cl.csv', 'r')
 	reg_incidin.readline()
