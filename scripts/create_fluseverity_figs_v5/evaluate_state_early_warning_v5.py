@@ -6,6 +6,8 @@
 ###Date: 11/1/14
 ###Function: What is the distribution of state early warnings that match national classifications across the 2001-02 through 2008-09 seasons (state level peak based retro classification)?
 # What is the distribution of region early warnings that match national classifications (region-lvl peak based retro classification)?
+# 7/22/15: remove season 4 data from state early warning and national retrospective comparison ONLY
+
 ###Import data: 
 
 ###Command Line: python evaluation_state_early_warning_v5.py
@@ -83,7 +85,7 @@ d_nat = fxn.readNationalClassifFile(nat)
 # code national level data as mild (-1), moderate (0), or severe (1)
 d_nat_codes = apply_severity_code(d_nat)
 
-# state level data: season, state, mn_retro, mn_early, valid normweeks
+# state level data (36 states): season, state, mn_retro, mn_early, valid normweeks
 stin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_classif_covCareAdj_v5_7st.csv','r') 
 stin.readline() # skip header
 st=csv.reader(stin, delimiter=',')
@@ -91,7 +93,7 @@ d_st = fxn.readStateClassifFile(st)
 # code state level data as mild (1), moderate (0), or severe (-1)
 d_st_codes = apply_severity_code(d_st)
 
-# state level data without early seasons: season, state, mn_retro, mn_early, valid normweeks
+# state level data without states with early peaking seasons (26 states): season, state, mn_retro, mn_early, valid normweeks
 stWEin=open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_classif_covCareAdj_v5_7st_withoutEarly.csv','r') 
 stWEin.readline() # skip header
 stWE=csv.reader(stWEin, delimiter=',')
@@ -109,7 +111,37 @@ print [d_nat_codes[s] for s in seasons]
 print [d_st_codes[(s, 'ME')] for s in seasons]
 
 ###########################
-# with early seasons: match early warning at state level to retrospective at national level and retropsective at state level to retrospective at national level 
+# with all available state data: 1) match early warning at state level to retrospective at national level  
+# use SDI_state_classif_covCareAdj_v5_7st.csv
+# 7/22/15: remove season 4
+
+# remove season 4
+seasons_noS4 = list(seasons)
+seasons_noS4.remove(4)
+# national retro classif
+n_code = [d_nat_codes[s][0] for s in seasons_noS4]
+ct = 0
+for st in states:
+	# include only states where all early warning and retrospective classifications are available 
+	if sum(sum(np.isnan([d_st_codes[(s, st)] for s in seasons_noS4]))) == 0:
+		ct += 1
+		# state early warning classif
+		st_code_early = [d_st_codes[(s, st)][1] for s in seasons_noS4]
+		# d_st_match[state] = [match S2, match S3, etc where match is represented as 1=match, 0=no match]
+		d_st_match_early[st] = [1  if retro==early else 0 for retro, early in zip(n_code, st_code_early)]		
+		# print matches for state ew to nat retro
+		print st, sum(d_st_match_early[st])
+	else:
+		print st, np.isnan([d_st_codes[(s, st)] for s in seasons_noS4])
+	
+print 'with all available state data and season 4 removed (state early warning to national retrospective): %s of %s states have early and retro classif for all %s seasons' %(ct, len(states), len(seasons_noS4))
+
+## check early warning state to retro national
+# print [d_nat[key][0] for key in sorted(d_nat)]
+# print [d_st[(key, 'LA')][1] for key in sorted(d_nat)]
+
+###########################
+# with all available state data: 2) retropsective at state level to retrospective at national level 
 # use SDI_state_classif_covCareAdj_v5_7st.csv
 
 # national retro classif
@@ -119,28 +151,19 @@ for st in states:
 	# include only states where all early warning and retrospective classifications are available 
 	if sum(sum(np.isnan([d_st_codes[(s, st)] for s in seasons]))) == 0:
 		ct += 1
-		# state early warning classif
-		st_code_early = [d_st_codes[(s, st)][1] for s in seasons]
 		# state retrospective classif
 		st_code_retro = [d_st_codes[(s, st)][0] for s in seasons]
 		# d_st_match[state] = [match S2, match S3, etc where match is represented as 1=match, 0=no match]
-		d_st_match_early[st] = [1  if retro==early else 0 for retro, early in zip(n_code, st_code_early)]
-		d_st_match_retro[st] = [1  if r1==r2 else 0 for r1, r2 in zip(n_code, st_code_retro)]
-		
-		# print matches for state ew to nat retro, state retro to nat retro, and state ew to state retro
-		print st, sum(d_st_match_early[st]), sum(d_st_match_retro[st])
+		d_st_match_retro[st] = [1  if r1==r2 else 0 for r1, r2 in zip(n_code, st_code_retro)]		
+		# print matches for state retro to nat retro
+		print st, sum(d_st_match_retro[st])
 	else:
 		print st, np.isnan([d_st_codes[(s, st)] for s in seasons])
 	
-print 'with early seasons: %s of %s states have early and retro classif for all %s seasons' %(ct, len(states), len(seasons))
-
-## check early warning state to retro national
-# print [d_nat[key][0] for key in sorted(d_nat)]
-# print [d_st[(key, 'NY')][1] for key in sorted(d_nat)]
-
+print 'with all available state data (state retrospective to national retrospective): %s of %s states have early and retro classif for all %s seasons' %(ct, len(states), len(seasons))
 
 ###########################
-# without early seasons: match early warning at state level to retrospective at state level
+# without states with early peaking seasons: 3) match early warning at state level to retrospective at state level
 # use SDI_state_classif_covCareAdj_v5_7st_withoutEarly.csv
 
 ct = 0
@@ -154,37 +177,41 @@ for st in states:
 		st_code_retro = [d_stWE_codes[(s, st)][0] for s in seasons]
 		# d_st_match_st2st[state] = [match state-early and state-retro S2, match S3, etc where match is represented as 1=match, 0=no match]
 		d_st_match_st2st[st] = [1  if retro==early else 0 for retro, early in zip(st_code_retro, st_code_early)]
-		# print matches for state ew to nat retro, state retro to nat retro, and state ew to state retro
+		# print matches for state ew to state retro
 		print st, sum(d_st_match_st2st[st])
 	else:
 		print st, np.isnan([d_stWE_codes[(s, st)] for s in seasons])
 	
-	
-print 'without early seasons: %s of %s states have early and retro classif for all %s seasons' %(ct, len(states), len(seasons))
+print 'without states with early peaking seasons (state early warning to state retrospective): %s of %s states have early and retro classif for all %s seasons' %(ct, len(states), len(seasons))
 
-###########################
-# find background accuracy rate across seasons (average number of states correct in each season)
+# 7/22/15: this code is broken because there are 7 seasons in d_st_match_early (season 4 removed) and 8 seasons in the other dictionaries. We aren't using these background accuracy rates in the paper anyways.
+# ###########################
+# # find background accuracy rate across seasons (average number of states correct in each season)
 
-# list states with data: with early seasons, without early seasons, union
-incl_states = [st for st in d_st_match_early]
-incl_statesWE = [st for st in d_st_match_st2st]
+# # list states with data: with early seasons, without early seasons, union
+# incl_states = [st for st in d_st_match_early]
+# incl_statesWE = [st for st in d_st_match_st2st]
 
-# d_correct_by_season_[seasonnum] = (# correct states early warning, # correct states retrospective)
-for i, s in enumerate(seasons):
-	st_early_matches = sum([d_st_match_early[st][i] for st in incl_states])
-	st_retro_matches = sum([d_st_match_retro[st][i] for st in incl_states])
-	st2st_matches = sum([d_st_match_st2st[st][i] for st in incl_statesWE])
-	d_correct_by_season[s] = (st_early_matches, st_retro_matches, st2st_matches)
+# # d_correct_by_season_[seasonnum] = (# correct states early warning, # correct states retrospective)
+# for i, s in enumerate(seasons):
+# 	st_early_matches = sum([d_st_match_early[st][i] for st in incl_states])
+# 	st_retro_matches = sum([d_st_match_retro[st][i] for st in incl_states])
+# 	st2st_matches = sum([d_st_match_st2st[st][i] for st in incl_statesWE])
+# 	d_correct_by_season[s] = (st_early_matches, st_retro_matches, st2st_matches)
 
-bg_rate_early = np.mean([d_correct_by_season[key][0]/float(len(incl_states)) for key in d_correct_by_season])
-bg_rate_retro = np.mean([d_correct_by_season[key][1]/float(len(incl_states)) for key in d_correct_by_season])
-bg_rate_st2st = np.mean([d_correct_by_season[key][2]/float(len(incl_statesWE)) for key in d_correct_by_season])
+# bg_rate_early = np.mean([d_correct_by_season[key][0]/float(len(incl_states)) for key in d_correct_by_season])
+# bg_rate_retro = np.mean([d_correct_by_season[key][1]/float(len(incl_states)) for key in d_correct_by_season])
+# bg_rate_st2st = np.mean([d_correct_by_season[key][2]/float(len(incl_statesWE)) for key in d_correct_by_season])
 
-print 'bg rate early', bg_rate_early # 2/23/15: 0.3194
-print 'bg rate retro', bg_rate_retro # 2/23/15: 0.5174
-print 'bg rate st2st', bg_rate_st2st # 2/23/15: 0.3798
+# print 'bg rate early', bg_rate_early # 2/23/15: 0.3194
+# print 'bg rate retro', bg_rate_retro # 2/23/15: 0.5174
+# print 'bg rate st2st', bg_rate_st2st # 2/23/15: 0.3798
 
 ###########################
 # print accuracy counts per state to file
+# list the 36 states with data (with early seasons)
+incl_states = [st for st in d_st_match_retro]
+
 fname = '/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_state_accuracy_counts_covCareAdj_v5.csv'
 print_accuracy_to_file(d_st_match_early, d_st_match_retro, d_st_match_st2st, incl_states, fname)
+# saved 7/22/15: 9:58 am
