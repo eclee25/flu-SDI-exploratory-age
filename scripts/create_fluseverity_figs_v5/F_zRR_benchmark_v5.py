@@ -39,10 +39,10 @@ incidin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_exp
 incid = csv.reader(incidin, delimiter=',')
 popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/totalpop_age.csv', 'r')
 pop = csv.reader(popin, delimiter=',')
-ixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixT_avg_quantileThresh.csv','r')
+ixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixTavg_altnorm_comparisons.csv','r')
 ixin.readline()
 ix = csv.reader(ixin, delimiter=',')
-ix2in = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixT_avg_quantileThresh.csv','r')
+ix2in = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixTavg_altnorm_comparisons.csv','r')
 ix2in.readline()
 ix2 = csv.reader(ix2in, delimiter=',')
 
@@ -52,12 +52,17 @@ sl = fxn.gp_seasonlabels
 fs = 24
 fssml = 16
 
+## normalization schemes
+# combo, bench_ix, q_ix = "", 1, 7
+# combo, bench_ix, q_ix = "_norm1", 2, 8
+combo, bench_ix, q_ix = "_norm2", 3, 9
+
 ### program ###
 # import data
 # d_benchmark[seasonnum] = CDC benchmark index value
 # d_qual_classif[seasonnum] = qualitative severity code (-1=mild, 0=mod, 1=sev)
-d_benchmark = fxn.benchmark_import(ix, 1)
-d_qual_classif = fxn.benchmark_import(ix2, 6)
+d_benchmark = fxn.benchmark_import(ix, bench_ix)
+d_qual_classif = fxn.benchmark_import(ix2, q_ix)
 
 # dict_wk[wk] = seasonnum
 # dict_totIncid53ls[s] = [incid rate per 100000 wk40,... incid rate per 100000 wk 39] (unadjusted ILI incidence)
@@ -90,8 +95,14 @@ compMask_benchmark = np.ma.compressed(mask_benchmark)
 
 # print 'retro corr coef', np.corrcoef(benchmark, retrozOR) # 7/20/15: 0.707
 # print 'early corr coef', np.corrcoef(compMask_benchmark, compMask_earlyzOR) # 7/20/15: 0.594
-print 'retro pearsonr', scipy.stats.pearsonr(benchmark, retrozOR) # R = 0.707, p-value = 0.05
-print 'early pearsonr', scipy.stats.pearsonr(compMask_benchmark, compMask_earlyzOR) # R = 0.594, p-value = 0.16
+print 'retro pearsonr', scipy.stats.pearsonr(benchmark, retrozOR) 
+# norm0: R = 0.707, p-value = 0.05
+# norm1: R = 0.765, p-value = 0.027
+# norm2: R = 0.755, p-value = 0.030
+print 'early pearsonr', scipy.stats.pearsonr(compMask_benchmark, compMask_earlyzOR) 
+# norm0: R = 0.594, p-value = 0.16
+# norm1: R = 0.713, p-value = 0.072
+# norm2: R = 0.666, p-value = 0.102
 
 # draw plots
 fig1 = plt.figure()
@@ -112,7 +123,7 @@ ax1.set_xlabel(fxn.gp_benchmark, fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([-1.5,1.5])
 ax1.set_ylim([-15,18])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F3/zRR_benchmark.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F3/zRR_benchmark%s.png' %(combo), transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -135,6 +146,6 @@ ax2.set_xlabel(fxn.gp_benchmark, fontsize=fs)
 ax2.tick_params(axis='both', labelsize=fssml)
 ax2.set_xlim([-1.5,1.5])
 ax2.set_ylim([-10,10])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F3/zRR_benchmark_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F3/zRR_benchmark_early%s.png' %(combo), transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()

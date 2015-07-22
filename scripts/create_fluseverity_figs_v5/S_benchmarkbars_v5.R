@@ -60,8 +60,8 @@ ixTData <- read.csv('benchmark_ixT_avg_quantileThresh.csv', header=T, colClasses
 seasonlab <- c('97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14')
 # assign colors based on severity
 # red severe, yellow moderate, blue mild
-sev <- which(ixTData$classif25==1)
-mod <- which(ixTData$classif25==0)
+sev <- which(ixTData$classifq==1)
+mod <- which(ixTData$classifq==0)
 colorvec <- rep('blue',16)
 colorvec[sev] <- 'red'
 colorvec[mod] <- 'yellow'
@@ -74,7 +74,7 @@ mids <- barplot(ixTData$ixT_avg_noILI, xlab='', ylab=expression(paste('Benchmark
 abline(h = quantile(ixTData$ixT_avg_noILI, c(0.25, 0.75)), col="black")
 axis(1, at=mids, seasonlab, las = 2)
 mtext('Season', side=1, line=3.5)
-dev.off() # 7/20/15, 5:21 pm
+dev.off() # 7/22/15, 3:44 pm
 
 # 7/20/15 short benchmark removed from paper
 # ###################################

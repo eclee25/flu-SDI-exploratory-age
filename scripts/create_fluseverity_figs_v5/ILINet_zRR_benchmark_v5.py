@@ -7,6 +7,7 @@
 ###Function: mean peak-based retro zOR metric vs. CDC benchmark index, mean Thanksgiving-based early zOR metric vs. CDC benchmark index
 # 11/4 convert to v5: covCare adjustment, RR, a:c
 # 7/21/15: update beta, notation
+# 7/22/15: qualitative beta thresholds
 
 ###Import data: /home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index_long.csv, CDC_Source/Import_Data/all_cdc_source_data.csv, Census/Import_Data/totalpop_age_Census_98-14.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 
@@ -34,19 +35,17 @@ import functions_v5 as fxn
 sevin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/ILINet_nat_classif_covCareAdj_7.csv','r')
 sevin.readline() # remove header
 sev = csv.reader(sevin, delimiter=',')
-ixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixT_avg_quantileThresh.csv','r')
-ixin.readline()
-ix = csv.reader(ixin, delimiter=',')
+ixqin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixTavg_altnorm_comparisons.csv','r')
+ixqin.readline()
+ixq = csv.reader(ixqin, delimiter=',')
+ixq2in = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixTavg_altnorm_comparisons.csv','r')
+ixq2in.readline()
+ixq2 = csv.reader(ixq2in, delimiter=',')
 
-# 7/21/15: these files need to be recreated with new beta
-# ## normalization schemes
-combo = ""
-# ix1in = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index_long_norm1.csv','r')
-# ix1in.readline()
-# ix1 = csv.reader(ix1in, delimiter=',')
-# ix2in = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index_long_norm2.csv','r')
-# ix2in.readline()
-# ix2 = csv.reader(ix2in, delimiter=',')
+## normalization schemes
+combo, bench_ix, q_ix = "", 1, 7
+# combo, bench_ix, q_ix = "_norm1", 2, 8
+# combo, bench_ix, q_ix = "_norm2", 3, 9
 
 ### called/local plotting parameters ###
 ps = fxn.pseasons
@@ -57,16 +56,20 @@ fssml = 16
 ### program ###
 # import data
 # d_benchmark[seasonnum] = CDC benchmark index value
-d_benchmark = fxn.benchmark_import(ix, 1) # no ILINet
+# d_qual_classif[seasonnum] = qualitative severity code (-1=mild, 0=mod, 1=sev)
+d_benchmark = fxn.benchmark_import(ixq, bench_ix) # norm0=1, norm1=2, norm2=3
 d_classifzOR = fxn.readNationalClassifFile(sev)
+d_qual_classif = fxn.benchmark_import(ixq2, q_ix) # norm0=7, norm1=8, norm2=9
 
 # plot values
 benchmark = [d_benchmark[s] for s in ps]
 retrozOR = [d_classifzOR[s][0] for s in ps]
 earlyzOR = np.ma.masked_invalid([d_classifzOR[s][1] for s in ps])
+print d_benchmark
+print d_qual_classif
 
 # grab beta threshold values
-mildThresh, sevThresh = fxn.return_benchmark_thresholds(d_benchmark.values())
+mildThresh, sevThresh = fxn.return_benchmark_thresholds(d_benchmark, d_qual_classif)
 
 for s, i, j in zip(ps, benchmark, retrozOR):
 	print s, i, j # to determine number of matches
@@ -119,8 +122,8 @@ plt.close()
 # updated 2/13/15 reported: initial, norm2, norm1
 print 'retro corr coef', np.corrcoef(benchmark, retrozOR) 
 # 2/13/15: 0.701, 0.366, 0.399
-# 7/21/15: 0.637
+# 7/21/15: 0.637, 0.302, 0.374
 mask_bench = np.ma.array(benchmark, mask=np.ma.getmask(earlyzOR))
 print 'early corr coef', np.corrcoef(mask_bench.compressed(), earlyzOR.compressed()) 
 # 2/13/15: -.261, , 
-# 7/21/15: -0.165
+# 7/21/15: -0.165, 0.092, 0.041
