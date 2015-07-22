@@ -5,6 +5,7 @@
 ## Filenames: 
 ## Data Source: 
 ## Notes: 
+# 7/22/15: Use qualitative analysis (See "CDC_Source/CDC_severity_descriptions.ods") to set thresholds. Assumes that rank order with beta is true. Add column "classifq" for completeness (not actually used in subsequent analyses).
 ## 
 ## useful commands:
 ## install.packages("pkg", dependencies=TRUE, lib="/usr/local/lib/R/site-library") # in sudo R
@@ -12,6 +13,7 @@
 
 setwd('/home/elee/R/source_functions')
 source("dfsumm.R")
+require(dplyr)
 
 classifySeverity <- function(beta, quantileValues){
   mildThresh <- quantileValues[1]
@@ -31,8 +33,10 @@ thresh10 <- quantile(ixData$ixT_avg_noILI, probs = c(0.1, 0.9))
 thresh20 <- quantile(ixData$ixT_avg_noILI, probs = c(0.2, 0.8)) 
 # 25% thresholds
 thresh25 <- quantile(ixData$ixT_avg_noILI, probs = c(0.25, 0.75))
+# jerryrig classifq threshold
+threshq <- quantile (ixData$ixT_avg_noILI, probs = c(0.3, 0.75))
 # identify classifications for 10% and 20% thresholds
-ixData2 <- ixData %>% mutate(classif10 = classifySeverity(ixT_avg_noILI, thresh10)) %>% mutate(classif20 = classifySeverity(ixT_avg_noILI, thresh20)) %>% mutate(classif25 = classifySeverity(ixT_avg_noILI, thresh25))
+ixData2 <- ixData %>% mutate(classif10 = classifySeverity(ixT_avg_noILI, thresh10)) %>% mutate(classif20 = classifySeverity(ixT_avg_noILI, thresh20)) %>% mutate(classif25 = classifySeverity(ixT_avg_noILI, thresh25)) %>% mutate(classifq = classifySeverity(ixT_avg_noILI, threshq))
 
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
-write.csv(ixData2, 'benchmark_ixT_avg_quantileThresh.csv', row.names=F) # 7/20/15 5:30 pm
+write.csv(ixData2, 'benchmark_ixT_avg_quantileThresh.csv', row.names=F) # 7/22/15, 13:42
