@@ -1678,11 +1678,15 @@ def ILIpercent_processing_CDCbaseline(dict_wk, dict_ILIpercent):
 	return dict_deltaILIpercent53ls
 
 ##############################################
-def return_benchmark_thresholds(benchmark):
-	''' Returns two threshold values, 1) below which seasons are mild and 2) above which seasons are severe.
+def return_benchmark_thresholds(dict_benchmark, dict_qualitative_classif):
+	''' Returns two threshold values based on qualitative coding in CDC_severity_definitions.ods, 1) below which seasons are mild and 2) above which seasons are severe.
 	'''
 	main(return_benchmark_thresholds)
-	return np.percentile(benchmark, gp_beta_thresholds)
+	seasons = sorted(dict_benchmark.keys())
+	# add and subtract 0.05 just for plotting purposes
+	mildThresh = max([dict_benchmark[s] for s in seasons if dict_qualitative_classif[s] == -1]) + 0.05
+	sevThresh = min([dict_benchmark[s] for s in seasons if dict_qualitative_classif[s] == 1]) - 0.05
+	return mildThresh, sevThresh
 
 ##############################################
 def returnShuffled(importList):

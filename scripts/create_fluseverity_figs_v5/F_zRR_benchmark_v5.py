@@ -11,6 +11,7 @@
 # 10/31 coverage adjustment no longer age-specific
 # 7/20/15: new beta
 # 7/21/15: pearson's r with scipy.stats, adds p-value
+# 7/22/15: beta threshold based on qualitative coding
 
 ###Import data: /home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index.csv, SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop_age.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 
@@ -41,6 +42,9 @@ pop = csv.reader(popin, delimiter=',')
 ixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixT_avg_quantileThresh.csv','r')
 ixin.readline()
 ix = csv.reader(ixin, delimiter=',')
+ix2in = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixT_avg_quantileThresh.csv','r')
+ix2in.readline()
+ix2 = csv.reader(ix2in, delimiter=',')
 
 ### called/local plotting parameters ###
 ps = fxn.pseasons
@@ -51,8 +55,9 @@ fssml = 16
 ### program ###
 # import data
 # d_benchmark[seasonnum] = CDC benchmark index value
-# d_classifzOR[seasonnum] =  (mean retrospective zOR, mean early warning zOR)
-d_benchmark = fxn.benchmark_import(ix, 1) # no ILINet
+# d_qual_classif[seasonnum] = qualitative severity code (-1=mild, 0=mod, 1=sev)
+d_benchmark = fxn.benchmark_import(ix, 1)
+d_qual_classif = fxn.benchmark_import(ix2, 6)
 
 # dict_wk[wk] = seasonnum
 # dict_totIncid53ls[s] = [incid rate per 100000 wk40,... incid rate per 100000 wk 39] (unadjusted ILI incidence)
@@ -68,12 +73,12 @@ d_classifzOR = fxn.classif_zRR_processing(d_wk, d_totIncidAdj53ls, d_zRR53ls)
 benchmark = [d_benchmark[s] for s in ps]
 retrozOR = [d_classifzOR[s][0] for s in ps]
 earlyzOR = [d_classifzOR[s][1] for s in ps]
-print retrozOR
-print benchmark
-print earlyzOR
+
 
 # grab beta threshold values
-mildThresh, sevThresh = fxn.return_benchmark_thresholds(d_benchmark.values())
+print d_benchmark
+print d_qual_classif
+mildThresh, sevThresh = fxn.return_benchmark_thresholds(d_benchmark, d_qual_classif)
 print mildThresh, sevThresh
 
 # correlation values
@@ -107,7 +112,7 @@ ax1.set_xlabel(fxn.gp_benchmark, fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([-1.5,1.5])
 ax1.set_ylim([-15,18])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/zRR_benchmark.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F3/zRR_benchmark.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -130,6 +135,6 @@ ax2.set_xlabel(fxn.gp_benchmark, fontsize=fs)
 ax2.tick_params(axis='both', labelsize=fssml)
 ax2.set_xlim([-1.5,1.5])
 ax2.set_ylim([-10,10])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/zRR_benchmark_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F3/zRR_benchmark_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
