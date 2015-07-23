@@ -6,6 +6,7 @@
 ###Date: 11/4/14
 ###Function: plot SDI zOR vs. ILINet zOR(supp figure)
 # 11/4 v5 updates
+# 7/23/15: new notation
 
 ###Import data: 
 
@@ -20,6 +21,7 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats
 
 ## local modules ##
 import functions_v5 as fxn
@@ -66,15 +68,15 @@ ax1.hlines([-1, 1], -30, 30, colors='k', linestyles='solid')
 ax1.fill([30, 1, 1, 30], [1, 1, 30, 30], facecolor='red', alpha=0.4)
 ax1.fill([-1, 1, 1, -1], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
 ax1.fill([-30, -1, -1, -30], [-1, -1, -30, -30], facecolor='blue', alpha=0.4)
-ax1.annotate('Mild', xy=(-2,-3), fontsize=fssml)
+ax1.annotate('Mild', xy=(-1.75,-14), fontsize=fssml)
 ax1.annotate('Severe', xy=(3.5,15.5), fontsize=fssml)
 ax1.set_title(fxn.gp_sigma_r, fontsize=fs)
-ax1.set_ylabel('SDI', fontsize=fs)
+ax1.set_ylabel('medical claims', fontsize=fs)
 ax1.set_xlabel('ILINet', fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([-5,5])
 ax1.set_ylim([-15,18])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_SDI_ILINet_retro.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_SDI_ILINet_retro.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # SDI vs ILINet early warning zOR
@@ -82,24 +84,24 @@ fig2 = plt.figure()
 ax2 = plt.subplot(111)
 ax2.plot(ILINet_early, SDI_early, marker = 'o', color = 'black', linestyle = 'None')
 for s, x, y in zip(sl, ILINet_early, SDI_early):
-	ax2.annotate(s, xy=(x,y), xytext=(-25,5), textcoords='offset points', fontsize=fssml)
+	ax2.annotate(s, xy=(x,y), xytext=(-15,5), textcoords='offset points', fontsize=fssml)
 ax2.vlines([-1, 1], -10, 20, colors='k', linestyles='solid')
 ax2.hlines([-1, 1], -10, 20, colors='k', linestyles='solid')
 ax2.fill([10, 1, 1, 10], [1, 1, 20, 20], facecolor='red', alpha=0.4)
 ax2.fill([-1, 1, 1, -1], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
 ax2.fill([-10, -1, -1, -10], [-1, -1, -10, -10], facecolor='blue', alpha=0.4)
-ax2.annotate('Mild', xy=(-2,-2), fontsize=fssml)
-ax2.annotate('Severe', xy=(3.5,8.5), fontsize=fssml)
+ax2.annotate('Mild', xy=(-4.5,-9), fontsize=fssml)
+ax2.annotate('Severe', xy=(8,8.5), fontsize=fssml)
 ax2.set_title(fxn.gp_sigma_w, fontsize=fs)
-ax2.set_ylabel('SDI', fontsize=fs)
+ax2.set_ylabel('medical claims', fontsize=fs)
 ax2.set_xlabel('ILINet', fontsize=fs)
 ax2.tick_params(axis='both', labelsize=fssml)
 ax2.set_xlim([-5,10])
 ax2.set_ylim([-10,10])
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/zRR_SDI_ILINet_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_SDI_ILINet_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # updated 2/11/15 
-print 'retro - SDI/ILINet', np.corrcoef(SDI_retro, ILINet_retro) # 0.775
-print 'early - SDI/ILINet', np.corrcoef(SDI_early, ILINet_early) # 0.080
+print 'retro - SDI/ILINet', scipy.stats.pearsonr(SDI_retro, ILINet_retro) # R = 0.775, p-value = 0.024
+print 'early - SDI/ILINet', scipy.stats.pearsonr(SDI_early, ILINet_early) # 0.080
 
