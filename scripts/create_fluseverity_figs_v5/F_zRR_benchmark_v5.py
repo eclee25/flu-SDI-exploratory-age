@@ -53,9 +53,9 @@ fs = 24
 fssml = 16
 
 ## normalization schemes
-combo, bench_ix, q_ix = "", 1, 7
-# combo, bench_ix, q_ix = "_norm1", 2, 8
-# combo, bench_ix, q_ix = "_norm2", 3, 9
+# combo, bench_ix, q_ix = "", 1, 7
+# combo, bench_ix, q_ix = "_norm1", 2, 8 # pre-post pandemic
+combo, bench_ix, q_ix = "_norm2", 3, 9 # antigenic cluster
 
 ### program ###
 # import data
@@ -123,7 +123,7 @@ ax1.set_xlabel(fxn.gp_benchmark, fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([-1.5,1.5])
 ax1.set_ylim([-15,18])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F3/zRR_benchmark%s.png' %(combo), transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/zRR_benchmark%s.png' %(combo), transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -146,6 +146,6 @@ ax2.set_xlabel(fxn.gp_benchmark, fontsize=fs)
 ax2.tick_params(axis='both', labelsize=fssml)
 ax2.set_xlim([-1.5,1.5])
 ax2.set_ylim([-10,10])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F3/zRR_benchmark_early%s.png' %(combo), transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/zRR_benchmark_early%s.png' %(combo), transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
