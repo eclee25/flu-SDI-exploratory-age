@@ -7,6 +7,7 @@
 ###Function: mean zOR retrospective classification vs. % H3 isolates of all subtyped isolates that season
 # 11/4 v5 updated zRR
 # 7/21/15: new notation
+# 7/24/15: add horizontal lines
 
 ###Import data: CDC_Source/Import_Data/all_cdc_source_data.csv, SQL_export/subtype5.csv, Census/Import_Data/totalpop_age_Census_98-14.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv, My_Bansal_Lab/Clean_Data_for_Import/NREVSS_Isolates_Season.csv
 
@@ -87,6 +88,7 @@ ax1 = fig1.add_subplot(1,1,1)
 ax1.plot(H3nrevss, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
 for s, x, y in zip(sl, H3nrevss, retrozOR):
 	ax1.annotate(s, xy=(x,y), xytext=(-20,5), textcoords='offset points', fontsize=fssml)
+ax1.hlines([-1, 1], -20, 20, colors='k', linestyles='solid')
 ax1.set_ylabel(fxn.gp_sigma_r, fontsize=fs)
 ax1.set_xlabel('H3 Proportion (NREVSS)', fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
