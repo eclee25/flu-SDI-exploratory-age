@@ -7,6 +7,7 @@
 ###Function: plot SDI zOR vs. ILINet zOR(supp figure)
 # 11/4 v5 updates
 # 7/23/15: new notation
+# 7/24/15: cdc notation added to title
 
 ###Import data: 
 
@@ -70,13 +71,12 @@ ax1.fill([-1, 1, 1, -1], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
 ax1.fill([-30, -1, -1, -30], [-1, -1, -30, -30], facecolor='blue', alpha=0.4)
 ax1.annotate('Mild', xy=(-1.75,-14), fontsize=fssml)
 ax1.annotate('Severe', xy=(3.5,15.5), fontsize=fssml)
-ax1.set_title(fxn.gp_sigma_r, fontsize=fs)
-ax1.set_ylabel('medical claims', fontsize=fs)
-ax1.set_xlabel('ILINet', fontsize=fs)
+ax1.set_ylabel(r'medical claims ($\bar \rho_{s,r}$)', fontsize=fs)
+ax1.set_xlabel(r'ILINet ($\bar \rho_{s,r}^{cdc}$)', fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([-5,5])
 ax1.set_ylim([-15,18])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_SDI_ILINet_retro.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/claims-vs-ILINet-index/zRR_SDI_ILINet_retro.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # SDI vs ILINet early warning zOR
@@ -92,13 +92,12 @@ ax2.fill([-1, 1, 1, -1], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
 ax2.fill([-10, -1, -1, -10], [-1, -1, -10, -10], facecolor='blue', alpha=0.4)
 ax2.annotate('Mild', xy=(-4.5,-9), fontsize=fssml)
 ax2.annotate('Severe', xy=(8,8.5), fontsize=fssml)
-ax2.set_title(fxn.gp_sigma_w, fontsize=fs)
-ax2.set_ylabel('medical claims', fontsize=fs)
-ax2.set_xlabel('ILINet', fontsize=fs)
+ax2.set_ylabel(r'medical claims ($\bar \rho_{s,w}$)', fontsize=fs)
+ax2.set_xlabel(r'ILINet ($\bar \rho_{s,w}^{cdc}$)', fontsize=fs)
 ax2.tick_params(axis='both', labelsize=fssml)
 ax2.set_xlim([-5,10])
 ax2.set_ylim([-10,10])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR_SDI_ILINet_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/claims-vs-ILINet-index/zRR_SDI_ILINet_early.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 
 # updated 2/11/15 
