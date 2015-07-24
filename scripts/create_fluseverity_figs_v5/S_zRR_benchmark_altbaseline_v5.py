@@ -7,6 +7,7 @@
 ###Function: metric vs. CDC benchmark index, where sensitivity of baseline is examined. Given that 7 week fall baseline is what we used in our study, the 7 week summer baseline, 10 week fall baseline, and 10 week summer baseline plots are examined.
 
 # 7/20/15: update benchmark
+# 7/24/15: update benchmark with qualitative classif thresholds
 
 ###Import data: CDC_Source/Import_Data/cdc_severity_index.csv, Py_export/SDI_national_classifications_summer-7.csv, Py_export/SDI_national_classifications_10.csv, Py_export/SDI_national_classifications_summer-10.csv
 
@@ -21,6 +22,7 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats
 
 ## local modules ##
 import functions_v5 as fxn
@@ -30,9 +32,12 @@ import functions_v5 as fxn
 ### functions ###
 ### data files ###
 # benchmark data
-ixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixT_avg_quantileThresh.csv','r')
+ixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixTavg_altnorm_comparisons.csv','r')
 ixin.readline()
 ix = csv.reader(ixin, delimiter=',')
+ix2in = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixTavg_altnorm_comparisons.csv','r')
+ix2in.readline()
+ix2 = csv.reader(ix2in, delimiter=',')
 # 10 week fall BL index
 f10in = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/SDI_nat_classif_covCareAdj_v5_10.csv','r')
 f10in.readline()
@@ -51,12 +56,14 @@ ps = fxn.pseasons
 sl = fxn.gp_seasonlabels
 fs = 24
 fssml = 16
+bench_ix, q_ix = 1, 7
 
 ### program ###
 
 ## import data ##
 # d_benchmark[seasonnum] = CDC benchmark index value
-d_benchmark = fxn.benchmark_import(ix, 1) # no ILINet
+d_benchmark = fxn.benchmark_import(ix, bench_ix)
+d_qual_classif = fxn.benchmark_import(ix2, q_ix)
 # d_nat_classif[season] = (mean retro zOR, mean early zOR)
 d_f10 = fxn.readNationalClassifFile(f10)
 d_s7 = fxn.readNationalClassifFile(s7)
@@ -69,7 +76,7 @@ s7r = [d_s7[s][0] for s in ps]
 s10r = [d_s10[s][0] for s in ps]
 
 # grab beta threshold values
-mildThresh, sevThresh = fxn.return_benchmark_thresholds(d_benchmark.values())
+mildThresh, sevThresh = fxn.return_benchmark_thresholds(d_benchmark, d_qual_classif)
 
 # draw plots
 fig1 = plt.figure()
@@ -141,7 +148,7 @@ plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Ag
 plt.close()
 # plt.show()
 
-# updated 7/20/15
-print '10 week fall corr coef', np.corrcoef(benchmark, f10r) # 0.745
-print '7 week summer corr coef', np.corrcoef(benchmark, s7r) # 0.665
-print '10 week summer corr coef', np.corrcoef(benchmark, s10r) #0.703
+# updated 7/24/15
+print '10 week fall corr coef', scipy.stats.pearsonr(benchmark, f10r) # R = 0.745, p-value = 0.034
+print '7 week summer corr coef', scipy.stats.pearsonr(benchmark, s7r) # R = 0.665, p-value = 0.072
+print '10 week summer corr coef', scipy.stats.pearsonr(benchmark, s10r) # R = 0.703, p-value = 0.052
