@@ -85,6 +85,9 @@ gp_sigmat = r'Adj. Ratio of Adult:Child ILI, $\rho_{s}(t)$'
 gp_benchmark = r'Benchmark, $\beta_{s}$'
 gp_attackrate = r'Seasonal ILI Visits per 100,000'
 gp_adjILI = r'Adj. ILI Visits per 100,000'
+gp_sigma_r_cdc = r'Retrospective Severity, $\bar \rho_{s,r}^{cdc}$'
+gp_sigma_w_cdc = r'Early Warning Severity, $\bar \rho_{s,w}^{cdc}$'
+gp_sigmat_cdc = r'Adj. Ratio of Adult:Child ILI, $\rho_{s}^{cdc}(t)$'
 
 ## Benchmark ##
 gp_beta_thresholds = [25, 70]
@@ -121,9 +124,9 @@ gp_FR_colors = cm.rainbow(np.linspace(0, 1, len(gp_FR_seasonlabels)))
 ## call parameters ##
 # set these parameters every time a plot is run
 
-# pseasons = gp_ILINet_plotting_seasons
+pseasons = gp_ILINet_plotting_seasons
 # pseasons = gp_FR_plotting_seasons
-pseasons = gp_plotting_seasons
+# pseasons = gp_plotting_seasons
 
 ##############################################
 def anydiag_baseline_comparison(csvreadfile):

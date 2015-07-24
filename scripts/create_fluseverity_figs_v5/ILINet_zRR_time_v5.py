@@ -7,6 +7,7 @@
 ###Function: RR of incidence in adults to incidence in children vs. week number normalized by the first 'gp_normweeks' of the season. Incidence in children and adults is normalized by the size of the child and adult populations in the second calendar year of the flu season. ILINet data
 # 11/4 convert to v5: covCare adjustment, RR, a:c
 # 7/21/15: update notation
+# 7/24/15: update CDC notation
 
 ###Import data: CDC_Source/Import_Data/all_cdc_source_data.csv, Census/Import_Data/totalpop_age_Census_98-14.csv
 
@@ -63,11 +64,11 @@ for s in ps:
 plt.xlim([0, fw-1])
 plt.xticks(range(fw)[::5], wklab[:fw:5]) 
 plt.xlabel('Week Number', fontsize=fs)
-plt.ylabel(fxn.gp_sigmat, fontsize=fs)
+plt.ylabel(fxn.gp_sigmat_cdc, fontsize=fs)
 # shrink current axis by 10%
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width*0.9, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/ILINet_zRR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/ILINet-figs/ILINet_zRR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
