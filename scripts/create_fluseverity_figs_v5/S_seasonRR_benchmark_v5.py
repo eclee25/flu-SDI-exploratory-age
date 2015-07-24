@@ -18,6 +18,7 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats
 
 ## local modules ##
 import functions_v5 as fxn
@@ -51,9 +52,12 @@ incidin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_exp
 incid = csv.reader(incidin, delimiter=',')
 popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/totalpop_age.csv', 'r')
 pop = csv.reader(popin, delimiter=',')
-ixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixT_avg_quantileThresh.csv','r')
+ixin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixTavg_altnorm_comparisons.csv','r')
 ixin.readline()
 ix = csv.reader(ixin, delimiter=',')
+ix2in = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export/benchmark_ixTavg_altnorm_comparisons.csv','r')
+ix2in.readline()
+ix2 = csv.reader(ix2in, delimiter=',')
 
 ### called/local plotting parameters ###
 ps = fxn.pseasons
@@ -61,12 +65,14 @@ sl = fxn.gp_seasonlabels
 fs = 24
 fssml = 16
 fw = fxn.gp_fluweeks
+bench_ix, q_ix = 1, 7
 
 ### program ###
 # import data
 # d_benchmark[seasonnum] = CDC benchmark index value
 # d_classifzOR[seasonnum] =  (mean retrospective zOR, mean early warning zOR)
-d_benchmark = fxn.benchmark_import(ix, 1) # no ILINet
+d_benchmark = fxn.benchmark_import(ix, bench_ix)
+d_qual_classif = fxn.benchmark_import(ix2, q_ix)
 
 # dict_wk[wk] = seasonnum
 # dict_totIncid53ls[s] = [incid rate per 100000 wk40,... incid rate per 100000 wk 39] (unadjusted ILI incidence)
@@ -86,12 +92,12 @@ nonfluSeason_RR = [nonfluSeasonRR(d_ageILIadj_season, d_pop, s) for s in ps]
 tightfluSeason_RR = [tightSeasonRR(d_ageILIadj_season, d_pop, s) for s in ps]
 
 # grab beta threshold values
-mildThresh, sevThresh = fxn.return_benchmark_thresholds(d_benchmark.values())
+mildThresh, sevThresh = fxn.return_benchmark_thresholds(d_benchmark, d_qual_classif)
 
 # updated 7/20/15
-print 'entire flu season (40 to 20) corr coef', np.corrcoef(benchmark, fluSeason_RR) # 0.789
-print 'non flu season corr coef', np.corrcoef(benchmark, nonfluSeason_RR) # 0.217
-print 'tight flu season (50 to 12) corr coef', np.corrcoef(benchmark, tightfluSeason_RR) # 0.825
+print 'entire flu season (40 to 20) corr coef', scipy.stats.pearsonr(benchmark, fluSeason_RR) # 0.789
+print 'non flu season corr coef', scipy.stats.pearsonr(benchmark, nonfluSeason_RR) # 0.217
+print 'tight flu season (50 to 12) corr coef', scipy.stats.pearsonr(benchmark, tightfluSeason_RR) # 0.825
 
 
 # draw plots

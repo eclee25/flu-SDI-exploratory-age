@@ -53,9 +53,9 @@ fs = 24
 fssml = 16
 
 ## normalization schemes
-# combo, bench_ix, q_ix = "", 1, 7
+combo, bench_ix, q_ix = "", 1, 7
 # combo, bench_ix, q_ix = "_norm1", 2, 8
-combo, bench_ix, q_ix = "_norm2", 3, 9
+# combo, bench_ix, q_ix = "_norm2", 3, 9
 
 ### program ###
 # import data
