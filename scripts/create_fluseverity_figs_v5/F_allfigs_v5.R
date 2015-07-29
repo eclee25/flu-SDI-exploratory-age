@@ -8,6 +8,7 @@
 ## Notes: F1.csv: 'season', 'wk', 'yr', 'wknum', 'outpatient & office ILI', 'outpatient & office anydiag', 'pop'
 ## 11/2/14 Note: createF1.csv includes data from all service places while F1.csv includes only outpatient data\
 ## 7/27/15: add benchmark bars to panel e, extend from 1997-2014 (excl. 2009-10), change fig labels
+## 7/29/15: formatting updates based on SB comments
 ## 
 ## useful commands:
 ## install.packages("pkg", dependencies=TRUE, lib="/usr/local/lib/R/site-library") # in sudo R
@@ -106,6 +107,8 @@ sdi_drop <- tbl_df(sdi2) %>% select(uqid, ILI_diag_perc)
 cdc_drop <- tbl_df(cdc_lm) %>% select(uqid, yr, wk, season, perc_unwt_ili, a_H1, a_H3, b, perc_pos, ped_deaths_cum, hosp_5.17, hosp_18.49, pi_only)
 merge1 <- left_join(cdc_drop, sdi_drop, by = "uqid") 
 merge2 <- merge1 %>% filter(uqid < "200940" | uqid >= "201040")
+# cdc data has week 200353, but sdi data does not; interpolate with mean
+merge2[which(merge2$uqid=='200353'),]$ILI_diag_perc <- mean(merge2[which(merge2$uqid=='200352'):which(merge2$uqid=='200401'),]$ILI_diag_perc, na.rm=T)
 
 ##########################################
 # plotting parameters
@@ -127,6 +130,8 @@ mod <- which(benchmark$b0_classifq==0)
 colorvec <- rep('blue',16)
 colorvec[sev] <- 'red'
 colorvec[mod] <- 'yellow'
+pandemiccol <- 'dark grey'
+dividercol <- 'black'
 
 ##########################################
 # combined figure
@@ -136,10 +141,10 @@ png(filename="all_panels.png", units=un, width=w, height=h, pointsize=ps, bg = '
 par(mfrow = c(5, 1), mar = margin, oma = omargin)
 
 # ILI panel
-plot(merge2$ILI_diag_perc, type = 'l', xlab = '', ylab = '', ylim = c(0, 8), col = 'tomato', axes = F, lwd = sz, cex.lab = sz)
-abline(v = which(merge2$uqid=='201040'), lwd = sz2, col = 'black')
-abline(h = 0, lwd = sz2, col = 'black')
-axis(2, at = seq(0, 7, by=2), labels=seq(0, 7, by=2))
+plot(merge2$ILI_diag_perc, type = 'l', xlab = '', ylab = '', ylim = c(0, 9), col = 'tomato', axes = F, lwd = sz, cex.lab = sz)
+segments(which(merge2$uqid=='201040'), 0, y1 = 2000, lwd = sz2, col = pandemiccol)
+abline(h = 0, lwd = sz2, col = dividercol)
+axis(2, at = seq(0, 9, by=2), labels=seq(0, 9, by=2))
 mtext(2, text = 'percent', line = sz3, cex = sz2)
 lines(merge2$perc_unwt_ili, type = 'l', col = 'turquoise3', lwd = sz)
 legend('topleft', c('medical claims', 'ILINet'), lwd = sz, col = c('tomato', 'turquoise3'), , title = 'ILI (%) of all visits')
@@ -149,44 +154,44 @@ par(mar=margin)
 plot(merge2$a_H1, col = 'navy', type = 'l', axes = F, ylab = '', xlab = '', ylim = c(0, 1600))
 lines(merge2$a_H3sum, col = 'violetred3', type = 'l', lwd = sz2)
 lines(merge2$b, col = 'orange', type = 'l', lwd = sz2)
-abline(v = which(merge2$uqid=='201040'), lwd = sz2, col = 'black')
-abline(h = 0, lwd = sz2, col = 'black')
-axis(2, at = seq(0, 1600, by=750), labels = seq(0, 1600, by=750), col.axis = 'black', col = 'black')
+segments(which(merge2$uqid=='201040'), 0, y1 = 2000, lwd = sz2, col = pandemiccol)
+abline(h = 0, lwd = sz2, col = dividercol)
+axis(2, at = seq(0, 1600, by=800), labels = seq(0, 1600, by=800), col.axis = 'black', col = 'black')
 mtext(2, text = 'samples', line = sz3, cex = sz2, col = 'black')
 par(new=T)
-plot(merge2$perc_pos, type = 'l', xlab = '', ylab = '', ylim = c(0, 35), col = 'black', axes = F, lwd = sz, cex.lab = sz)
-axis(4, at=seq(0, 35, by=15), labels=seq(0, 35, by=15))
+plot(merge2$perc_pos, type = 'l', xlab = '', ylab = '', ylim = c(0, 60), col = 'black', axes = F, lwd = sz, cex.lab = sz)
+axis(4, at=seq(0, 60, by=30), labels=seq(0, 60, by=30))
 mtext(4, text = 'percent', line = sz3, cex = sz2)
 legend('topleft', c('A/H1 samples', 'A/H3 ...', 'B ...', 'positive tests (%)'), col = c('navy', 'violetred3', 'orange', 'black'), lwd = c(sz2, sz2, sz2, sz))
 
 # laboratory confirmed panel (cumulative hospitalization rates, pediatric deaths)
 par(mar=margin)
 plot(merge2$ped_deaths_cum, col = 'forestgreen ', type = 'l', lwd = sz, axes = F, ylab = '', xlab = '', ylim = c(0, 200))
-abline(v = which(merge2$uqid=='201040'), lwd = sz2, col = 'black')
-abline(h = 0, lwd = sz2, col = 'black')
+segments(which(merge2$uqid=='201040'), 0, y1 = 2000, lwd = sz2, col = pandemiccol)
+abline(h = 0, lwd = sz2, col = dividercol)
 axis(4, at = seq(0, 200, by=100), labels = seq(0, 200, by=100), col.axis = 'black', col = 'black', col.ticks = 'black')
 mtext(4, text = 'deaths', line = sz3, col = 'black', cex = sz2)
 par(new=T)
-plot(merge2$hosp_5.17, type = 'l', xlab = '', ylab = '', axes = F, lwd = sz,  cex.lab = sz, col = 'red', ylim = c(0, 26))
+plot(merge2$hosp_5.17, type = 'l', xlab = '', ylab = '', axes = F, lwd = sz,  cex.lab = sz, col = 'red', ylim = c(0, 22))
 lines(merge2$hosp_18.49, type = 'l', col = 'blue', lwd = sz)
-axis(2, at=seq(0, 26, by=10), labels=seq(0, 26, by=10))
+axis(2, at=seq(0, 22, by=10), labels=seq(0, 22, by=10))
 mtext(2, text = 'rate', line = sz3, cex = sz2)
 legend('topleft', c('5-17 yr hosp. rate', '18-49 yr hosp. rate', 'pediatric deaths'), col = c('red', 'blue', 'forestgreen'), lwd = c(sz, sz, sz, sz), title = 'Cumulative lab-confirmed:')
 
 # death panel
 par(mar=margin) 
-plot(merge2$pi_only, type = 'l', xlab = '', ylab = '', axes = F, lwd = 2, ylim = c(400, 1400), cex.lab = sz)
-abline(v = which(merge2$uqid=='201040'), lwd = sz2, col = 'black')
-abline(h = 400, lwd = sz2, col = 'black')
-axis(2, at = seq(400, 1400, by = 500), labels = seq(400, 1400, by = 500))
-mtext(2, text = 'deaths', line = sz3, cex = sz2)
-legend('topleft', 'P&I-associated', col = 'black', lwd = sz)
+plot(merge2$pi_only, type = 'l', xlab = '', ylab = '', axes = F, lwd = 2, ylim = c(300, 1600), cex.lab = sz)
+segments(which(merge2$uqid=='201040'), 300, y1 = 2000, lwd = sz2, col = pandemiccol)
+abline(h = 300, lwd = sz2, col = dividercol)
+axis(2, at = seq(300, 1600, by = 650), labels = seq(300, 1600, by = 650))
+mtext(2, text = 'P&I deaths', line = sz3, cex = sz2)
+# legend('topleft', 'P&I-associated', col = 'black', lwd = sz)
 
 # benchmark panel
 par(mar=margin)
 mp <- barplot(benchmark$beta_norm0, xlab = '', ylab = '', axes = F, col = colorvec, cex.lab = sz, width=diff(wkticks), ylim = c(-1.5, 1.5))
-abline(v = (mp[13]+mp[12])/2, lwd = sz2, col = 'black') # force line bw 2008-09 and 2010-11 seasons
-abline(h = 0, lwd = sz2, col = 'black')
+segments((mp[13]+mp[12])/2, -3, y1 = 2000, lwd = sz2, col = pandemiccol) # force line bw 2008-09 and 2010-11 seasons
+abline(h = 0, lwd = sz2, col = dividercol)
 axis(2, at = seq(-1, 1, by = 1), labels = seq(-1, 1, by = 1))
 mtext(2, text = "benchmark", line = sz3, cex = sz2)
 legend('topleft', c('Mild', 'Moderate', 'Severe'), col = c('blue', 'yellow', 'red'), lwd = c(sz, sz, sz))
