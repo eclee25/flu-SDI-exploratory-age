@@ -6,6 +6,7 @@
 ###Date: 1/9/15
 ###Function: mean peak-based retro zRR metric vs. hospitalization rate and P&I mortality perc with best fit lines at state level
 # 7/20/15: update notation
+# 7/30/15: update state notation
 
 ###Import data: Py_export/SDI_st_classif_covCareAdj_v5_7.csv, Census/state_abbreviations.csv
 
@@ -81,7 +82,7 @@ ax1.annotate('Severe', xy=(11,15), fontsize=fssml)
 
 # ili and P&I axis
 ax1.set_ylabel('Rate per 100,000', fontsize=fs) 
-ax1.set_xlabel(fxn.gp_sigma_r, fontsize=fs)
+ax1.set_xlabel(fxn.gp_sigma_r_st, fontsize=fs)
 ax1.tick_params(axis='both', labelsize=fssml)
 ax1.set_xlim([-15,15])
 ax1.set_ylim([-1, 16])
@@ -91,7 +92,7 @@ Eformat, = ax1.plot([], [], color = colorvec[0], linestyle = '-', lw = lwd, labe
 
 ax1.legend(loc=2)
 
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/eMort_zRR_st.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F5/eMort_zRR_st.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 plt.show()
 

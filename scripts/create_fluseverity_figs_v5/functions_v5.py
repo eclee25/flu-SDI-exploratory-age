@@ -88,6 +88,7 @@ gp_adjILI = r'Adj. ILI Visits per 100,000'
 gp_sigma_r_cdc = r'Retrospective Severity, $\bar \rho_{s,r}^{cdc}$'
 gp_sigma_w_cdc = r'Early Warning Severity, $\bar \rho_{s,w}^{cdc}$'
 gp_sigmat_cdc = r'Adj. Ratio of Adult:Child ILI, $\rho_{s}^{cdc}(t)$'
+gp_sigma_r_st = r'Retrospective Severity, $\bar{\rho_{s,r}(\tau)}$'
 
 ## Benchmark ##
 gp_beta_thresholds = [25, 70]

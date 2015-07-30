@@ -8,6 +8,7 @@
 ## Notes: ggplot2 references: http://blog.revolutionanalytics.com/2009/11/choropleth-challenge-result.html
 # 7/21/15: update notation
 # 7/22/15: reduce margin sizes, similar to F_state_accuracy_choropleth
+# 7/30/15: update state notation
 ## 
 ## useful commands:
 ## install.packages("pkg", dependencies=TRUE, lib="/usr/local/lib/R/site-library") # in sudo R
@@ -44,6 +45,7 @@ dfsumm<-function(x) {
 
 require(maps)
 require(ggplot2)
+require(grid)
 
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export')
 
@@ -77,8 +79,8 @@ for (seas in 2:9){
     geom_polygon(aes(fill=mean_retro_zOR), size = 0.2) +
     geom_polygon(data=us_state_map, color='white', fill=NA) +
     theme_minimal(base_size = 16, base_family = "") +
-    theme(panel.background = element_blank(),panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank(), plot.margin = unit(mar, "mm")) +
+    theme(panel.background = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), axis.ticks = element_blank(), axis.text.y = element_blank(), axis.text.x = element_blank(), plot.margin = unit(mar, "mm")) +
     labs(x=NULL, y=NULL) +
-    scale_fill_brewer(expression(paste('severity, ', bar(rho["s,r"]))), type='div', palette=7, labels=levels(orig3$mean_retro_zOR), drop=FALSE)
+    scale_fill_brewer(expression(paste('severity, ', bar(rho["s,r"](tau)))), type='div', palette=7, labels=levels(orig3$mean_retro_zOR), drop=FALSE)
   ggsave(seasonmap2, width=5, height=3, file=sprintf('RetrozRR_State_Season%s_stlvl.png', seas))
 }
