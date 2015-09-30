@@ -20,3 +20,13 @@ scripts/small_attack_rate_explore.sql
 Rural_Urban/MCDC_reference.txt
 descriptive_age_dynamics.lyx
 scripts/WIPS2015/importData/
+March_2015_Notes
+mapping_code/cleanedmapdata/
+mapping_code/county_maps_python_code/
+scripts/AR_popsize.R
+scripts/OR_allweeks_hhsreg_check.R
+scripts/OR_subtype_vaxmatch_agg.py
+scripts/OR_vaxmatch_agg.py
+scripts/admin/create_season_cdcwk.sql
+scripts/create_reference_datasets.R
+scripts/longWIPS2015/
