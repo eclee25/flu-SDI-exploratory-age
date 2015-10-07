@@ -1,7 +1,8 @@
 
 ## Name: Elizabeth Lee
 ## Date: 7/15/15
-## Function: 
+## Function: export cleaned data to create reformed benchmark
+# 10/4/15: export to R_export
 ## Filenames: 
 ## Data Source: 
 ## Notes: 
@@ -13,9 +14,8 @@
 require(dplyr)
 require(ggplot2)
 require(tidyr)
+setwd(dirname(sys.frame(1)$ofile)) # only works if you source the program
 
-setwd('/home/elee/R/source_functions')
-source("dfsumm.R")
 
 logit_func <- function(p, percents){
   if(percents==T){
@@ -24,7 +24,7 @@ logit_func <- function(p, percents){
   return(log(p)-log(1-p))
 }
 
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data')
+setwd('../../../../../CDC_Source/Import_Data')
 # short data: seasons 2 to 9, long data: seasons -2 to 14
 long <- read.csv('cdc_severity_data_long_cleaned.csv', header=T, na.strings="NA")
 
@@ -49,7 +49,8 @@ names(long2.std.logs) <- c("season", "stdLogit_perc_pos", "stdLogit_propPI", "st
 p.long <- gather(long2.std.logs, "metric", "value", 2:7)
 metric.ts <- ggplot(p.long, aes(x=season, y=value, group=metric)) +
     geom_point(aes(color=metric)) + facet_wrap(~metric)
-setwd('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Exploration/output')
+setwd(dirname(sys.frame(1)$ofile))
+setwd('../../../../../Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Exploration/output')
 ggsave("longBeta_stdMetrics.png", width=9, height=6) # 7/19/15 8:05 pm
 
 # gather data for calculation of mean transformed index
@@ -67,7 +68,9 @@ long5 <- long2 %>% left_join(long2.std.logs, by="season") %>% left_join(long4, b
 long5 %>% select(season, contains("ix"))
 
 # compare to original benchmark values
-setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data')
+setwd(dirname(sys.frame(1)$ofile))
+setwd('../../../../../CDC_Source/Import_Data')
+
 
 longIX <- read.csv('cdc_severity_index_long.csv', header=T, na.strings="NA")
 longIX2 <- longIX %>% mutate(ix_mn = apply(longIX[,c(2:4, 6:7)], 1, mean, na.rm=T)) 
@@ -78,7 +81,8 @@ longIX2 %>% select(season, contains("ix"))
 long.compare <- data.frame(season=longIX2$season, beta.orig=longIX2$ix_noILI, beta.mean=longIX2$ix_mn, beta.Tmean=long5$ixT_avg_noILI)
 
 # write data to file
-setwd('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Exploration/output')
-write.csv(long.compare, "longBeta_comparisons.csv", row.names=F) # 7/19/15 8:11 pm
-write.csv(long5, "longBeta_ixT_avg_noILI.csv", row.names=F) # 7/19/15 8:11 pm
+setwd(dirname(sys.frame(1)$ofile))
+setwd('../../../R_export')
+write.csv(long.compare, "longBeta_comparisons.csv", row.names=F) # 10/6/15 12:51 pm
+write.csv(long5, "longBeta_ixT_avg_noILI.csv", row.names=F) # 10/6/15 12:51 pm
 
