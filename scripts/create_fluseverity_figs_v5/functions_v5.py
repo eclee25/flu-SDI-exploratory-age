@@ -77,16 +77,16 @@ dict_careseek_census = {('NE', 'A'):0.44, ('MW', 'A'):0.39, ('SO', 'A'):0.42, ('
 # global parameters - plotting
 
 ## generic label formatting ##
-gp_sigma_r = r'Retrospective Severity, $\bar \rho_{s,r}$'
-gp_sigma_w = r'Early Warning Severity, $\bar \rho_{s,w}$'
+gp_sigma_r = r'Retrospective Severity, $\overline{\rho_{s,r}}$'
+gp_sigma_w = r'Early Warning Severity, $\overline{\rho_{s,w}}$'
 gp_sigmat = r'Adj. Ratio of Adult:Child ILI, $\rho_{s}(t)$'
 gp_benchmark = r'Benchmark, $\beta_{s}$'
 gp_attackrate = r'Seasonal ILI Visits per 100,000'
 gp_adjILI = r'Adj. ILI Visits per 100,000'
-gp_sigma_r_cdc = r'Retrospective Severity, $\bar \rho_{s,r}^{cdc}$'
-gp_sigma_w_cdc = r'Early Warning Severity, $\bar \rho_{s,w}^{cdc}$'
+gp_sigma_r_cdc = r'Retrospective Severity, $\overline{\rho_{s,r}^{cdc}}$'
+gp_sigma_w_cdc = r'Early Warning Severity, $\overline{\rho_{s,w}^{cdc}}$'
 gp_sigmat_cdc = r'Adj. Ratio of Adult:Child ILI, $\rho_{s}^{cdc}(t)$'
-gp_sigma_r_st = r'Retrospective Severity, $\bar{\rho_{s,r}(\tau)}$'
+gp_sigma_r_st = r'Retrospective Severity, $\overline{\rho_{s,r}(\tau)}$'
 
 ## Benchmark ##
 gp_beta_thresholds = [25, 70]

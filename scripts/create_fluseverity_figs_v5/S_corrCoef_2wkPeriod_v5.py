@@ -114,12 +114,12 @@ gformat, = ax1.plot([],[], color='black', alpha=0.4, linewidth=lw, marker='o', l
 CIformat, = ax1.plot([],[], color='red', linewidth=lw, label = '95% CI for randomized null')
 ax1.legend(loc=4)
 
-ax1.set_ylabel(r"Pearson's R: $\beta_{s}$ and mean $\rho_{s}(t)$", fontsize=fs) 
+ax1.set_ylabel(r"Pearson's R: $\beta_{s}$ and $\overline{\rho_{s}(t)}$", fontsize=fs) 
 ax1.set_xlabel('Window Period', fontsize=fs)
 plt.xticks(range(52)[::5], window_xticks[::5])
 ax1.set_xlim([0,53])
 ax1.set_ylim([-1.0,1.0])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/corrCoef_window_gFallBL.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission3_ID/SIFigures/corrCoef_window_gFallBL.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
