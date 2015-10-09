@@ -9,6 +9,7 @@
 # 11/7/14: care-seeking for ILI = age-specific estimate for state in 2009-10 BRFSS; states with missing data are filled in with the corresponding census region's age-specific estimate
 # 7/21/15: update notation, colors
 # 7/30/15: update state notation
+# 10/8/15: rm lines, overline
 
 ###Import data: R_export/OR_zip3_week_outpatient_cl.csv, R_export/allpopstat_zip3_season_cl.csv
 #### These data were cleaned with data_extraction/clean_OR_hhsreg_week_outpatient.R and exported with OR_zip3_week.sql
@@ -175,14 +176,12 @@ print 'nat classif', [d_nat_classif[s][0] for s in ps]
 bxp = plt.boxplot(retrozOR_by_state, patch_artist=True) 
 for patch, color in zip(bxp['boxes'], sorted_colors_ix):
 	patch.set_facecolor(color)
-plt.axhline(y=-1, color='k')
-plt.axhline(y=1, color='k')
 plt.ylabel(fxn.gp_sigma_r_st, fontsize=fs)
 plt.xlim([0.5, 37.5])
 plt.ylim([-8, 8])
 plt.xticks(xrange(1, len(sorted_states)+1), sorted_states, rotation = 'vertical', fontsize=fssml)
 plt.yticks(fontsize=fssml)
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/zRR-state-bxp/zRR_state_state.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission3_ID/SIFigures/zRR_state_state.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -193,12 +192,12 @@ bxp2 = plt.boxplot(retroDev_by_state, patch_artist=True)
 for patch, color in zip(bxp2['boxes'], sorted_colors_dev):
 	patch.set_facecolor(color)
 plt.axhline(y=0, color='k')
-plt.ylabel(r'Deviation of $\bar{\rho_{s,r}(\tau)}$ from $\bar{\rho_{s,r}}$', fontsize=fs)
+plt.ylabel(r'Deviation of $\overline{\rho_{s,r}(\tau)}$ from $\overline{\rho_{s,r}}$', fontsize=fs)
 plt.xlim([0.5, 37.5])
 plt.xticks(xrange(1, len(sorted_states2)+1), sorted_states2, rotation = 'vertical', fontsize=fssml)
 plt.yticks(fontsize=fssml)
 plt.ylim([-4,4])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F4/zRR_state_state_deviation.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission3_ID/MainFigures/zRR_state_state_deviation.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
