@@ -99,14 +99,13 @@ for (s in -2:14){
 ##########################################
 # 7/27/15 benchmark barplot
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
-benchmark <- read.csv('benchmark_ixTavg_altnorm_comparisons.csv', header=T)
 # 10/8/15: based qualitative coding (CDC_source/CDC_severity_descriptions.ods/norm3-noniterative)
 benchcol <- c(NA, NA, 0, -1, 0, -1, 1, 0, -1, -1, 0, 0, 0, -1, 1, 0) # 1 = sev, 0 = mod, -1 = mild, NA = no data
 
 ##########################################
 # 7/27/15 merge cdc_lm and sdi2 data 
 sdi_drop <- tbl_df(sdi2) %>% select(uqid, ILI_diag_perc)
-cdc_drop <- tbl_df(cdc_lm) %>% select(uqid, yr, wk, season, perc_unwt_ili, a_H1, a_H3, b, perc_pos, ped_deaths_cum, hosp_5.17, hosp_18.49, pi_only)
+cdc_drop <- tbl_df(cdc_lm) %>% select(uqid, yr, wk, season, perc_unwt_ili, a_H1, a_H3sum, b, perc_pos, ped_deaths_cum, hosp_5.17, hosp_18.49, pi_only)
 merge1 <- left_join(cdc_drop, sdi_drop, by = "uqid") 
 merge2 <- merge1 %>% filter(uqid < "200940" | uqid >= "201040")
 # cdc data has week 200353, but sdi data does not; interpolate with mean
@@ -151,7 +150,7 @@ abline(h = 0, lwd = sz2, col = dividercol)
 axis(2, at = seq(0, 9, by=2), labels=seq(0, 9, by=2))
 mtext(2, text = 'percent', line = sz3, cex = sz2)
 lines(merge2$perc_unwt_ili, type = 'l', col = 'turquoise3', lwd = sz)
-legend('topleft', c('medical claims', 'ILINet'), lwd = sz, col = c('tomato', 'turquoise3'), , title = 'ILI (%) of all visits')
+legend('topleft', c('medical claims', 'ILINet'), lwd = sz, col = c('tomato', 'turquoise3'), title = 'ILI (%) of all visits')
 
 # perc_pos panel
 par(mar=margin)
