@@ -9,6 +9,7 @@
 # 7/21/15: update beta, notation
 # 7/22/15: qualitative beta thresholds
 # 7/24/15: notation for cdc index
+# 10/8/15: rm classif, color severity labels, save p-values, overline, color points
 
 ###Import data: /home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index_long.csv, CDC_Source/Import_Data/all_cdc_source_data.csv, Census/Import_Data/totalpop_age_Census_98-14.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 
@@ -25,12 +26,12 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats
 
 ## local modules ##
 import functions_v5 as fxn
 
 ### data structures ###
-
 ### functions ###
 ### data files ###
 sevin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/Py_export/ILINet_nat_classif_covCareAdj_7.csv','r')
@@ -53,6 +54,7 @@ ps = fxn.pseasons
 sl = fxn.gp_ILINet_seasonlabels
 fs = 24
 fssml = 16
+sevCol = fxn.gp_mild_severe_colors
 
 ### program ###
 # import data
@@ -66,27 +68,18 @@ d_qual_classif = fxn.benchmark_import(ixq2, q_ix) # norm0=7, norm1=8, norm2=9
 benchmark = [d_benchmark[s] for s in ps]
 retrozOR = [d_classifzOR[s][0] for s in ps]
 earlyzOR = np.ma.masked_invalid([d_classifzOR[s][1] for s in ps])
-print d_benchmark
-print d_qual_classif
-
-# grab beta threshold values
-mildThresh, sevThresh = fxn.return_benchmark_thresholds(d_benchmark, d_qual_classif)
-
-for s, i, j in zip(ps, benchmark, retrozOR):
-	print s, i, j # to determine number of matches
+vals = zip(benchmark, retrozOR, earlyzOR)
+d_plotData = dict(zip(ps, vals))
+d_plotCol = fxn.gp_CDCclassif_ix_ILINet
 
 # draw plots
 # mean retro zOR vs. benchmark index
 fig1 = plt.figure()
 ax1 = fig1.add_subplot(1,1,1)
-ax1.plot(benchmark, retrozOR, marker = 'o', color = 'black', linestyle = 'None')
-ax1.vlines([mildThresh, sevThresh], -20, 30, colors='k', linestyles='solid')
-ax1.hlines([-1, 1], -20, 30, colors='k', linestyles='solid')
-ax1.fill([-6, mildThresh, mildThresh, -6], [-1, -1, -20, -20], facecolor='blue', alpha=0.4)
-ax1.fill([mildThresh, sevThresh, sevThresh, mildThresh], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
-ax1.fill([sevThresh, 10, 10, sevThresh], [1, 1, 30, 30], facecolor='red', alpha=0.4)
-ax1.annotate('Mild', xy=(-1.4,-8), fontsize=fssml)
-ax1.annotate('Severe', xy=(1.1,3), fontsize=fssml)
+for key in d_plotCol:
+	ax1.plot([d_plotData[k][0] for k in d_plotCol[key]], [d_plotData[k][1] for k in d_plotCol[key]], marker = 'o', color = key, linestyle = 'None')
+ax1.annotate('Mild', xy=(-1.4,-8), fontsize=fssml, color = sevCol[0])
+ax1.annotate('Severe', xy=(1.1,25), fontsize=fssml, color = sevCol[1])
 for s, x, y in zip(sl, benchmark, retrozOR):
 	ax1.annotate(s, xy=(x,y), xytext=(-15,5), textcoords='offset points', fontsize=fssml)
 ax1.set_ylabel(fxn.gp_sigma_r_cdc, fontsize=fs)
@@ -94,21 +87,17 @@ ax1.set_xlabel(fxn.gp_benchmark, fontsize=fs)
 ax1.tick_params(axis='both',labelsize=fssml)
 ax1.set_xlim([-1.5,1.5])
 ax1.set_ylim([-10,30])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/ILINet-figs/ILINet_zRR_benchmark%s.png' %(combo), transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission3_ID/SIFigures/ILINet_zRR_benchmark%s.png' %(combo), transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
 # mean early warning zOR vs. benchmark index
 fig2 = plt.figure()
 ax2 = fig2.add_subplot(1,1,1)
-ax2.plot(benchmark, earlyzOR, marker = 'o', color = 'black', linestyle = 'None')
-ax2.vlines([mildThresh, sevThresh], -20, 20, colors='k', linestyles='solid')
-ax2.hlines([-1, 1], -20, 20, colors='k', linestyles='solid')
-ax2.fill([-6, mildThresh, mildThresh, -6], [-1, -1, -20, -20], facecolor='blue', alpha=0.4)
-ax2.fill([mildThresh, sevThresh, sevThresh, mildThresh], [-1, -1, 1, 1], facecolor='yellow', alpha=0.4)
-ax2.fill([sevThresh, 10, 10, sevThresh], [1, 1, 20, 20], facecolor='red', alpha=0.4)
-ax2.annotate('Mild', xy=(-1.4,-4.5), fontsize=fssml)
-ax2.annotate('Severe', xy=(1.1,1.5), fontsize=fssml)
+for key in d_plotCol:
+	ax2.plot([d_plotData[k][0] for k in d_plotCol[key]], [d_plotData[k][2] for k in d_plotCol[key]], marker = 'o', color = key, linestyle = 'None')
+ax2.annotate('Mild', xy=(-1.4,-4.5), fontsize=fssml, color = sevCol[0])
+ax2.annotate('Severe', xy=(1.1,9), fontsize=fssml, color = sevCol[1])
 for s, x, y in zip(sl, benchmark, earlyzOR):
 	ax2.annotate(s, xy=(x,y), xytext=(-15,5), textcoords='offset points', fontsize=fssml)
 ax2.set_ylabel(fxn.gp_sigma_w_cdc, fontsize=fs)
@@ -116,13 +105,15 @@ ax2.set_xlabel(fxn.gp_benchmark, fontsize=fs)
 ax2.tick_params(axis='both', labelsize=fssml)
 ax2.set_xlim([-1.5,1.5])
 ax2.set_ylim([-5,10])
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/ILINet-figs/ILINet_zRR_benchmark_early%s.png' %(combo), transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission3_ID/SIFigures/ILINet_zRR_benchmark_early%s.png' %(combo), transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
-# updated 7/21/15 reported: initial, norm2, norm1
-print 'retro corr coef', np.corrcoef(benchmark, retrozOR) 
-# 7/21/15: 0.637, 0.302, 0.374
+# updated 10/8/15 reported: initial, norm2, norm1
+print 'retro corr coef', scipy.stats.pearsonr(benchmark, retrozOR) 
+# initial: R = 0.637, p-value = 0.008
+# 7/21/15 (norm2, norm1): 0.302, 0.374
 mask_bench = np.ma.array(benchmark, mask=np.ma.getmask(earlyzOR))
-print 'early corr coef', np.corrcoef(mask_bench.compressed(), earlyzOR.compressed()) 
-# 7/21/15: -0.165, 0.092, 0.041
+print 'early corr coef', scipy.stats.pearsonr(mask_bench.compressed(), earlyzOR.compressed()) 
+# initial: R = -0.165, p-value = 0.590
+# 7/21/15 (norm2, norm1): 0.092, 0.041
