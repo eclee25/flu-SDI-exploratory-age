@@ -100,6 +100,8 @@ for (s in -2:14){
 # 7/27/15 benchmark barplot
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
 benchmark <- read.csv('benchmark_ixTavg_altnorm_comparisons.csv', header=T)
+# 10/8/15: based qualitative coding (CDC_source/CDC_severity_descriptions.ods/norm3-noniterative)
+benchcol <- c(NA, NA, 0, -1, 0, -1, 1, 0, -1, -1, 0, 0, 0, -1, 1, 0) # 1 = sev, 0 = mod, -1 = mild, NA = no data
 
 ##########################################
 # 7/27/15 merge cdc_lm and sdi2 data 
@@ -125,17 +127,19 @@ wkticks <- which(substring(merge2$uqid, 5, 6)=='40')
 # wklabs <- paste(c(rep('Oct', length(wkticks)-1), 'May'), substr(merge2$yr[wkticks], 3, 4), sep=' ')
 seasonlabs <- c('97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14')
 # benchmark bar colors
-sev <- which(benchmark$b0_classifq==1)
-mod <- which(benchmark$b0_classifq==0)
+sev <- which(benchcol==1)
+mod <- which(benchcol==0)
+nocode <- which(is.na(benchcol))
 colorvec <- rep('blue',16)
 colorvec[sev] <- 'red'
 colorvec[mod] <- 'yellow'
+colorvec[nocode] <- 'light grey'
 pandemiccol <- 'dark grey'
 dividercol <- 'black'
 
 ##########################################
 # combined figure
-setwd('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F1')
+setwd('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission3_ID/MainFigures/')
 
 png(filename="all_panels.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
 par(mfrow = c(5, 1), mar = margin, oma = omargin)
@@ -194,7 +198,7 @@ segments((mp[13]+mp[12])/2, -3, y1 = 2000, lwd = sz2, col = pandemiccol) # force
 abline(h = 0, lwd = sz2, col = dividercol)
 axis(2, at = seq(-1, 1, by = 1), labels = seq(-1, 1, by = 1))
 mtext(2, text = "benchmark", line = sz3, cex = sz2)
-legend('topleft', c('Mild', 'Moderate', 'Severe'), col = c('blue', 'yellow', 'red'), lwd = c(sz, sz, sz))
+legend('topleft', c('Severe', 'Moderate', 'Mild', 'No Data'), col = c('red', 'yellow', 'blue', 'light grey'), lwd = c(sz, sz, sz, sz))
 
 # x-axis
 axis(1, at = mp, labels = seasonlabs, las = 2, cex.axis = sz2)
