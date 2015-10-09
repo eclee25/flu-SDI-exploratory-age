@@ -24,6 +24,7 @@ import matplotlib.cm as cm
 import bisect
 import csv
 import random as rnd
+import matplotlib.colors as colors
 
 ##############################################
 # global parameters - methods
@@ -112,10 +113,13 @@ gp_mild_severe_colors = ['blue', 'red']
 gp_plot_titles = ['Mild Season', 'Severe Season']
 gp_marker = 'None'
 gp_linewidth = 3
+gp_CDCclassif_ix = {'yellow':(2, 5, 8, 9), 'blue':(3, 6, 7), 'red':(4,)}
 
 ## ILINet data ##
 gp_ILINet_seasonlabels = ['97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14']
 gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
+gp_CDCclassif_ix_ILINet = {'yellow':(2, 5, 8, 9, 0, 11, 14), 'blue':(3, 6, 7, 1, 12), 'red':(4, 13), 'white':(-2, -1)}
+
 
 ## FR data ##
 gp_FR_seasonlabels = ['91-92', '92-93', '93-94', '94-95', '95-96', '96-97', '97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14']
