@@ -42,7 +42,7 @@ s_lab = fxn.gp_seasonlabels
 wklab = fxn.gp_weeklabels
 plt_labs = fxn.gp_severitylabels
 
-pltseas = [mild_s[2], mod_s[0], sev_s[2]] # plot only one example of each type of seasons
+pltseas = [sev_s[0], mod_s[1], mild_s[1]] # plot only one example of each type of seasons
 
 ### functions ###
 
@@ -74,7 +74,7 @@ Cformat, = ax.plot([], [], color = 'grey', linestyle = lnsty[0], lw = lwd, ms = 
 Aformat, = ax.plot([], [], color = 'grey', linestyle = lnsty[1], lw = lwd, ms = msz, marker = fxn.gp_marker, label = 'adults')
 
 ## designate legend/title labels
-ax.legend(loc = 'upper left')
+ax.legend(loc = 'upper right')
 ax.set_ylabel(fxn.gp_adjILI, fontsize=fs)
 
 ## plot settings
@@ -84,7 +84,7 @@ ax.set_xlabel('Week Number', fontsize=fs)
 plt.xlim([0, fw-1])
 
 # save figure
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/F2/incidCA_nonnorm_singpanel.png' , transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('//home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission3_ID/MainFigures/incidCA_nonnorm_singpanel.png' , transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 

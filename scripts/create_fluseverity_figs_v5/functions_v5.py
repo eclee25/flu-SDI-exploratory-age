@@ -38,9 +38,11 @@ gp_early_duration = 2 # duration of the early warning period in weeks
 gp_begin_early_week = 2 # number of weeks after the week with Thanksgiving that the early warning period should begin (that season only)
 gp_plotting_seasons = range(2,10) # season numbers for which data will be plotted (eg. Season 2 = 2001-02)
 gp_plotting_regions = range(1, 11) # region numbers
-gp_mild =[3, 6, 7, 9] # seasons 3, 6, 7, 9
-gp_mod = [2] # seasons 2
-gp_sev = [4, 5, 8] # seasons 4, 8, 10 (pandemic)
+
+## Qualitative Analysis ##
+gp_mild =(3, 6, 7) # seasons 3, 6, 7 
+gp_mod = (2, 5, 8, 9) # seasons 2, 5, 8, 9
+gp_sev = (4,) # seasons 4, 
 
 ## ILINet data ## 
 gp_ILINet_plotting_seasons = range(-2, 10) + range(11,15) # remove 2009-10 data
@@ -60,12 +62,7 @@ other = ['<2 YEARS', '2-4 YEARS', '60-69 YEARS', '70-79 YEARS', '80 YEARS']
 dict_ages = defaultdict(list)
 # dict_ages[agegroup code] = [agegroup bin 1, age group bin 2,... in text]
 dict_ages = dict(zip(age_keys, [children, adults, other]))
-## create dict_ages_FR ##
-children_FR = ['5,10', '10,15', '15,20']
-adults_FR = ['20,25', '25,30', '30,35', '35,40', '40,45', '45,50', '50,55', '55,60', '60,65']
-other_FR = ['0,5', '65,70', '70,75', '75,80', '80,200']
-dict_ages_FR = defaultdict(list)
-dict_ages_FR = dict(zip(age_keys, [children_FR, adults_FR, other_FR]))
+
 
 ## ILI care-seeking behavior ##
 # national level, weighted averages based on sample size in Biggerstaff2012 and Biggerstaff2014
@@ -103,8 +100,8 @@ gp_retro_early_colors = ['black', '#7cfc00']
 gp_regions = ['Boston (R1)', 'New York (R2)', 'Philadelphia (R3)', 'Atlanta (R4)', 'Chicago (R5)', 'Dallas (R6)', 'Kansas City (R7)', 'Denver (R8)', 'San Francisco (R9)', 'Seattle (R10)']
 gp_weeklabels = range(40,54) # week number labels for plots vs. time
 gp_weeklabels.extend(range(1,40))
-gp_severitylabels = ['Mild', 'Moderate', 'Severe']
-gp_severitycolors = ['b', 'y', 'r']
+gp_severitylabels = ['Severe', 'Moderate', 'Mild']
+gp_severitycolors = ['r', 'y', 'b']
 gp_line_style = ['-', ':']
 gp_barwidth = 0.35
 gp_agelabels = ['Child', 'Adult', 'Other Ages']
@@ -113,17 +110,13 @@ gp_mild_severe_colors = ['blue', 'red']
 gp_plot_titles = ['Mild Season', 'Severe Season']
 gp_marker = 'None'
 gp_linewidth = 3
-gp_CDCclassif_ix = {'yellow':(2, 5, 8, 9), 'blue':(3, 6, 7), 'red':(4,)}
+gp_CDCclassif_ix = {'blue':gp_mild, 'yellow':gp_mod, 'red':gp_sev}
 
 ## ILINet data ##
 gp_ILINet_seasonlabels = ['97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14']
 gp_ILINet_colors = cm.rainbow(np.linspace(0, 1, len(gp_ILINet_seasonlabels)))
-gp_CDCclassif_ix_ILINet = {'yellow':(2, 5, 8, 9, 0, 11, 14), 'blue':(3, 6, 7, 1, 12), 'red':(4, 13), 'white':(-2, -1)}
+gp_CDCclassif_ix_ILINet = {'blue':(3, 6, 7, 1, 12), 'yellow':(2, 5, 8, 9, 0, 11, 14), 'red':(4, 13), 'white':(-2, -1)}
 
-
-## FR data ##
-gp_FR_seasonlabels = ['91-92', '92-93', '93-94', '94-95', '95-96', '96-97', '97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14']
-gp_FR_colors = cm.rainbow(np.linspace(0, 1, len(gp_FR_seasonlabels)))
 
 ##############################################
 ## call parameters ##

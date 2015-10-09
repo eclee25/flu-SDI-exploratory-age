@@ -83,8 +83,6 @@ earlyzOR = [d_classifzOR[s][1] for s in ps]
 vals = zip(benchmark, retrozOR, earlyzOR)
 d_plotData = dict(zip(ps, vals))
 d_plotCol = fxn.gp_CDCclassif_ix
-print d_plotCol
-
 
 # correlation values
 mask_earlyzOR = np.ma.masked_invalid(earlyzOR)
