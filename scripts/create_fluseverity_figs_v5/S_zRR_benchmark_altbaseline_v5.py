@@ -58,6 +58,7 @@ sl = fxn.gp_seasonlabels
 fs = 24
 fssml = 16
 bench_ix, q_ix = 1, 7
+sevCol = fxn.gp_mild_severe_colors
 
 ### program ###
 
@@ -85,8 +86,8 @@ ax1 = fig1.add_subplot(1,1,1)
 # 10 week fall BL mean retro zOR vs. benchmark index
 for key in d_plotCol:
 	ax1.plot([d_plotData[k][0] for k in d_plotCol[key]], [d_plotData[k][1] for k in d_plotCol[key]], marker = 'o', color = key, linestyle = 'None')
-ax1.annotate('Mild', xy=(-1.4,-14), fontsize=fssml)
-ax1.annotate('Severe', xy=(1.1,12), fontsize=fssml)
+ax1.annotate('Mild', xy=(-1.4,-14), fontsize=fssml, color = sevCol[0])
+ax1.annotate('Severe', xy=(1.1,12), fontsize=fssml, color = sevCol[1])
 ax1.annotate('10 week fall baseline', xy=(-1.4,13), fontsize=fssml)
 for s, x, y in zip(sl, benchmark, f10r):
 	ax1.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
@@ -104,8 +105,8 @@ ax2 = fig2.add_subplot(1,1,1)
 # 7 week summer BL mean retro zOR vs. benchmark index
 for key in d_plotCol:
 	ax2.plot([d_plotData[k][0] for k in d_plotCol[key]], [d_plotData[k][2] for k in d_plotCol[key]], marker = 'o', color = key, linestyle = 'None')
-ax2.annotate('Mild', xy=(-1.4,-14), fontsize=fssml)
-ax2.annotate('Severe', xy=(1.1,12), fontsize=fssml)
+ax2.annotate('Mild', xy=(-1.4,-14), fontsize=fssml, color = sevCol[0])
+ax2.annotate('Severe', xy=(1.1,12), fontsize=fssml, color = sevCol[1])
 ax2.annotate('7 week summer baseline', xy=(-1.4,13), fontsize=fssml)
 for s, x, y in zip(sl, benchmark, s7r):
 	ax2.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
@@ -123,8 +124,8 @@ ax3 = fig3.add_subplot(1,1,1)
 # 10 week summer BL mean retro zOR vs. benchmark index
 for key in d_plotCol:
 	ax3.plot([d_plotData[k][0] for k in d_plotCol[key]], [d_plotData[k][3] for k in d_plotCol[key]], marker = 'o', color = key, linestyle = 'None')
-ax3.annotate('Mild', xy=(-1.4,-14), fontsize=fssml)
-ax3.annotate('Severe', xy=(1.1,12), fontsize=fssml)
+ax3.annotate('Mild', xy=(-1.4,-14), fontsize=fssml, color = sevCol[0])
+ax3.annotate('Severe', xy=(1.1,12), fontsize=fssml, color = sevCol[1])
 ax3.annotate('10 week summer baseline', xy=(-1.4,13), fontsize=fssml)
 for s, x, y in zip(sl, benchmark, s10r):
 	ax3.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
