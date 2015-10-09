@@ -7,6 +7,7 @@
 ###Function: correlation coefficient between benchmark and zRR vs. moving 2 week window for SDI data for 7 week fall baseline 
 ### 7/20/15: new benchmark
 ### 7/22/15: update notation
+### 10/8/15: overline y-axis notation
 
 ###Import data: SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 
