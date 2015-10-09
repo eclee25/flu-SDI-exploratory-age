@@ -7,6 +7,7 @@
 ###Function: mean peak-based retro zRR metric vs. hospitalization rate, P&I mortality perc, and excess mortality rate with best fit lines
 # 1/13/15 add excess mortality rates
 # 7/20/15: update notation
+# 10/8/15: rm vert lines, p-values
 
 ###Import data: Py_export/SDI_nat_classif_covCareAdj_v5_7.csv, 
 
@@ -21,11 +22,10 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats
 
 ## local modules ##
 import functions_v5 as fxn
-
-### data structures ###
 
 ### functions ###
 def factors_import(csvreadfile):
@@ -105,11 +105,6 @@ ax1.plot(retrozOR, pk_ili_prop, 'o', retrozOR, Ifit_fn(retrozOR), '-', color = c
 # ax1.plot(retrozOR, pi_mort, 'o', retrozOR, Pfit_fn(retrozOR), '-', color = colorvec[2], lw = lwd)
 ax2.plot(retrozOR[2:], hosp_tot, 'o', retrozOR[2:], Hfit_fn(retrozOR[2:]), '-', color = colorvec[1], lw = lwd)
 ax2.plot(retrozOR, ex_pi_mort, 'o', retrozOR, Efit_fn(retrozOR), '-', color = colorvec[3], lw = lwd)
-# delineate mild, moderate severe
-ax1.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
-# ax1.fill([-15, -1, -1, -15], [0, 0, 10, 10], facecolor='blue', alpha=0.4)
-# ax1.fill([-1, 1, 1, -1], [0, 0, 10, 10], facecolor='yellow', alpha=0.4)
-# ax1.fill([1, 15, 15, 1], [0, 0, 10, 10], facecolor='red', alpha=0.4)
 ax1.annotate('Mild', xy=(-14.5,0.25), fontsize=fssml)
 ax1.annotate('Severe', xy=(11,6.5), fontsize=fssml)
 
@@ -132,12 +127,12 @@ Eformat, = ax2.plot([],[], color = colorvec[3], linestyle = '-', lw = lwd, label
 
 ax2.legend(loc=2, prop={'size':12})
 
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/hospMort_zRR_nat.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission3_ID/MainFigures/hospMort_zRR_nat.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
-# updated 2/11/15
-print 'pk_ili_prop corr coef', np.corrcoef(pk_ili_prop, retrozOR) # 0.681
-print 'hosp_tot corr coef', np.corrcoef(hosp_tot, retrozOR[2:]) # 0.591 w/o first two seasons
-print 'pi_mort corr coef', np.corrcoef(pi_mort, retrozOR) # 0.573
-print 'ex_pi_mort corr coef', np.corrcoef(ex_pi_mort, retrozOR) # 0.535 (weightAvg_excessPI_state)
+# updated 10/8/15
+print 'pk_ili_prop corr coef', scipy.stats.pearsonr(pk_ili_prop, retrozOR) # R = 0.681, p-value = 0.063
+print 'hosp_tot corr coef', scipy.stats.pearsonr(hosp_tot, retrozOR[2:]) # R = 0.591 w/o first two seasons, p-value = 0.217
+print 'pi_mort corr coef', scipy.stats.pearsonr(pi_mort, retrozOR) # R = 0.573, p-value = 0.137
+print 'ex_pi_mort corr coef', scipy.stats.pearsonr(ex_pi_mort, retrozOR) # R = 0.535 (weightAvg_excessPI_state), p-value = 0.172

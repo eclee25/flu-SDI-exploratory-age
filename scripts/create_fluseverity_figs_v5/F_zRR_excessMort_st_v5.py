@@ -7,6 +7,7 @@
 ###Function: mean peak-based retro zRR metric vs. hospitalization rate and P&I mortality perc with best fit lines at state level
 # 7/20/15: update notation
 # 7/30/15: update state notation
+# 10/8/15: rm vert line, p-values
 
 ###Import data: Py_export/SDI_st_classif_covCareAdj_v5_7.csv, Census/state_abbreviations.csv
 
@@ -21,6 +22,7 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.stats
 
 ## local modules ##
 import functions_v5 as fxn
@@ -71,12 +73,6 @@ ax1 = fig1.add_subplot(1,1,1)
 
 # best fit line
 ax1.plot(retrozOR, excessPI, 'o', retrozOR, Efit_fn(retrozOR), '-', color = colorvec[0], lw = lwd)
-
-# delineate mild, moderate severe
-ax1.vlines([-1, 1], -20, 20, colors='k', linestyles='solid')
-# ax1.fill([-15, -1, -1, -15], [0, 0, 10, 10], facecolor='blue', alpha=0.4)
-# ax1.fill([-1, 1, 1, -1], [0, 0, 10, 10], facecolor='yellow', alpha=0.4)
-# ax1.fill([1, 15, 15, 1], [0, 0, 10, 10], facecolor='red', alpha=0.4)
 ax1.annotate('Mild', xy=(-14.5,0.25), fontsize=fssml)
 ax1.annotate('Severe', xy=(11,15), fontsize=fssml)
 
@@ -92,11 +88,11 @@ Eformat, = ax1.plot([], [], color = colorvec[0], linestyle = '-', lw = lwd, labe
 
 ax1.legend(loc=2)
 
-plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/MainFigures/F5/eMort_zRR_st.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission3_ID/MainFigures/eMort_zRR_st.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 plt.show()
 
 # all, severe, mild reporting order
-print 'excess PI corr coef', np.corrcoef(excessPI, retrozOR) # 0.111, 
-print 'detrended excess PI corr coef', np.corrcoef(excessPI_detrended, retrozOR) # 0.157,
+print 'excess PI corr coef', scipy.stats.pearsonr(excessPI, retrozOR) # R = 0.111, p-value = 0.04
+print 'detrended excess PI corr coef', scipy.stats.pearsonr(excessPI_detrended, retrozOR) # 0.157, p-value = 0.003
 

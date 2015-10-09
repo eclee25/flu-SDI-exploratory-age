@@ -6,8 +6,8 @@
 ###Date: 10/31/14
 ###Function: child and adult incidence per 100,000 over time in an example mild, moderate, and severe season.
 #### Compare the relative contributions of adult and child incidence during that season
-# 10/31 coverage adjustment no longer age-specific
-
+# 10/31/14 coverage adjustment no longer age-specific
+# 10/8/15 change seasons based on qualitative code
 
 ###Import data: OR_allweeks_outpatient.csv, totalpop_age.csv
 
