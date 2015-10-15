@@ -67,6 +67,7 @@ fs = 24
 fssml = 16
 fw = fxn.gp_fluweeks
 bench_ix, q_ix = 1, 7
+sevCol = fxn.gp_mild_severe_colors
 
 ### program ###
 # import data
@@ -125,8 +126,8 @@ ax2 = fig2.add_subplot(1,1,1)
 # nonflu season vs. benchmark index
 for key in d_plotCol:
 	ax2.plot([d_plotData[k][0] for k in d_plotCol[key]], [d_plotData[k][2] for k in d_plotCol[key]], marker = 'o', color = key, linestyle = 'None')
-ax2.annotate('Mild', xy=(-1.4,0.1), fontsize=fssml)
-ax2.annotate('Severe', xy=(1.1,0.5), fontsize=fssml)
+ax2.annotate('Mild', xy=(-1.4,0.1), fontsize=fssml, color = sevCol[0])
+ax2.annotate('Severe', xy=(1.1,0.5), fontsize=fssml, color = sevCol[1])
 for s, x, y in zip(sl, benchmark, nonfluSeason_RR):
 	ax2.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
 ax2.set_ylabel('Weeks 21 to 39 RR, adult:child', fontsize=fs) 
@@ -143,8 +144,8 @@ ax3 = fig3.add_subplot(1,1,1)
 # tight flu season RR vs. benchmark index
 for key in d_plotCol:
 	ax3.plot([d_plotData[k][0] for k in d_plotCol[key]], [d_plotData[k][3] for k in d_plotCol[key]], marker = 'o', color = key, linestyle = 'None')
-ax3.annotate('Mild', xy=(-1.4,0.1), fontsize=fssml)
-ax3.annotate('Severe', xy=(1.1,0.5), fontsize=fssml)
+ax3.annotate('Mild', xy=(-1.4,0.1), fontsize=fssml, color = sevCol[0])
+ax3.annotate('Severe', xy=(1.1,0.5), fontsize=fssml, color = sevCol[1])
 for s, x, y in zip(sl, benchmark, tightfluSeason_RR):
 	ax3.annotate(s, xy=(x,y), xytext=(-10,5), textcoords='offset points', fontsize=fssml)
 ax3.set_ylabel('Weeks 50 to 12 RR, adult:child', fontsize=fs) 

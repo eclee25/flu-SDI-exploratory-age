@@ -70,6 +70,7 @@ for key in d_plotCol:
 	ax1.plot([d_plotData[k][1] for k in d_plotCol[key]], [d_plotData[k][0] for k in d_plotCol[key]], marker = 'o', color = key, linestyle = 'None')
 for s, x, y in zip(sl, ILINet_retro, SDI_retro):
 	ax1.annotate(s, xy=(x,y), xytext=(-25,-15), textcoords='offset points', fontsize=fssml)
+ax1.plot(range(-15, 15), range(-15, 15), color = 'grey')
 ax1.annotate('Mild', xy=(-4.8,-9), fontsize=fssml, color = sevCol[0])
 ax1.annotate('Severe', xy=(3.5,15.5), fontsize=fssml, color = sevCol[1])
 ax1.set_ylabel(r'medical claims ($\overline{\rho_{s,r}}$)', fontsize=fs)
@@ -87,6 +88,7 @@ for key in d_plotCol:
 	ax2.plot([d_plotData[k][3] for k in d_plotCol[key]], [d_plotData[k][2] for k in d_plotCol[key]], marker = 'o', color = key, linestyle = 'None')
 for s, x, y in zip(sl, ILINet_early, SDI_early):
 	ax2.annotate(s, xy=(x,y), xytext=(-15,5), textcoords='offset points', fontsize=fssml)
+ax2.plot(range(-15, 15), range(-15, 15), color = 'grey')
 ax2.annotate('Mild', xy=(-4.5,-9), fontsize=fssml, color = sevCol[0])
 ax2.annotate('Severe', xy=(8,8.5), fontsize=fssml, color = sevCol[1])
 ax2.set_ylabel(r'medical claims ($\overline{\rho_{s,w}}$)', fontsize=fs)
