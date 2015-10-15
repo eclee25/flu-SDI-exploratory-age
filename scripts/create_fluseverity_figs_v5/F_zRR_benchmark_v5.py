@@ -13,6 +13,7 @@
 # 7/21/15: pearson's r with scipy.stats, adds p-value
 # 7/22/15: beta threshold based on qualitative coding
 # 10/5/15: remove all thresholds
+# 10/15/15: calculate p-values from permutation test
 
 ###Import data: /home/elee/Dropbox/Elizabeth_Bansal_Lab/CDC_Source/Import_Data/cdc_severity_index.csv, SQL_export/OR_allweeks_outpatient.csv, SQL_export/totalpop_age.csv, My_Bansal_Lab/Clean_Data_for_Import/ThanksgivingWeekData_cl.csv
 
@@ -28,6 +29,7 @@ import csv
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats
+import random as rnd
 
 ## local modules ##
 import functions_v5 as fxn
@@ -53,6 +55,8 @@ sl = fxn.gp_seasonlabels
 fs = 24
 fssml = 16
 sevCol = fxn.gp_mild_severe_colors
+nswaps = 1000 # number of permutations
+
 
 ## normalization schemes
 combo, bench_ix, q_ix = "", 1, 7
@@ -83,6 +87,7 @@ earlyzOR = [d_classifzOR[s][1] for s in ps]
 vals = zip(benchmark, retrozOR, earlyzOR)
 d_plotData = dict(zip(ps, vals))
 d_plotCol = fxn.gp_CDCclassif_ix
+print d_plotData
 
 # correlation values
 mask_earlyzOR = np.ma.masked_invalid(earlyzOR)
@@ -90,9 +95,13 @@ mask_benchmark = np.ma.array(benchmark, mask=np.ma.getmask(mask_earlyzOR))
 compMask_earlyzOR = np.ma.compressed(mask_earlyzOR)
 compMask_benchmark = np.ma.compressed(mask_benchmark)
 
+# # 10/15/15 permutation test Ho: R = 0, two-sided test
+# # that's already what the scipy.stats function is doing
+# print '\n Perm test Scipy.stats.pearsonr results'
+# print 'retro perm', fxn.pearsonPermTest(retrozOR, benchmark, nswaps)
+# # norm0: R = 0.707, p-value = 0.05
 
-# print 'retro corr coef', np.corrcoef(benchmark, retrozOR) # 7/20/15: 0.707
-# print 'early corr coef', np.corrcoef(compMask_benchmark, compMask_earlyzOR) # 7/20/15: 0.594
+print '\nScipy.stats.pearsonr results'
 print 'retro pearsonr', scipy.stats.pearsonr(benchmark, retrozOR) 
 # norm0: R = 0.707, p-value = 0.05
 # norm1: R = 0.765, p-value = 0.027

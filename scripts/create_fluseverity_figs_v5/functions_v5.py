@@ -25,6 +25,7 @@ import bisect
 import csv
 import random as rnd
 import matplotlib.colors as colors
+import scipy.stats
 
 ##############################################
 # global parameters - methods
@@ -50,9 +51,6 @@ gp_ILINet_plotting_seasons = range(-2, 10) + range(11,15) # remove 2009-10 data
 ## pandemic analyses only ## 
 gp_pandemic_plotting_seasons = range(9,11) # 2008-09 and 2009-10 data only
 gp_pandemicbaseline = ['between pandemic waves', 'last season baseline', 'after pandemic']
-
-## France data ## 
-gp_FR_plotting_seasons = range(-8, 10) + range(11,15) # rm 2009-10 data
 
 ## create dict_ages ##
 age_keys = ['C', 'A', 'O']
@@ -1496,79 +1494,6 @@ def moving_average(iterable, window):
 		yield s / float(window)
 
 ##############################################
-def FR_week_RR_processing(csv_incidence):
-	''' Import national France data (inc2_inc-tranche-fr_V2.csv), which includes season number, week, 5-year age group, and ILI incid. Data are extrapolated to cover the entire country. Children are 5-19 yo and adults are 20-64 yo. Return three dicts:
-	dict_wk[wk] = seasonnum
-	dict_totIncid53ls[season] = [incid per 100,000 wk40, .. wk39] (no adjustments for FR data)
-	dict_ageIncid53ls[(season, age)] = [incid per 100,000 wk40, .. wk39] (no adjustments for FR data)
-	'''
-	main(FR_week_RR_processing)
-	
-	## import ILI data ##
-	# dict_ILIpop_smallAge_week[(week, agestring)] = (ILI, popsize); dict_wk[week] = seasonnum
-	dict_ILIpop_smallAge_week, dict_wk = {}, {}
-	for row in csv_incidence: 
-		week = row[0]
-		wk = iso_ThuDate_from_weeknum(week)
-		agestring = row[2][1:-1]
-		dict_ILIpop_smallAge_week[(wk, agestring)] = (float(row[4]), int(row[8]))
-		dict_wk[wk] = CDCweek(wk)
-
-	# unique weeks for totIncid
-	unique_weeks = [key for key in dict_wk]
-	dict_totIncid_week, dict_ageIncid_week = {},{}
-	# total incidence per 100,000
-	for wk in unique_weeks:
-		dummy_dict = dict((key, dict_ILIpop_smallAge_week[key]) for key in dict_ILIpop_smallAge_week if key[0] == wk)
-		ILI_pop = [sum(vals) for vals in zip(*dummy_dict.values())]
-		dict_totIncid_week[wk] = ILI_pop[0]/ILI_pop[1]*100000
-		# age-specific incidence per 100,000
-		for age in dict_ages_FR:
-			dummy_dict_age = dict((key, dummy_dict[key]) for key in dummy_dict if key[1] in dict_ages_FR[age])
-			ILI_pop_age = [sum(vals) for vals in zip(*dummy_dict_age.values())]
-			dict_ageIncid_week[(wk, age)] = ILI_pop_age[0]/ILI_pop_age[1]*100000
-
-	## convert to 53 week lists ##
-	FRseasons = set(sorted(dict_wk.values())) # unique seasons in FR data
-	dict_totIncid53ls, dict_ageIncid53ls = defaultdict(list), defaultdict(list)
-	for s in FRseasons:
-		dummyweeks = sorted([wk for wk in dict_wk if dict_wk[wk] == s])
-		incidTot = [dict_totIncid_week[wk] for wk in dummyweeks]
-		if len(dummyweeks) == 52:
-			incidTot.insert(13, (incidTot[12]+incidTot[13])/2.)
-		dict_totIncid53ls[s] = incidTot
-		for age in age_keys:
-			incidAge = [dict_ageIncid_week[(wk, age)] for wk in dummyweeks]
-			if len(dummyweeks) == 52:
-				incidAge.insert(13, (incidAge[12]+incidAge[13])/2.)
-			dict_ageIncid53ls[(s, age)] = incidAge
-
-	return dict_wk, dict_totIncid53ls, dict_ageIncid53ls
-
-##############################################
-def FR_week_RR_processing_part2(dict_wk, dict_ageIncid53ls):
-	''' Calculate RR and zRR for France data. Return two dicts:
-	dict_RR53ls[s] = [RR wk 40,...RR wk39]
-	dict_zRR53ls[s] = [zRR wk 40,...zRR wk39]
-	'''
-	main(FR_week_RR_processing_part2)
-
-	dict_RR53ls, dict_zRR53ls = defaultdict(list), defaultdict(list)
-	FRseasons = gp_FR_plotting_seasons # unique seasons in FR data 
-	for s in FRseasons:
-		child_incid = dict_ageIncid53ls[(s, 'C')]
-		adult_incid = dict_ageIncid53ls[(s, 'A')]
-		RR = [a/c if c and a else float('nan') for c, a in zip(child_incid, adult_incid)]
-		dict_RR53ls[s] = RR
-		# zRR53ls dict
-		normalization_period = dict_RR53ls[s][:gp_normweeks]
-		season_mean = np.mean(normalization_period)
-		season_sd = np.std(normalization_period)
-		dict_zRR53ls[s] = [(val-season_mean)/season_sd for val in dict_RR53ls[s]]
-
-	return dict_RR53ls, dict_zRR53ls
-
-##############################################
 def week_ILIpercent_processing(csv_ILI, csv_visits):
 	''' Import SQL_export/OR_allweeks_outpatient.csv and anydiag_allweeks_outpatient.csv, which together, includes season, week, ILI, age, total visits. Calculate percent of visits due to ILI in the surveillance system for the IMS data for total population. 
 	dict_wk[Thu date of week] = seasonnum
@@ -1694,6 +1619,16 @@ def returnShuffled(importList):
 	'''
 	rnd.shuffle(importList)
 	return importList
+
+##############################################
+def pearsonPermTest(vector1, vector2, numswaps):
+	'''Permutation test of Pearson's R (Ho: R = 0), where p-values represent the proportion of randomized correlation coefficients (between vector2 and numswaps permutations of vector1 without replacement) that exceeded the correlation coefficient between vector1 and vector2 in magnitude. R and p-value are reported.
+		For all intents and purposes, this appears to be the same as the p-value reported in scipy.stats.pearsonr.
+	'''
+	nullCors = [scipy.stats.pearsonr(returnShuffled(vector1[:]), vector2)[0] for i in range(numswaps)]
+	trueCor = scipy.stats.pearsonr(vector1, vector2)[0]
+	pval = len([coef for coef in nullCors if abs(coef) > abs(trueCor)])/float(numswaps)
+	return trueCor, pval
 
 ##############################################
 # footer
