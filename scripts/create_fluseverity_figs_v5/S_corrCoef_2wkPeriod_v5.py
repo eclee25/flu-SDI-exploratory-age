@@ -54,7 +54,7 @@ first_wk = [('0'+str(wk))[-2:] for wk in wk1]
 wk2 = range(41,54) + range(1,40)
 sec_wk = [('0'+str(wk))[-2:] for wk in wk2]
 window_xticks = [fir+sec for fir, sec in zip(first_wk, sec_wk)]
-nswaps = 250
+nswaps = 1000
 
 ### program ###
 # import benchmark
