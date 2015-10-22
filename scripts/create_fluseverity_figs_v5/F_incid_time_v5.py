@@ -21,7 +21,8 @@
 ### packages/modules ###
 import csv
 import matplotlib.pyplot as plt
-
+import os
+cwd = os.getcwd()
 ## local modules ##
 import functions_v5 as fxn
 
@@ -29,9 +30,9 @@ import functions_v5 as fxn
 
 ### functions ###
 ### data files ###
-incidin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/OR_allweeks_outpatient.csv','r')
+incidin = open(os.path.join(cwd, '../../SQL_export/OR_allweeks_outpatient.csv'),'r')
 incid = csv.reader(incidin, delimiter=',')
-popin = open('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/SQL_export/totalpop_age.csv', 'r')
+popin = open(os.path.join(cwd, '../../SQL_export/totalpop_age.csv'), 'r')
 pop = csv.reader(popin, delimiter=',')
 
 ### called/local plotting parameters ###
@@ -56,6 +57,9 @@ d_totIncid53ls, d_totIncidAdj53ls, d_RR53ls, d_zRR53ls = fxn.week_RR_processing_
 # dict_indices[(snum, classif period)] = [wk index 1, wk index 2, etc.]
 d_indices = fxn.identify_retro_early_weeks(d_wk, d_totIncidAdj53ls)
 
+# 10/22/15: How many weeks before the peak is the early warning period in 2007-08?
+print d_indices[(8, 'e')], [(i,v) for i,v in enumerate(d_totIncidAdj53ls[8]) if v == max(d_totIncidAdj53ls[8])] # (9, 11) (21, 136.85)
+
 # plot incidence rate time series
 for s in ps:
 	plt.plot(xrange(fw), d_totIncid53ls[s][:fw], marker = fxn.gp_marker, color = colvec[s-2], label = sl[s-2], linewidth = fxn.gp_linewidth)
@@ -70,7 +74,7 @@ plt.xticks(range(fw)[::5], wklab[:fw:5])
 plt.xlabel('Week Number', fontsize=fs)
 plt.ylabel('ILI Visits per 100,000', fontsize=fs)
 plt.legend(loc='upper left')
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/incid_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig(os.path.join(cwd, '../../../../Manuscripts/Age_Severity/fluseverity_figs_v5/Supp/incid_time.png'), transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
@@ -88,6 +92,6 @@ plt.ylim([0, 200])
 plt.xlabel('Week Number', fontsize=fs)
 plt.ylabel(fxn.gp_adjILI, fontsize=fs)
 plt.legend(loc='upper left')
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/fluseverity_figs_v5/F2/incidAdj_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig(os.path.join(cwd, '../../../../Manuscripts/Age_Severity/fluseverity_figs_v5/F2/incidAdj_time.png'), transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
