@@ -21,6 +21,7 @@
 ### packages/modules ###
 import csv
 import matplotlib.pyplot as plt
+import numpy as np
 
 ## local modules ##
 import functions_v5 as fxn
@@ -61,6 +62,7 @@ for s in ps:
 	beg_early, end_early = d_indices[(s, 'e')]
 	plt.plot(range(beg_retro, end_retro), d_zRR53ls[s][beg_retro:end_retro], marker = 'o', color = fxn.gp_retro_early_colors[0], linewidth = 2)
 	plt.plot(range(beg_early, end_early), d_zRR53ls[s][beg_early:end_early], marker = 'o', color = fxn.gp_retro_early_colors[1], linewidth = 2)
+	print np.mean(d_zRR53ls[s][beg_retro:end_retro])
 plt.xlim([0, fw-1])
 plt.xticks(range(fw)[::5], wklab[:fw:5]) 
 plt.xlabel('Week Number', fontsize=fs)

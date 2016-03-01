@@ -120,8 +120,8 @@ gp_CDCclassif_ix_ILINet = {'blue':(3, 6, 7, 1, 12), 'yellow':(2, 5, 8, 9, 0, 11,
 ## call parameters ##
 # set these parameters every time a plot is run
 
-# pseasons = gp_ILINet_plotting_seasons
-pseasons = gp_plotting_seasons
+pseasons = gp_ILINet_plotting_seasons
+# pseasons = gp_plotting_seasons
 
 ##############################################
 def anydiag_baseline_comparison(csvreadfile):
@@ -595,6 +595,7 @@ def ILINet_coverageCareseek_adjustment(dict_ILI_week, dict_wk, dict_anyvisit_wee
 			Visits = [dict_anyvisit_week[wk] for wk in dummyweeks]
 			ILI = [dict_ILI_week[(wk, age)] for wk in dummyweeks]
 			if len(dummyweeks) == 52:
+				print s, "52 weeks"
 				Visits.insert(13, (Visits[12]+Visits[13])/2.)
 				ILI.insert(13, (ILI[12]+ILI[13])/2.)
 			dict_anyvisit_season[s] = sum(Visits[:gp_fluweeks]) # total any diagnosis visits during flu season
@@ -1054,6 +1055,7 @@ def week_RR_processing_part2(dict_pop, dict_totILI53ls, dict_totILIadj53ls, dict
 		season_sd = np.std(normalization_period)
 		dict_zRR53ls[s] = [(val-season_mean)/season_sd for val in dict_RR53ls[s]]
 
+	print sorted(dict_pop.iteritems())
 	return dict_totIncid53ls, dict_totIncidAdj53ls, dict_RR53ls, dict_zRR53ls
 
 ##############################################

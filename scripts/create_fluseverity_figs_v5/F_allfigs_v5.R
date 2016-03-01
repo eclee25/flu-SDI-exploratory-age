@@ -99,6 +99,7 @@ for (s in -2:14){
 ##########################################
 # 7/27/15 benchmark barplot
 setwd('/home/elee/Dropbox/Elizabeth_Bansal_Lab/SDI_Data/explore/R_export')
+benchmark <- read.csv('benchmark_ixTavg_altnorm_comparisons.csv', header=T)
 # 10/8/15: based qualitative coding (CDC_source/CDC_severity_descriptions.ods/norm3-noniterative)
 benchcol <- c(NA, NA, 0, -1, 0, -1, 1, 0, -1, -1, 0, 0, 0, -1, 1, 0) # 1 = sev, 0 = mod, -1 = mild, NA = no data
 
@@ -113,15 +114,15 @@ merge2[which(merge2$uqid=='200353'),]$ILI_diag_perc <- mean(merge2[which(merge2$
 
 ##########################################
 # plotting parameters
-w = 580 
-h = 700
-ps = 14
+w = 5
+h = 6
+ps = 8.75
 margin = c(0.5, 4, 1, 4) # bottom, left, top, right
 omargin = c(3.5, 0, 0, 0)
 sz = 2
 sz2 = 1.2
 sz3 = 2.5
-un = "px"
+un = "in"
 wkticks <- which(substring(merge2$uqid, 5, 6)=='40')
 # wklabs <- paste(c(rep('Oct', length(wkticks)-1), 'May'), substr(merge2$yr[wkticks], 3, 4), sep=' ')
 seasonlabs <- c('97-98', '98-99', '99-00', '00-01', '01-02', '02-03', '03-04', '04-05', '05-06', '06-07', '07-08', '08-09', '10-11', '11-12', '12-13', '13-14')
@@ -138,9 +139,9 @@ dividercol <- 'black'
 
 ##########################################
 # combined figure
-setwd('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission3_ID/MainFigures/')
+setwd('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCInfectiousDiseases/MainFigures/subfigs')
 
-png(filename="all_panels.png", units=un, width=w, height=h, pointsize=ps, bg = 'white')
+png(filename="all_panels.png", units=un, width=w, height=h, pointsize=ps, res=300, bg = 'white')
 par(mfrow = c(5, 1), mar = margin, oma = omargin)
 
 # ILI panel
@@ -154,12 +155,12 @@ legend('topleft', c('medical claims', 'ILINet'), lwd = sz, col = c('tomato', 'tu
 
 # perc_pos panel
 par(mar=margin)
-plot(merge2$a_H1, col = 'navy', type = 'l', axes = F, ylab = '', xlab = '', ylim = c(0, 1600))
+plot(merge2$a_H1, col = 'navy', type = 'l', axes = F, ylab = '', xlab = '', ylim = c(0, 2000))
 lines(merge2$a_H3sum, col = 'violetred3', type = 'l', lwd = sz2)
 lines(merge2$b, col = 'orange', type = 'l', lwd = sz2)
 segments(which(merge2$uqid=='201040'), 0, y1 = 2000, lwd = sz2, col = pandemiccol)
 abline(h = 0, lwd = sz2, col = dividercol)
-axis(2, at = seq(0, 1600, by=800), labels = seq(0, 1600, by=800), col.axis = 'black', col = 'black')
+axis(2, at = seq(0, 2000, by=1000), labels = seq(0, 2000, by=1000), col.axis = 'black', col = 'black')
 mtext(2, text = 'samples', line = sz3, cex = sz2, col = 'black')
 par(new=T)
 plot(merge2$perc_pos, type = 'l', xlab = '', ylab = '', ylim = c(0, 60), col = 'black', axes = F, lwd = sz, cex.lab = sz)

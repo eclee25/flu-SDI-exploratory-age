@@ -23,7 +23,7 @@ setwd(dirname(sys.frame(1)$ofile)) # only works if you source the program
 
 #### plot formatting ################################
 mar <- c(0.5, 0.5, 0.5, 0.5)
-w <- 8; h <- 5.75
+w <- 8; h <- 5.75; dp <- 300
 
 #### import data ################################
 setwd('../../Py_export') 
@@ -84,7 +84,7 @@ barDSt <- data.frame(mn_retro = retroVal$mn_retro, exPI = predict(modStExPI, ret
 barDNat2 <- fullD %>% filter(season %in% c(9, 6, 5, 8)) %>% select(-ex_PImort_SD, -pk_ili_prop) %>% gather("metric", "value", 3:5) %>% mutate(mn_retro_fac = signif(mn_retro, 2)) %>% filter(metric != 'pk_ili_prop') %>% left_join(fullD %>% select(season, ex_PImort_SD), by = 'season') %>% mutate(SD = ifelse(metric == 'ex_PImort_rate100K', ex_PImort_SD, NA)) %>% select(-ex_PImort_SD)
 
 #### draw bar chart ################################
-setwd('../../Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission3_ID/MainFigures')
+setwd('../../Manuscripts/Age_Severity/Submission_Materials/BMCInfectiousDiseases/MainFigures/subfigs')
 
 natPlot <- ggplot(barDNat, aes(x = factor(mn_retro), y = value, ymax = 24)) +
   geom_bar(aes(alpha = metric, fill = factor(mn_retro)), colour = 'black', stat = 'identity', width = 0.75, position = "dodge") +
@@ -103,22 +103,23 @@ limits.ls <- sort(unique(barDNat2$mn_retro_fac))
 if(length(limits.ls) == 5){
   colorbar <- c("#2c7bb6", "#abd9e9", "#ffffbf", "#fdae61", "#d7191c")
 } else{
-  colorbar <- c("#2c7bb6", "#abd9e9", "#ffffbf", "#d7191c")
+  # colorbar <- c("#2c7bb6", "#abd9e9", "#ffffbf", "#d7191c")
+  colorbar <- c("#313695", "#abd9e9", "#fee090", "#d7191c")
 }
 
 natPlotU <- ggplot(barDNat2, aes(x = mn_retro_fac, y = value)) +
   geom_bar(aes(alpha = factor(metric, levels = c("hosp_tot", "ex_PImort_rate100K", "pk_ili_perc")), fill = factor(mn_retro_fac)), colour = 'black', stat = 'identity', width = 2.5, position = "dodge") +
   geom_errorbar(aes(ymax = value + SD, ymin = ifelse((value - SD) >= 0, value - SD, 0)), position = "dodge", hjust = 1, width = .3) +
-  scale_alpha_manual(limits = c("hosp_tot", "ex_PImort_rate100K", "pk_ili_perc"), labels = c("Hosp. (rate)", "Excess P&I Mort. (rate)", "Peak ILI/Visits (%)"), values = c(0.5, 0.75, 1), name = 'Indicator') +
+  scale_alpha_manual(limits = c("hosp_tot", "ex_PImort_rate100K", "pk_ili_perc"), labels = c("Hosp. (rate)", "Excess P&I Mort. (rate)", "Peak ILI/Visits (%)"), values = c(0.2, 0.6, 1), name = 'Indicator') +
   scale_fill_manual(limits = as.character(limits.ls), values = colorbar, labels = c("Mild", rep("", length(limits.ls)-2), "Severe")) +
-  geom_text(aes(label = c("Mild", rep("", length(limits.ls)-2), "Severe"), x = limits.ls, y = rep(25, length(limits.ls))), size = 4) +
+  geom_text(aes(label = c("Mild", rep("", length(limits.ls)-2), "Severe"), x = limits.ls, y = rep(21, length(limits.ls))), size = 4) +
   theme_bw(base_size = 14, base_family = "") +
   theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank(), plot.margin = unit(mar, "mm"), legend.position = 'bottom') +
   ylab("Cum. Rate per 100K; Percent") +
   xlab(expression(paste('Retospective Severity, ', bar(rho["s,r"])))) +
   scale_x_continuous(breaks = c(limits.ls), labels = as.character(limits.ls)) +
   guides(fill = 'none')
-ggsave(natPlotU, width = w, height = h, file = "zRR_translation_uneven.png")
+ggsave(natPlotU, width = w, height = h, dpi = dp, file = "zRR_translation_uneven.png")
 print(natPlotU)
 
 #### alternative bar charts ################################
