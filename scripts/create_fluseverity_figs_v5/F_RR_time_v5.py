@@ -58,21 +58,18 @@ d_indices = fxn.identify_retro_early_weeks(d_wk, d_totIncidAdj53ls)
 # plot values
 for s in ps:
 	plt.plot(d_RR53ls[s], marker = fxn.gp_marker, color = colvec[s-2], label = sl[s-2], linewidth = fxn.gp_linewidth)
-# for s in ps:
-# 	beg_retro, end_retro = d_indices[(s, 'r')]
-# 	beg_early, end_early = d_indices[(s, 'e')]
-# 	plt.plot(range(beg_retro, end_retro), d_RR53ls[s][beg_retro:end_retro], marker = 's', color = fxn.gp_retro_early_colors[0], linewidth = 4)
-# 	plt.plot(range(beg_early, end_early), d_RR53ls[s][beg_early:end_early], marker = 's', color = fxn.gp_retro_early_colors[1], linewidth = 4)
-# plt.axvline(x=13, color='k', ls='--', lw=2)
+for s in ps:
+	beg_retro, end_retro = d_indices[(s, 'r')]
+	beg_early, end_early = d_indices[(s, 'e')]
+	plt.plot(range(beg_retro, end_retro), d_RR53ls[s][beg_retro:end_retro], marker = 's', color = fxn.gp_retro_early_colors[0], linewidth = 4)
+	plt.plot(range(beg_early, end_early), d_RR53ls[s][beg_early:end_early], marker = 's', color = fxn.gp_retro_early_colors[1], linewidth = 4)
 plt.xlim([0, 53])
 plt.xticks(range(len(wklab))[::5], wklab[::5]) 
 plt.ylim([0.1, 1])
 plt.xlabel('Week Number', fontsize=fs)
-# plt.ylabel(r'$RR_{s}(t)$, adult:child', fontsize=fs)
-plt.ylabel('Relative Risk, adult:child', fontsize=fs)
+plt.ylabel(r'$RR_{s}(t)$, adult:child', fontsize=fs)
 plt.legend(loc='upper right')
-# plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/baseline period sensitivity/RR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
-plt.savefig('/home/elee/Dropbox/Elizabeth_Bansal_Lab/Presentations/WRAIR_2017_01_31/RR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
+plt.savefig('/home/elee/Dropbox (Bansal Lab)/Elizabeth_Bansal_Lab/Manuscripts/Age_Severity/Submission_Materials/BMCMedicine/Submission2/SIFigures/baseline period sensitivity/RR_time.png', transparent=False, bbox_inches='tight', pad_inches=0)
 plt.close()
 # plt.show()
 
