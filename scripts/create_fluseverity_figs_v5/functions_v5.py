@@ -120,8 +120,8 @@ gp_CDCclassif_ix_ILINet = {'blue':(3, 6, 7, 1, 12), 'yellow':(2, 5, 8, 9, 0, 11,
 ## call parameters ##
 # set these parameters every time a plot is run
 
-pseasons = gp_ILINet_plotting_seasons
-# pseasons = gp_plotting_seasons
+# pseasons = gp_ILINet_plotting_seasons
+pseasons = gp_plotting_seasons
 
 ##############################################
 def anydiag_baseline_comparison(csvreadfile):
